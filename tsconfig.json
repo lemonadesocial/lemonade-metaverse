@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    /* Redirect output structure to the directory. */
+    "outDir": "dist",
+    /* List of library files to be included in the compilation. */
+    "lib": ["ES2020"],
+    /* Specify module code generation */
+    "module": "commonjs",
+    /* Specify ECMAScript target version */
+    "target": "ES2020",
+    /* Allow default imports from modules with no default export. */
+    "esModuleInterop": true,
+    /* Generates corresponding .map file. */
+    "sourceMap": true,
+    /* Emit the source alongside the sourcemaps within a single file. */
+    "inlineSources": true,
+    /* Enable all strict type checking options. */
+    "strict": true,
+    /* Enables experimental support for emitting type metadata for decorators which works with the module reflect-metadata. */
+    "emitDecoratorMetadata": true,
+    /* Enables experimental support for decorators, which is in stage 2 of the TC39 standardization process. */
+    "experimentalDecorators": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

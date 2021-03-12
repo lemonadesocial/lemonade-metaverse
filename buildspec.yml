@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $DOCKER_REPO
+      - docker pull $DOCKER_REPO:$DOCKER_TAG-modules || true
+  build:
+    commands:
+      - >
+        docker build                                                     \
+          --build-arg AWS_REGION=$AWS_REGION                             \
+          --cache-from $DOCKER_REPO:$DOCKER_TAG-modules                  \
+          --target modules                                               \
+          -t $DOCKER_REPO:$DOCKER_TAG-modules                            \
+          .
+      - >
+        docker build                                                     \
+          --build-arg AWS_REGION=$AWS_REGION                             \
+          --build-arg SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION  \
+          --cache-from $DOCKER_REPO:$DOCKER_TAG-modules                  \
+          -t $DOCKER_REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION             \
+          -t $DOCKER_REPO:$DOCKER_TAG                                    \
+          .
+  post_build:
+    commands:
+      - docker push $DOCKER_REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker push $DOCKER_REPO:$DOCKER_TAG-modules
+      - docker push $DOCKER_REPO:$DOCKER_TAG
+      - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER $DOCKER_REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION > imagedefinitions.json
+artifacts:
+  files:
+    - imagedefinitions.json
