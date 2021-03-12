@@ -11,6 +11,7 @@ export const databaseUrl = process.env.DATABASE_URL || 'mongodb://localhost';
 export const enjinAppId = parseInt(process.env.ENJIN_APP_ID || '0');
 export const enjinAppSecret = process.env.ENJIN_APP_SECRET || 'dummy';
 export const environment = process.env.NODE_ENV || 'development';
+export const jwtKey = process.env.JWT_KEY || 'dummy';
 export const port = parseInt(process.env.PORT || '4000');
 export const redisUrl = process.env.REDIS_URL;
 export const sourceVersion = process.env.SOURCE_VERSION || 'unknown';

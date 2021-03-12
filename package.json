@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/ioredis": "^4.22.0",
     "@types/koa__router": "^8.0.4",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/mongoose": "^5.10.2",
     "@types/pino": "^6.3.4",
     "@types/source-map-support": "^0.5.3",
@@ -33,6 +34,7 @@
     "http-terminator": "^3.0.0",
     "ioredis": "^4.23.0",
     "koa": "^2.13.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "5.10.18",
     "node-fetch": "^2.6.1",
     "pino": "^6.8.0",
