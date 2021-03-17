@@ -1,10 +1,10 @@
 import { GraphQLClient } from 'graphql-request'
 import crypto from 'crypto';
 
-import { encrypt, decrypt } from './crypto';
-import { redis } from './redis';
+import { encrypt, decrypt } from '../../helpers/crypto';
+import { redis } from '../../helpers/redis';
 
-import { enjinAppId, enjinAppSecret, isProduction } from '../../config';
+import { enjinAppId, enjinAppSecret, isProduction } from '../../../config';
 
 const CACHE_EX = 60;
 const CACHE_HASH_ALGORITHM = 'sha256';

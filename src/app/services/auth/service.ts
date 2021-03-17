@@ -1,16 +1,13 @@
 import * as assert from 'assert';
 import * as jwt from 'jsonwebtoken';
 
-import { logger } from '../helpers/pino';
+import { logger } from '../../helpers/pino';
 
-import { jwtKey } from '../../config';
+import { Auth } from './types';
+import { AuthenticationError } from '../../types/errors';
+import { ParameterizedContext } from '../../types';
 
-import { ParameterizedContext } from '../types';
-import { AuthenticationError } from '../types/errors';
-
-export interface Auth {
-  user: string;
-}
+import { jwtKey } from '../../../config';
 
 export const authenticate = async (
   { request }: ParameterizedContext,

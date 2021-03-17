@@ -1,6 +1,6 @@
-import { client, getAppAccessToken } from '../helpers/enjin';
+import { client, getAppAccessToken } from './helper';
 
-import { EnjinBalance, EnjinUser } from '../types/enjin';
+import { EnjinBalance, EnjinUser } from './types';
 
 const ENJIN_USER_FRAGMENT = `
 fragment EnjinUserFragment on EnjinUser {

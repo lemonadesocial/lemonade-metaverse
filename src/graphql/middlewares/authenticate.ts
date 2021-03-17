@@ -1,6 +1,6 @@
 import { MiddlewareFn } from 'type-graphql';
 
-import { authenticate } from '../../app/services/auth';
+import { authenticate } from '../../app/services/auth/service';
 
 import { Context } from '../types';
 
