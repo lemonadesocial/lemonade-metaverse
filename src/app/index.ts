@@ -1,4 +1,4 @@
-import Koa, { ParameterizedContext } from 'koa';
+import Koa from 'koa';
 
 import { logger } from './helpers/pino';
 
@@ -8,11 +8,12 @@ import { prometheusMiddleware } from './middlewares/prometheus';
 
 import { router } from './routers';
 
-import { State, Context } from './types';
+import { State, Context, ParameterizedContext } from './types';
 
 import { appKey } from '../config';
 
 export const app = new Koa<State, Context>();
+
 app.proxy = true;
 app.keys = [appKey];
 
@@ -23,7 +24,7 @@ app.use(loggerMiddleware());
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.on('error', (error: Error, ctx?: ParameterizedContext<State, Context>) => {
+app.on('error', (error: Error, ctx?: ParameterizedContext) => {
   const ctxLogger = ctx?.state.logger || logger;
 
   ctxLogger.error(error);

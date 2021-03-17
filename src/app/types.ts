@@ -1,12 +1,10 @@
-import { BaseLogger } from 'pino';
-
-export interface Auth {
-  user: string;
-}
+import * as koa from 'koa';
+import * as pino from 'pino';
 
 export interface State {
-  auth?: Auth;
-  logger: BaseLogger;
+  logger: pino.BaseLogger;
 }
 
-export type Context = Record<string, any>;
+export type Context = Record<string, unknown>;
+
+export type ParameterizedContext = koa.ParameterizedContext<State, Context>;
