@@ -11,7 +11,7 @@ import { jwtKey } from '../../../config';
 
 export const authenticate = async (
   { request }: ParameterizedContext,
-): Promise<Auth> => {
+) => {
   const token = request.headers.authorization?.split(' ')[1];
 
   assert.ok(token, new AuthenticationError('The authorization token is missing.'));
@@ -27,5 +27,11 @@ export const authenticate = async (
 
   assert.ok(typeof payload === 'object' && typeof payload.user === 'string', new AuthenticationError('The authorization token payload is invalid.'));
 
-  return { user: payload.user };
+  const auth: Auth = { user: payload.user };
+
+  if (typeof payload.enjin_user === 'number') {
+    auth.enjin_user = payload.enjin_user;
+  }
+
+  return auth;
 };
