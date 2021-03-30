@@ -1,0 +1,47 @@
+query AuthApp($appId: Int!, $appSecret: String!) {
+  AuthApp(id: $appId, secret: $appSecret) {
+    accessToken
+    expiresIn
+  }
+}
+
+query EnjinBalances($address: String!) {
+  EnjinBalances(ethAddress: $address, value_gt: 0) {
+    token {
+      id
+      index
+      name
+    }
+    value
+    wallet {
+      ethAddress
+    }
+  }
+}
+
+fragment EnjinUserFragment on EnjinUser {
+  id
+  name
+  identities {
+    id,
+    linkingCode
+    linkingCodeQr
+    wallet {
+      ethAddress
+      ethBalance
+    }
+  }
+}
+
+query EnjinUser($id: Int!) {
+  EnjinUser(id: $id) {
+    ...EnjinUserFragment
+  }
+}
+
+mutation CreateEnjinUser($name: String!) {
+  CreateEnjinUser(name: $name) {
+    ...EnjinUserFragment
+    accessTokens
+  }
+}

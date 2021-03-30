@@ -1,0 +1,24 @@
+overwrite: true
+schema: 'https://cloud.enjin.io/graphql'
+config:
+  scalars:
+    BigInt: BigInt
+    DateTime: Date
+    EthAddress: String
+    Object: Record<string, unknown>
+generates:
+  src/lib/enjin/sdk.generated.ts:
+    documents:
+      - src/lib/enjin/sdk.graphql
+    plugins:
+      - typescript
+      - typescript-graphql-request
+      - typescript-operations
+    config:
+      documentNode: string
+      namingConvention: keep
+  src/lib/enjin/types.generated.ts:
+    plugins:
+      - typescript-type-graphql
+    config:
+      namingConvention: keep
