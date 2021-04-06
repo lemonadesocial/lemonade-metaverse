@@ -14,6 +14,7 @@ export const environment = process.env.NODE_ENV || 'development';
 export const jwtKey = process.env.JWT_KEY || 'dummy';
 export const port = parseInt(process.env.PORT || '4000');
 export const redisUrl = process.env.REDIS_URL;
+export const s3Bucket = process.env.S3_BUCKET || 'dummy';
 export const sourceVersion = process.env.SOURCE_VERSION || 'unknown';
 
 export const isDevelopment = environment === 'development';
