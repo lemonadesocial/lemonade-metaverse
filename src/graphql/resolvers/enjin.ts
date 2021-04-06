@@ -1,4 +1,4 @@
-import { ApolloError } from 'apollo-server-koa';
+import { AuthenticationError } from 'apollo-server-koa';
 import { Arg, Ctx, Resolver, UseMiddleware, Query } from 'type-graphql';
 import * as assert from 'assert';
 
@@ -18,7 +18,7 @@ export class EnjinResolver {
   ) {
     const { auth: { enjin_user: id } } = ctx;
 
-    assert.ok(id, new ApolloError('Enjin user is missing from authorization token payload.'));
+    assert.ok(id, new AuthenticationError('Enjin user is missing from authorization token payload.'));
 
     const { EnjinUser } = await request('EnjinUser', { id });
 
