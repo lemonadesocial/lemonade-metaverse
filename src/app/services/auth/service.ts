@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import * as joi from 'joi';
 import * as jwt from 'jsonwebtoken';
 
 import { logger } from '../../helpers/pino';
@@ -9,9 +10,18 @@ import { ParameterizedContext } from '../../types';
 
 import { jwtKey } from '../../../config';
 
+const schema = joi.object<Auth>({
+  user: joi.string().required(),
+  enjin_user: joi.number(),
+}).required();
+
+function validate(value: unknown): asserts value is Auth {
+  joi.assert(value, schema, { allowUnknown: true });
+}
+
 export const authenticate = async (
   { request }: ParameterizedContext,
-) => {
+): Promise<Auth> => {
   const token = request.headers.authorization?.split(' ')[1];
 
   assert.ok(token, new AuthenticationError('The authorization token is missing.'));
@@ -21,17 +31,15 @@ export const authenticate = async (
     payload = jwt.verify(token, jwtKey) as typeof payload;
   } catch (err) {
     logger.debug(err);
-
     throw new AuthenticationError('The authorization token is invalid.');
   }
 
-  assert.ok(typeof payload === 'object' && typeof payload.user === 'string', new AuthenticationError('The authorization token payload is invalid.'));
-
-  const auth: Auth = { user: payload.user };
-
-  if (typeof payload.enjin_user === 'number') {
-    auth.enjin_user = payload.enjin_user;
+  try {
+    validate(payload);
+  } catch (err) {
+    logger.debug(err);
+    throw new AuthenticationError('The authorization token payload is invalid.')
   }
 
-  return auth;
+  return payload;
 };
