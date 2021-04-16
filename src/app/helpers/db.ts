@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { databaseDebug, databaseUrl } from '../../config';
+import { databaseDebug, databaseUri } from '../../config';
 
 mongoose.set('debug', databaseDebug);
 mongoose.set('useCreateIndex', true);
@@ -11,7 +11,7 @@ mongoose.set('useUnifiedTopology', true);
 export const connect = async (
   options?: mongoose.ConnectionOptions,
 ) => {
-  return await mongoose.connect(databaseUrl, options);
+  return await mongoose.connect(databaseUri, options);
 };
 
 export const disconnect = async () => {
