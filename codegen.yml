@@ -1,24 +1,22 @@
 overwrite: true
-schema: 'https://cloud.enjin.io/graphql'
+schema: 'https://api.thegraph.com/subgraphs/name/lemonadesocial/lemonade-marketplace-subgraph'
 config:
   scalars:
-    BigInt: BigInt
-    DateTime: Date
-    EthAddress: String
-    Object: Record<string, unknown>
+    BigInt: string
+    Bytes: string
 generates:
-  src/lib/enjin/sdk.generated.ts:
+  src/lib/lemonade-marketplace-subgraph/documents.generated.ts:
     documents:
-      - src/lib/enjin/sdk.graphql
+      - src/lib/lemonade-marketplace-subgraph/schema.graphql
+    plugins:
+      - typescript-document-nodes
+    config:
+      namingConvention: keep
+  src/lib/lemonade-marketplace-subgraph/types.generated.ts:
+    documents:
+      - src/lib/lemonade-marketplace-subgraph/schema.graphql
     plugins:
       - typescript
-      - typescript-graphql-request
       - typescript-operations
-    config:
-      documentNode: string
-      namingConvention: keep
-  src/lib/enjin/types.generated.ts:
-    plugins:
-      - typescript-type-graphql
     config:
       namingConvention: keep

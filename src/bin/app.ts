@@ -63,7 +63,7 @@ const main = async () => {
   await db.connect();
 
   const server = app.listen(port, function onListening() {
-    logger.info('NFT started - version %s', sourceVersion)
+    logger.info('NFT app started - version %s', sourceVersion)
   });
 
   httpTerminator = createHttpTerminator({ server });
