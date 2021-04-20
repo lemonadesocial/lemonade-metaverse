@@ -251,11 +251,6 @@ export enum _SubgraphErrorPolicy_ {
   deny = 'deny'
 }
 
-export type OfferFragmentFragment = (
-  { __typename?: 'Offer' }
-  & Pick<Offer, 'id' | 'lastBlock' | 'createdAt' | 'offerContract' | 'offerId' | 'tokenURI' | 'active' | 'seller' | 'currency' | 'price' | 'tokenContract' | 'tokenId' | 'buyer'>
-);
-
 export type GetOffersQueryVariables = Exact<{
   lastBlock_gt?: Maybe<Scalars['BigInt']>;
   skip: Scalars['Int'];
@@ -267,7 +262,7 @@ export type GetOffersQuery = (
   { __typename?: 'Query' }
   & { offers: Array<(
     { __typename?: 'Offer' }
-    & OfferFragmentFragment
+    & Pick<Offer, 'id' | 'lastBlock' | 'createdAt' | 'offerContract' | 'offerId' | 'tokenURI' | 'active' | 'seller' | 'currency' | 'price' | 'tokenContract' | 'tokenId' | 'buyer'>
   )> }
 );
 
@@ -280,6 +275,6 @@ export type StreamOffersSubscription = (
   { __typename?: 'Subscription' }
   & { offers: Array<(
     { __typename?: 'Offer' }
-    & OfferFragmentFragment
+    & Pick<Offer, 'id' | 'lastBlock' | 'createdAt' | 'offerContract' | 'offerId' | 'tokenURI' | 'active' | 'seller' | 'currency' | 'price' | 'tokenContract' | 'tokenId' | 'buyer'>
   )> }
 );

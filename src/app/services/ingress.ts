@@ -1,28 +1,37 @@
 import { BulkWriteOperation } from 'mongodb';
 import { Histogram } from 'prom-client';
+import { Queue, QueueScheduler, Worker } from 'bullmq';
 
 import { logger } from '../helpers/pino';
+import { redis } from '../helpers/redis';
+import { removeRepeatableByName } from '../utils/bullmq';
 import * as enrich from './enrich';
 import * as indexer from '../helpers/indexer';
 
 import { OfferModel, Offer } from '../models/offer';
 import { StateModel } from '../models/state';
 
-import { GetOffers, StreamOffers } from '../../lib/lemonade-marketplace-subgraph/documents.generated';
-import { GetOffersQuery, GetOffersQueryVariables, StreamOffersSubscription, StreamOffersSubscriptionVariables, Offer as OfferType } from '../../lib/lemonade-marketplace-subgraph/types.generated';
+import { GetOffers } from '../../lib/lemonade-marketplace-subgraph/documents.generated';
+import { GetOffersQuery, GetOffersQueryVariables } from '../../lib/lemonade-marketplace-subgraph/types.generated';
 
-const BACKFILL_LAST_BLOCK_KEY = 'backfill_last_block';
+const JOB_INTERVAL = 1000;
+const JOB_NAME = 'ingress';
+const LAST_BLOCK_KEY = 'ingress_last_block';
+const POLL_FIRST = 1000; // maximum objects returned per query
+const QUEUE_NAME = 'ingress';
 
 const durationSeconds = new Histogram({
   name: 'nft_ingress_duration_seconds',
   help: 'Duration of NFT ingress in seconds',
 });
 
-const process = async function (
-  offers: OfferType[],
-) {
-  const stopTimer = durationSeconds.startTimer();
+type JobData = null;
+const queue = new Queue<JobData>(QUEUE_NAME, { connection: redis });
+const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: redis });
 
+const process = async function (
+  offers: GetOffersQuery['offers'],
+) {
   const { upsertedIds } = await OfferModel.bulkWrite(offers.map<BulkWriteOperation<Offer>>((offer) => ({
     updateOne: {
       filter: { id: offer.id },
@@ -52,25 +61,20 @@ const process = async function (
 
   if (upserts.length) {
     await enrich.queue.addBulk(upserts.map((offer) => ({
+      name: enrich.JOB_NAME,
       data: {
         id: offer.id,
         token_uri: offer.tokenURI,
       },
     })));
   }
-
-  stopTimer();
 };
 
-export const backfill = async () => {
-  const state = await StateModel.findOne(
-    { key: BACKFILL_LAST_BLOCK_KEY },
-    { value: 1 }
-  ).lean<{ value: string }>();
-
-  const lastBlock_gt = state?.value;
+export const poll = async (
+  lastBlock_gt?: string,
+) => {
   let skip = 0;
-  const first = 1000;
+  const first = POLL_FIRST;
 
   let length = 0;
   let lastBlock: string | undefined;
@@ -87,48 +91,37 @@ export const backfill = async () => {
       await process(data.offers);
 
       skip += first;
-      lastBlock = data.offers[length - 1].lastBlock;
+      lastBlock = data.offers[length - 1].lastBlock; // requires asc sort on lastBlock
     }
   } while (length);
 
-  if (lastBlock) {
-    await StateModel.updateOne(
-      { key: BACKFILL_LAST_BLOCK_KEY },
-      { $set: { value: lastBlock } },
-      { upsert: true },
-    );
-  }
-
-  return { lastBlock: lastBlock || lastBlock_gt };
+  return lastBlock;
 };
 
-export const subscribe = (
-  lastBlock_gt?: string,
-) => {
-  const observable = indexer.client.subscribe<StreamOffersSubscription, StreamOffersSubscriptionVariables>({
-    query: StreamOffers,
-    variables: { lastBlock_gt },
-  });
+export const start = async () => {
+  await removeRepeatableByName(queue, JOB_NAME);
+  await queue.add(JOB_NAME, null, { repeat: { every: JOB_INTERVAL } });
 
-  return observable.subscribe({
-    next({ data, errors }) {
-      if (errors?.length) {
-        logger.error({ errors });
-      } else if (data?.offers) {
-        logger.debug({ offers: data.offers });
+  new Worker<JobData>(queue.name, async function () {
+    const stopTimer = durationSeconds.startTimer();
 
-        process(data.offers).catch((error) => {
-          logger.error(error, 'failed to process');
-        });
-      }
-    },
-    error(error) {
-      logger.error(error, 'failed to observe');
-    },
+    const query = { key: LAST_BLOCK_KEY };
+    const state = await StateModel.findOne(query, { value: 1 }).lean<{ value: string }>();
+
+    const lastBlock_gt = state?.value;
+    const lastBlock = await poll(lastBlock_gt);
+
+    if (lastBlock && lastBlock !== lastBlock_gt) {
+      await StateModel.updateOne(query, { $set: { value: lastBlock } }, { upsert: true });
+    }
+
+    stopTimer();
   });
 };
 
 export const close = async () => {
-  indexer.close();
+  await queue.close();
+  await queueScheduler.close();
   await enrich.queue.close();
+  indexer.client.stop();
 };

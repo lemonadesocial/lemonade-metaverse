@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 
-export const schema = (url: string) => {
+export const parseSchema = (url: string) => {
   const pos = url.indexOf('://');
 
-  assert.notStrictEqual(pos, -1, 'failed to extract schema');
+  assert.notStrictEqual(pos, -1, 'failed to parse schema');
 
   return url.substr(0, pos);
 };

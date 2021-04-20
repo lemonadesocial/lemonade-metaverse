@@ -14,15 +14,11 @@ export class Offer {
 
   @Field()
   @prop({ required: true })
+  public lastBlock!: string;
+
+  @Field()
+  @prop({ required: true })
   public created_at!: Date;
-
-  @Field()
-  @prop({ required: true })
-  public updated_at!: Date;
-
-  @Field()
-  @prop({ required: true })
-  public offer_contract!: string;
 
   @Field()
   @prop({ required: true })

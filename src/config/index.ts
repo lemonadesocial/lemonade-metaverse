@@ -10,7 +10,6 @@ export const databaseDebug = parseBoolean(process.env.DATABASE_DEBUG);
 export const databaseUri = process.env.DATABASE_URI || 'mongodb://localhost';
 export const environment = process.env.NODE_ENV || 'development';
 export const indexerHttpUri = process.env.INDEXER_HTTP_URI || 'dummy';
-export const indexerWsUri = process.env.INDEXER_WS_URI || 'dummy';
 export const ipfsGatewayUri = process.env.IPFS_GATEWAY_URI || 'https://ipfs.io';
 export const jwtKey = process.env.JWT_KEY || 'dummy';
 export const port = parseInt(process.env.PORT || '4000');

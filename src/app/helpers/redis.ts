@@ -2,9 +2,9 @@ import Redis from 'ioredis';
 
 import { logger } from './pino';
 
-import { redisUri, isDevelopment } from '../../config';
+import { redisUri } from '../../config';
 
-export const redis = new Redis(redisUri, { lazyConnect: isDevelopment });
+export const redis = new Redis(redisUri);
 
 redis.on('error', function onError(err: Error) {
   logger.error(err);
