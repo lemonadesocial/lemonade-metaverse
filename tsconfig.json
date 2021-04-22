@@ -10,6 +10,8 @@
     "target": "ES2020",
     /* Allow default imports from modules with no default export. */
     "esModuleInterop": true,
+    // /* Enable importing .json files */
+    // "resolveJsonModule": true,
     /* Skip type checking of all declaration files (*.d.ts). */
     "skipLibCheck": true,
     /* Generates corresponding .map file. */

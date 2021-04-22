@@ -14,26 +14,6 @@ export const GetOffers = gql`
     createdAt
     offerContract
     offerId
-    tokenURI
-    active
-    seller
-    currency
-    price
-    tokenContract
-    tokenId
-    buyer
-  }
-}
-    `;
-export const StreamOffers = gql`
-    subscription StreamOffers($lastBlock_gt: BigInt = -1) {
-  offers {
-    id
-    lastBlock
-    createdAt
-    offerContract
-    offerId
-    tokenURI
     active
     seller
     currency

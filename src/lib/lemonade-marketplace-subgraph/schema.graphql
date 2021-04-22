@@ -5,7 +5,6 @@ query GetOffers($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
     createdAt
     offerContract
     offerId
-    tokenURI
 
     active
     seller

@@ -32,7 +32,6 @@ export type Offer = {
   createdAt: Scalars['BigInt'];
   offerContract: Scalars['Bytes'];
   offerId: Scalars['BigInt'];
-  tokenURI: Scalars['String'];
   active: Scalars['Boolean'];
   seller: Scalars['Bytes'];
   currency: Scalars['Bytes'];
@@ -81,20 +80,6 @@ export type Offer_filter = {
   offerId_lte?: Maybe<Scalars['BigInt']>;
   offerId_in?: Maybe<Array<Scalars['BigInt']>>;
   offerId_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  tokenURI?: Maybe<Scalars['String']>;
-  tokenURI_not?: Maybe<Scalars['String']>;
-  tokenURI_gt?: Maybe<Scalars['String']>;
-  tokenURI_lt?: Maybe<Scalars['String']>;
-  tokenURI_gte?: Maybe<Scalars['String']>;
-  tokenURI_lte?: Maybe<Scalars['String']>;
-  tokenURI_in?: Maybe<Array<Scalars['String']>>;
-  tokenURI_not_in?: Maybe<Array<Scalars['String']>>;
-  tokenURI_contains?: Maybe<Scalars['String']>;
-  tokenURI_not_contains?: Maybe<Scalars['String']>;
-  tokenURI_starts_with?: Maybe<Scalars['String']>;
-  tokenURI_not_starts_with?: Maybe<Scalars['String']>;
-  tokenURI_ends_with?: Maybe<Scalars['String']>;
-  tokenURI_not_ends_with?: Maybe<Scalars['String']>;
   active?: Maybe<Scalars['Boolean']>;
   active_not?: Maybe<Scalars['Boolean']>;
   active_in?: Maybe<Array<Scalars['Boolean']>>;
@@ -147,7 +132,6 @@ export enum Offer_orderBy {
   createdAt = 'createdAt',
   offerContract = 'offerContract',
   offerId = 'offerId',
-  tokenURI = 'tokenURI',
   active = 'active',
   seller = 'seller',
   currency = 'currency',
@@ -262,19 +246,6 @@ export type GetOffersQuery = (
   { __typename?: 'Query' }
   & { offers: Array<(
     { __typename?: 'Offer' }
-    & Pick<Offer, 'id' | 'lastBlock' | 'createdAt' | 'offerContract' | 'offerId' | 'tokenURI' | 'active' | 'seller' | 'currency' | 'price' | 'tokenContract' | 'tokenId' | 'buyer'>
-  )> }
-);
-
-export type StreamOffersSubscriptionVariables = Exact<{
-  lastBlock_gt?: Maybe<Scalars['BigInt']>;
-}>;
-
-
-export type StreamOffersSubscription = (
-  { __typename?: 'Subscription' }
-  & { offers: Array<(
-    { __typename?: 'Offer' }
-    & Pick<Offer, 'id' | 'lastBlock' | 'createdAt' | 'offerContract' | 'offerId' | 'tokenURI' | 'active' | 'seller' | 'currency' | 'price' | 'tokenContract' | 'tokenId' | 'buyer'>
+    & Pick<Offer, 'id' | 'lastBlock' | 'createdAt' | 'offerContract' | 'offerId' | 'active' | 'seller' | 'currency' | 'price' | 'tokenContract' | 'tokenId' | 'buyer'>
   )> }
 );

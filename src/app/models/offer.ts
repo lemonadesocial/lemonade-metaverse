@@ -1,12 +1,12 @@
 import { Field, ObjectType } from 'type-graphql';
 import { getModelForClass, index, prop, modelOptions, Severity } from '@typegoose/typegoose';
-import GraphQLJSON from 'graphql-type-json';
+import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 
 @ObjectType()
 @index({ id: 1 }, { unique: true })
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Offer {
-  /* Indexer properties */
+  /* Required properties */
 
   @Field()
   @prop({ required: true })
@@ -22,11 +22,11 @@ export class Offer {
 
   @Field()
   @prop({ required: true })
-  public offer_id!: string;
+  public offer_contract!: string;
 
   @Field()
   @prop({ required: true })
-  public token_uri!: string;
+  public offer_id!: string;
 
   @Field()
   @prop({ required: true })
@@ -38,7 +38,15 @@ export class Offer {
 
   @Field()
   @prop({ required: true })
-  public currency!: string;
+  public currency_contract!: string;
+
+  @Field()
+  @prop({ required: true })
+  public currency_name!: string;
+
+  @Field()
+  @prop({ required: true })
+  public currency_symbol!: string;
 
   @Field()
   @prop({ required: true })
@@ -52,13 +60,17 @@ export class Offer {
   @prop({ required: true })
   public token_id!: string;
 
+  @Field()
+  @prop({ required: true })
+  public token_uri!: string;
+
+  /* Optional properties */
+
   @Field({ nullable: true })
   @prop()
   public buyer?: string;
 
-  /* Backend properties */
-
-  @Field(() => GraphQLJSON, { nullable: true })
+  @Field(() => GraphQLJSONObject)
   @prop()
   public token_metadata?: Record<string, unknown>;
 }
