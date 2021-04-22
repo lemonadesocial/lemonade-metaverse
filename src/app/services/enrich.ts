@@ -40,7 +40,7 @@ export const start = async () => {
   const httpAgent = new http.Agent({ keepAlive: true });
   const httpsAgent = new https.Agent({ keepAlive: true });
 
-  new Worker<JobData>(queue.name, async function (job) {
+  const worker = new Worker<JobData>(queue.name, async function (job) {
     const stopTimer = durationSeconds.startTimer();
 
     const { id, token_uri } = job.data;
@@ -73,6 +73,10 @@ export const start = async () => {
     });
 
     stopTimer();
+  });
+
+  worker.on('failed', function onFailed(_, error) {
+    logger.error(error, 'failed to enrich');
   });
 };
 
