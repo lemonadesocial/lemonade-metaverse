@@ -5,11 +5,11 @@ export const PaginatedResponse = <TItemsFieldValue>(
 ) => {
   @ObjectType({ isAbstract: true })
   abstract class PaginatedResponseClass {
-    @Field(() => [itemsFieldValue])
-    public items!: TItemsFieldValue[];
+    @Field(() => [itemsFieldValue], { nullable: true })
+    public items!: TItemsFieldValue[] | null;
 
-    @Field(() => Int)
-    public total!: number;
+    @Field(() => Int, { nullable: true })
+    public total!: number | null;
   }
 
   return PaginatedResponseClass;
