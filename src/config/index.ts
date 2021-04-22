@@ -16,6 +16,7 @@ export const port = parseInt(process.env.PORT || '4000');
 export const redisUri = process.env.REDIS_URI;
 export const s3Bucket = process.env.S3_BUCKET || 'dummy';
 export const sourceVersion = process.env.SOURCE_VERSION || 'unknown';
+export const web3Uri = process.env.WEB3_URI || 'dummy';
 
 export const isDevelopment = environment === 'development';
 export const isProduction = environment === 'production';
