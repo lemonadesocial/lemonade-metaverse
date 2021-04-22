@@ -44,7 +44,7 @@ const build = async (
 
   return {
     id: offer.id,
-    lastBlock: offer.lastBlock,
+    last_block: offer.lastBlock,
     created_at: new Date(parseInt(offer.createdAt) * 1000),
     offer_contract: offer.offerContract,
     offer_id: offer.offerId,

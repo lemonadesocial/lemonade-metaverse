@@ -1,6 +1,6 @@
 import { Field, ObjectType } from 'type-graphql';
 import { getModelForClass, index, prop, modelOptions, Severity } from '@typegoose/typegoose';
-import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
+import { GraphQLJSONObject } from 'graphql-type-json';
 
 @ObjectType()
 @index({ id: 1 }, { unique: true })
@@ -14,7 +14,7 @@ export class Offer {
 
   @Field()
   @prop({ required: true })
-  public lastBlock!: string;
+  public last_block!: string;
 
   @Field()
   @prop({ required: true })
