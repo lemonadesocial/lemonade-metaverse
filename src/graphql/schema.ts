@@ -1,6 +1,5 @@
 import { buildSchema } from 'type-graphql';
 import * as path from 'path';
-import GraphQLBigInt from 'apollo-type-bigint';
 import GraphQLJSON from 'graphql-type-json';
 
 import { LoggerMiddleware } from './middlewares/logger';
@@ -16,7 +15,6 @@ export const build = async () => {
     ],
     resolvers: [resolversPath],
     scalarsMap: [
-      { type: BigInt, scalar: new GraphQLBigInt('bigInt') },
       { type: Object, scalar: GraphQLJSON },
     ],
   });

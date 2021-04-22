@@ -17,9 +17,3 @@ export class AppError extends Error {
     Error.captureStackTrace(this);
   }
 }
-
-export class AuthenticationError extends AppError {
-  constructor(message: string) {
-    super(message, 'AuthenticationError', 'UNAUTHENTICATED', 401);
-  }
-}
