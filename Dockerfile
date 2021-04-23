@@ -20,7 +20,7 @@ FROM 115670576153.dkr.ecr.${AWS_REGION}.amazonaws.com/alpine:3.13
 WORKDIR /app
 
 RUN apk add --no-cache nodejs
-RUN wget https://github.com/segmentio/chamber/releases/download/v2.9.0/chamber-v2.9.0-linux-amd64 -O /usr/local/bin/chamber && chmod +x /usr/local/bin/chamber
+RUN wget https://github.com/segmentio/chamber/releases/download/v2.10.0/chamber-v2.10.0-linux-amd64 -O /usr/local/bin/chamber && chmod +x /usr/local/bin/chamber
 COPY --from=builder /app /app
 
 ARG SOURCE_VERSION
