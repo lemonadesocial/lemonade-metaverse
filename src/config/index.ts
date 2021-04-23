@@ -3,7 +3,7 @@ const parseBoolean = (value?: string) => {
 };
 
 export const apolloDebug = parseBoolean(process.env.APOLLO_DEBUG);
-export const apolloIntropection = parseBoolean(process.env.APOLLO_INTROSPECTION);
+export const apolloIntrospection = parseBoolean(process.env.APOLLO_INTROSPECTION);
 export const appKey = process.env.APP_KEY || 'dummy';
 export const databaseDebug = parseBoolean(process.env.DATABASE_DEBUG);
 export const databaseUri = process.env.DATABASE_URI || 'mongodb://localhost';
