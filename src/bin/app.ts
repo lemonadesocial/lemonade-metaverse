@@ -9,6 +9,7 @@ import * as util from 'util';
 import { app } from '../app';
 import { logger } from '../app/helpers/pino';
 import * as db from '../app/helpers/db';
+import * as metrics from '../app/services/metrics';
 import * as redis from '../app/helpers/redis';
 
 import * as graphql from '../graphql';
@@ -40,6 +41,7 @@ const shutdown = async () => {
 
     await db.disconnect();
     redis.disconnect();
+    await metrics.stop();
 
     process.exit(0);
   } catch (err) {
@@ -60,6 +62,7 @@ process.on('SIGUSR2', async function onSigusr2Signal() {
 });
 
 const main = async () => {
+  metrics.start();
   await db.connect();
 
   const server = app.listen(port, function onListening() {

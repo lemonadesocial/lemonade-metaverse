@@ -17,12 +17,6 @@ export const prometheusMiddleware = (): Middleware => {
   return async function prometheusMiddleware(ctx, next) {
     const start = process.hrtime();
     try {
-      if (ctx.path === '/metrics') {
-        ctx.body = await prom.register.metrics();
-        ctx.type = prom.register.contentType;
-        return;
-      }
-
       await next();
     } finally {
       if (ctx._matchedRoute) {

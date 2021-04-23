@@ -6,6 +6,7 @@ import * as pino from 'pino';
 import { logger } from '../app/helpers/pino';
 import * as db from '../app/helpers/db';
 import * as ingress from '../app/services/ingress';
+import * as metrics from '../app/services/metrics';
 
 import { sourceVersion } from '../config';
 
@@ -30,6 +31,7 @@ const shutdown = async () => {
   try {
     await ingress.close();
     await db.disconnect();
+    await metrics.stop();
 
     process.exit(0);
   } catch (err) {
@@ -46,6 +48,7 @@ process.on('SIGTERM', async function onSigtermSignal() {
 });
 
 const main = async () => {
+  metrics.start();
   await db.connect();
   await ingress.start();
 
