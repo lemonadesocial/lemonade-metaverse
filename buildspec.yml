@@ -27,7 +27,7 @@ phases:
       - docker push $DOCKER_REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker push $DOCKER_REPO:$DOCKER_TAG-modules
       - docker push $DOCKER_REPO:$DOCKER_TAG
-      - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER $DOCKER_REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION > imagedefinitions.json
+      - printf '[{"name":"app","imageUri":"%s"}, {"name":"enrich","imageUri":"%s"}, {"name":"ingress","imageUri":"%s"}]' $DOCKER_REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION $DOCKER_REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION $DOCKER_REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION > imagedefinitions.json
 artifacts:
   files:
     - imagedefinitions.json
