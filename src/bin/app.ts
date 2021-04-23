@@ -32,7 +32,7 @@ const fatalHandler = pino.final(logger, function handler(err, logger) {
   process.exit(1);
 });
 
-let httpTerminator: HttpTerminator;
+let httpTerminator: HttpTerminator | undefined;
 
 const shutdown = async () => {
   try {
