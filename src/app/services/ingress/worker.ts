@@ -1,19 +1,18 @@
 import { BulkWriteOperation } from 'mongodb';
 import { Histogram } from 'prom-client';
-import { Queue, QueueScheduler, Worker } from 'bullmq';
+import { Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 
-import { logger } from '../helpers/pino';
-import { redis } from '../helpers/redis';
-import { removeRepeatableByName } from '../utils/bullmq';
-import { web3, proxy, jsonERC20, jsonERC721Lemonade } from '../helpers/web3';
-import * as enrich from './enrich';
-import * as indexer from '../helpers/indexer';
+import { logger } from '../../helpers/pino';
+import { redis } from '../../helpers/redis';
+import { web3, proxy, jsonERC20, jsonERC721Lemonade } from '../../helpers/web3';
+import * as enrich from '../enrich/queue';
+import * as indexer from '../../helpers/indexer';
 
-import { OfferModel, Offer } from '../models/offer';
-import { StateModel } from '../models/state';
+import { OfferModel, Offer } from '../../models/offer';
+import { StateModel } from '../../models/state';
 
-import { GetOffers } from '../../lib/lemonade-marketplace-subgraph/documents.generated';
-import { Offer as OfferType, GetOffersQuery, GetOffersQueryVariables } from '../../lib/lemonade-marketplace-subgraph/types.generated';
+import { GetOffers } from '../../../lib/lemonade-marketplace-subgraph/documents.generated';
+import { Offer as OfferType, GetOffersQuery, GetOffersQueryVariables } from '../../../lib/lemonade-marketplace-subgraph/types.generated';
 
 const JOB_INTERVAL = 1000;
 const JOB_NAME = 'ingress';
@@ -21,14 +20,12 @@ const LAST_BLOCK_KEY = 'ingress_last_block';
 const POLL_FIRST = 1000; // maximum objects returned per query
 const QUEUE_NAME = 'ingress';
 
+type JobData = null;
+
 const durationSeconds = new Histogram({
   name: 'nft_ingress_duration_seconds',
   help: 'Duration of NFT ingress in seconds',
 });
-
-type JobData = null;
-const queue = new Queue<JobData>(QUEUE_NAME, { connection: redis });
-const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: redis });
 
 const build = async (
   offer: OfferType,
@@ -90,7 +87,7 @@ const process = async function (
 
   if (upserts.length) {
     await enrich.queue.addBulk(upserts.map((offer) => ({
-      name: enrich.JOB_NAME,
+      name: 'enrich',
       data: {
         id: offer.id,
         token_uri: offer.token_uri,
@@ -99,7 +96,7 @@ const process = async function (
   }
 };
 
-export const poll = async (
+const poll = async (
   lastBlock_gt?: string,
 ) => {
   let skip = 0;
@@ -127,34 +124,58 @@ export const poll = async (
   return lastBlock;
 };
 
+const processor: Processor<JobData> = async () => {
+  const stopTimer = durationSeconds.startTimer();
+
+  const query = { key: LAST_BLOCK_KEY };
+  const state = await StateModel.findOne(query, { value: 1 }).lean<{ value: string }>();
+
+  const lastBlock_gt = state?.value;
+  const lastBlock = await poll(lastBlock_gt);
+
+  if (lastBlock && lastBlock !== lastBlock_gt) {
+    await StateModel.updateOne(query, { $set: { value: lastBlock } }, { upsert: true });
+  }
+
+  stopTimer();
+};
+
+let queueScheduler: QueueScheduler | undefined;
+let worker: Worker<JobData> | undefined;
+
+export const bootstrap = async () => {
+  const queue = new Queue(QUEUE_NAME, { connection: redis });
+  try {
+    await queue.waitUntilReady();
+
+    const repeatableJobs = await queue.getRepeatableJobs();
+    const jobs = repeatableJobs.filter((job) => job.name === JOB_NAME);
+    if (jobs.length) await Promise.all(jobs.map((job) => queue.removeRepeatableByKey(job.key)));
+
+    await queue.add(JOB_NAME, null, { repeat: { every: JOB_INTERVAL } });
+  } finally {
+    await queue.close();
+  }
+};
+
 export const start = async () => {
-  await removeRepeatableByName(queue, JOB_NAME);
-  await queue.add(JOB_NAME, null, { repeat: { every: JOB_INTERVAL } });
+  await enrich.waitUntilReady();
 
-  const worker = new Worker<JobData>(queue.name, async function () {
-    const stopTimer = durationSeconds.startTimer();
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: redis });
+  await queueScheduler.waitUntilReady();
 
-    const query = { key: LAST_BLOCK_KEY };
-    const state = await StateModel.findOne(query, { value: 1 }).lean<{ value: string }>();
-
-    const lastBlock_gt = state?.value;
-    const lastBlock = await poll(lastBlock_gt);
-
-    if (lastBlock && lastBlock !== lastBlock_gt) {
-      await StateModel.updateOne(query, { $set: { value: lastBlock } }, { upsert: true });
-    }
-
-    stopTimer();
-  });
-
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: redis });
   worker.on('failed', function onFailed(_, error) {
     logger.error(error, 'failed to ingress');
   });
+  await worker.waitUntilReady();
 };
 
-export const close = async () => {
-  await queue.close();
-  await queueScheduler.close();
-  await enrich.queue.close();
+export const stop = async () => {
+  if (worker) await worker.close();
   indexer.client.stop();
+
+  if (queueScheduler) await queueScheduler.close();
+
+  await enrich.close();
 };

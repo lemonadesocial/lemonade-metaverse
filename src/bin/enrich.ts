@@ -5,7 +5,7 @@ import * as pino from 'pino';
 
 import { logger } from '../app/helpers/pino';
 import * as db from '../app/helpers/db';
-import * as enrich from '../app/services/enrich';
+import * as enrich from '../app/services/enrich/worker';
 import * as metrics from '../app/services/metrics';
 
 import { metricsPort, sourceVersion } from '../config';

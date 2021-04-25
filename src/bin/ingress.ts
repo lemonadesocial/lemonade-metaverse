@@ -5,7 +5,7 @@ import * as pino from 'pino';
 
 import { logger } from '../app/helpers/pino';
 import * as db from '../app/helpers/db';
-import * as ingress from '../app/services/ingress';
+import * as ingress from '../app/services/ingress/worker';
 import * as metrics from '../app/services/metrics';
 
 import { metricsPort, sourceVersion } from '../config';
@@ -29,7 +29,7 @@ const fatalHandler = pino.final(logger, function handler(err, logger) {
 
 const shutdown = async () => {
   try {
-    await ingress.close();
+    await ingress.stop();
     await db.disconnect();
     await metrics.stop();
 
@@ -50,6 +50,7 @@ process.on('SIGTERM', async function onSigtermSignal() {
 const main = async () => {
   metrics.start(metricsPort);
   await db.connect();
+  await ingress.bootstrap();
   await ingress.start();
 
   logger.info('NFT ingress started - version %s', sourceVersion);
