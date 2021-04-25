@@ -23,8 +23,8 @@ const QUEUE_NAME = 'ingress';
 type JobData = null;
 
 const durationSeconds = new Histogram({
-  name: 'nft_ingress_duration_seconds',
-  help: 'Duration of NFT ingress in seconds',
+  name: 'metaverse_ingress_duration_seconds',
+  help: 'Duration of metaverse ingress in seconds',
 });
 
 const build = async (

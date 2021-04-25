@@ -21,8 +21,8 @@ import { JobData, QUEUE_NAME } from './shared';
 export const WRITER_TIMEOUT = 1000;
 
 const durationSeconds = new Histogram({
-  name: 'nft_enrich_duration_seconds',
-  help: 'Duration of NFT enrich in seconds',
+  name: 'metaverse_enrich_duration_seconds',
+  help: 'Duration of metaverse enrich in seconds',
 });
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });
