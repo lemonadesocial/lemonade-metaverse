@@ -12,7 +12,15 @@ export const jsonERC721Lemonade = require('../../../assets/abis/ERC721Lemonade.j
 const LRU_MAX = 100;
 const LRU_MAX_AGE = 500;
 
-export const web3 = new Web3(web3Uri);
+export const web3 = new Web3(
+  new Web3.providers.WebsocketProvider(web3Uri, {
+    reconnect: {
+      auto: true,
+      delay: 1000,
+      onTimeout: true,
+    },
+  })
+);
 
 const cache = new LRU<string, unknown>({
   max: LRU_MAX,
