@@ -4,8 +4,6 @@ import prom from 'prom-client';
 
 import { logger } from '../helpers/pino';
 
-const PORT = 9100;
-
 const httpServer = http.createServer(async (_, res) => {
   try {
     res.setHeader('Content-Type', prom.register.contentType);
@@ -21,9 +19,10 @@ const httpServer = http.createServer(async (_, res) => {
 let httpTerminator: HttpTerminator | undefined;
 
 export const start = (
+  port?: number,
   onListening?: () => void,
 ) => {
-  const server = httpServer.listen(PORT, onListening);
+  const server = httpServer.listen(port, onListening);
 
   httpTerminator = createHttpTerminator({ server });
 };

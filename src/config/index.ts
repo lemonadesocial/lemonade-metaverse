@@ -11,6 +11,7 @@ export const databaseUri = process.env.DATABASE_URI || 'mongodb://localhost';
 export const environment = process.env.NODE_ENV || 'development';
 export const indexerHttpUri = process.env.INDEXER_HTTP_URI || 'dummy';
 export const ipfsGatewayUri = process.env.IPFS_GATEWAY_URI || 'https://ipfs.io';
+export const metricsPort = parseInt(process.env.METRICS_PORT || '9100');
 export const redisUri = process.env.REDIS_URI;
 export const sourceVersion = process.env.SOURCE_VERSION || 'unknown';
 export const web3Uri = process.env.WEB3_URI || 'dummy';

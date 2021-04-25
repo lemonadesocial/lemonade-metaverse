@@ -8,7 +8,7 @@ import * as db from '../app/helpers/db';
 import * as enrich from '../app/services/enrich';
 import * as metrics from '../app/services/metrics';
 
-import { sourceVersion } from '../config';
+import { metricsPort, sourceVersion } from '../config';
 
 const errorHandler = pino.final(logger, function handler(err, logger, event: string) {
   logger.error(err, event);
@@ -48,7 +48,7 @@ process.on('SIGTERM', async function onSigtermSignal() {
 });
 
 const main = async () => {
-  metrics.start();
+  metrics.start(metricsPort);
   await db.connect();
   await enrich.start();
 
