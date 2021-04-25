@@ -14,7 +14,7 @@ import * as redis from '../app/helpers/redis';
 
 import * as graphql from '../graphql';
 
-import { port, sourceVersion } from '../config';
+import { appPort, sourceVersion } from '../config';
 
 const errorHandler = pino.final(logger, function handler(err, logger, event: string) {
   logger.error(err, event);
@@ -65,7 +65,7 @@ const main = async () => {
   metrics.start();
   await db.connect();
 
-  const server = app.listen(port, function onListening() {
+  const server = app.listen(appPort, function onListening() {
     logger.info('NFT app started - version %s', sourceVersion)
   });
 
