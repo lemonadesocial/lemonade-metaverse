@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'reflect-metadata';
 import 'source-map-support/register';
+import { ApolloServer } from 'apollo-server-koa';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import * as pino from 'pino';
 import * as prom from 'prom-client';
@@ -33,11 +34,13 @@ const fatalHandler = pino.final(logger, function handler(err, logger) {
   process.exit(1);
 });
 
+let apolloServer: ApolloServer | undefined;
 let httpTerminator: HttpTerminator | undefined;
 
 const shutdown = async () => {
   try {
     if (httpTerminator) await httpTerminator.terminate();
+    if (apolloServer) await apolloServer.stop();
 
     await db.disconnect();
     await metrics.stop();
@@ -81,9 +84,8 @@ const main = async () => {
     collect: async function() { this.set(await getServerConnections()); },
   });
 
-  const graphqlServer = await graphql.createServer();
-
-  graphqlServer.applyMiddleware({ app: app as any });
+  apolloServer = await graphql.createServer();
+  apolloServer.applyMiddleware({ app: app as any });
 };
 
 main().catch(fatalHandler);
