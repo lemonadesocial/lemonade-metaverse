@@ -40,8 +40,8 @@ const shutdown = async () => {
     if (httpTerminator) await httpTerminator.terminate();
 
     await db.disconnect();
-    redis.disconnect();
     await metrics.stop();
+    redis.disconnect();
 
     process.exit(0);
   } catch (err) {

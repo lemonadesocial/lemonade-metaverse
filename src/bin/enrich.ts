@@ -7,6 +7,7 @@ import { logger } from '../app/helpers/pino';
 import * as db from '../app/helpers/db';
 import * as enrich from '../app/services/enrich/worker';
 import * as metrics from '../app/services/metrics';
+import * as redis from '../app/helpers/redis';
 
 import { metricsPort, sourceVersion } from '../config';
 
@@ -30,8 +31,10 @@ const fatalHandler = pino.final(logger, function handler(err, logger) {
 const shutdown = async () => {
   try {
     await enrich.stop();
+
     await db.disconnect();
     await metrics.stop();
+    redis.disconnect();
 
     process.exit(0);
   } catch (err) {
@@ -50,6 +53,7 @@ process.on('SIGTERM', async function onSigtermSignal() {
 const main = async () => {
   metrics.start(metricsPort);
   await db.connect();
+
   await enrich.start();
 
   logger.info('metaverse enrich started - version %s', sourceVersion);
