@@ -173,7 +173,7 @@ export const start = async () => {
 
 export const stop = async () => {
   if (worker) await worker.close();
-  indexer.client.stop();
+  indexer.stop();
   web3.disconnect();
 
   if (queueScheduler) await queueScheduler.close();

@@ -12,3 +12,7 @@ export const client = new ApolloClient({
     uri: indexerHttpUri,
   }),
 });
+
+export const stop = () => {
+  client.stop();
+};
