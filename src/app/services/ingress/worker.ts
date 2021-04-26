@@ -4,7 +4,7 @@ import { Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 
 import { logger } from '../../helpers/pino';
 import { redis } from '../../helpers/redis';
-import { web3, proxy, jsonERC20, jsonERC721Lemonade } from '../../helpers/web3';
+import * as web3 from '../../helpers/web3';
 import * as enrich from '../enrich/queue';
 import * as indexer from '../../helpers/indexer';
 
@@ -30,8 +30,8 @@ const durationSeconds = new Histogram({
 const build = async (
   offer: OfferType,
 ): Promise<Offer> => {
-  const currency = proxy(new web3.eth.Contract(jsonERC20, offer.currency), 10000);
-  const token = proxy(new web3.eth.Contract(jsonERC721Lemonade, offer.tokenContract));
+  const currency = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC20, offer.currency), 10000);
+  const token = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC721Lemonade, offer.tokenContract));
 
   const [currency_name, currency_symbol, token_uri] = await Promise.all([
     currency.name<string>(),
@@ -174,6 +174,7 @@ export const start = async () => {
 export const stop = async () => {
   if (worker) await worker.close();
   indexer.client.stop();
+  web3.disconnect();
 
   if (queueScheduler) await queueScheduler.close();
 
