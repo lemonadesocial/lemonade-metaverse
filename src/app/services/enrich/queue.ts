@@ -1,11 +1,12 @@
 import { Queue, QueueScheduler } from 'bullmq';
+import Redis from 'ioredis';
 
-import { redis } from '../../helpers/redis';
+import { redisUri } from '../../../config';
 
 import { JobData, QUEUE_NAME } from './shared';
 
-export const queue = new Queue<JobData>(QUEUE_NAME, { connection: redis });
-export const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: redis });
+export const queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
+export const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
 
 export const waitUntilReady = async () => {
   await Promise.all([
@@ -15,8 +16,6 @@ export const waitUntilReady = async () => {
 };
 
 export const close = async () => {
-  await Promise.all([
-    queue.close(),
-    queueScheduler.close(),
-  ]);
+  await queue.close();
+  await queueScheduler.close();
 };

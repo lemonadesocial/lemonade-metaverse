@@ -6,15 +6,15 @@ import * as http from 'http';
 import * as https from 'https';
 import * as path from 'path';
 import fetch, { Response } from 'node-fetch';
+import Redis from 'ioredis';
 
 import { OfferModel, Offer } from '../../models/offer';
 
 import { BuffereredQueue } from '../../utils/buffered-queue';
 import { logger } from '../../helpers/pino';
 import { parseSchema } from '../../utils/url';
-import { redis } from '../../helpers/redis';
 
-import { ipfsGatewayUri } from '../../../config';
+import { ipfsGatewayUri, redisUri } from '../../../config';
 
 import { JobData, QUEUE_NAME } from './shared';
 
@@ -70,10 +70,10 @@ let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
 export const start = async () => {
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: redis });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
   await queueScheduler.waitUntilReady();
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: redis });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
   worker.on('failed', function onFailed(_, error) {
     logger.error(error, 'failed to enrich');
   });
