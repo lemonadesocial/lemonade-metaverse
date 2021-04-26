@@ -52,7 +52,7 @@ const main = async () => {
   await db.connect();
   await enrich.start();
 
-  logger.info('NFT enrich started - version %s', sourceVersion);
+  logger.info('metaverse enrich started - version %s', sourceVersion);
 };
 
 main().catch(fatalHandler);

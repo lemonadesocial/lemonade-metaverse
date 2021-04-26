@@ -66,7 +66,7 @@ const main = async () => {
   await db.connect();
 
   const server = app.listen(appPort, function onListening() {
-    logger.info('NFT app started - version %s', sourceVersion)
+    logger.info('metaverse app started - version %s', sourceVersion)
   });
 
   httpTerminator = createHttpTerminator({ server });

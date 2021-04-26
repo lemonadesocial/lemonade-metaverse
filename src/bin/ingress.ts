@@ -53,7 +53,7 @@ const main = async () => {
   await ingress.bootstrap();
   await ingress.start();
 
-  logger.info('NFT ingress started - version %s', sourceVersion);
+  logger.info('metaverse ingress started - version %s', sourceVersion);
 };
 
 main().catch(fatalHandler);
