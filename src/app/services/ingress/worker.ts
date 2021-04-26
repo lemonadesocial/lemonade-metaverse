@@ -152,7 +152,12 @@ export const bootstrap = async () => {
 
     const repeatableJobs = await queue.getRepeatableJobs();
     const jobs = repeatableJobs.filter((job) => job.name === JOB_NAME);
-    if (jobs.length) await Promise.all(jobs.map((job) => queue.removeRepeatableByKey(job.key)));
+
+    if (jobs.length) {
+      await Promise.all(jobs.map((job) =>
+        queue.removeRepeatableByKey(job.key)
+      ));
+    }
 
     await queue.add(JOB_NAME, null, { repeat: { every: JOB_INTERVAL } });
   } finally {
