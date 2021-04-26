@@ -1,9 +1,9 @@
 import { BulkWriteOperation } from 'mongodb';
 import { Histogram } from 'prom-client';
 import { Processor, Queue, QueueScheduler, Worker } from 'bullmq';
+import Redis from 'ioredis';
 
 import { logger } from '../../helpers/pino';
-import { redis } from '../../helpers/redis';
 import * as web3 from '../../helpers/web3';
 import * as enrich from '../enrich/queue';
 import * as indexer from '../../helpers/indexer';
@@ -13,6 +13,8 @@ import { StateModel } from '../../models/state';
 
 import { GetOffers } from '../../../lib/lemonade-marketplace-subgraph/documents.generated';
 import { Offer as OfferType, GetOffersQuery, GetOffersQueryVariables } from '../../../lib/lemonade-marketplace-subgraph/types.generated';
+
+import { redisUri } from '../../../config';
 
 const JOB_INTERVAL = 1000;
 const JOB_NAME = 'ingress';
@@ -144,7 +146,7 @@ let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
 export const bootstrap = async () => {
-  const queue = new Queue(QUEUE_NAME, { connection: redis });
+  const queue = new Queue(QUEUE_NAME, { connection: new Redis(redisUri) });
   try {
     await queue.waitUntilReady();
 
@@ -161,10 +163,10 @@ export const bootstrap = async () => {
 export const start = async () => {
   await enrich.waitUntilReady();
 
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: redis });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
   await queueScheduler.waitUntilReady();
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: redis });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
   worker.on('failed', function onFailed(_, error) {
     logger.error(error, 'failed to ingress');
   });
