@@ -40,6 +40,7 @@
     "class-validator": "^0.13.1",
     "graphql": "^15.5.0",
     "graphql-parse-resolve-info": "^4.11.0",
+    "graphql-redis-subscriptions": "^2.3.1",
     "graphql-tag": "^2.11.0",
     "graphql-type-json": "^0.3.2",
     "http-terminator": "^3.0.0",

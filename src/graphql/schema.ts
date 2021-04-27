@@ -5,6 +5,8 @@ import GraphQLJSON from 'graphql-type-json';
 import { LoggerMiddleware } from './middlewares/logger';
 import { PrometheusMiddleware } from './middlewares/prometheus';
 
+import { pubSub } from '../app/helpers/pub-sub';
+
 export const build = async () => {
   const resolversPath = path.join(__dirname, '/resolvers/**/*.{ts,js}');
 
@@ -14,6 +16,7 @@ export const build = async () => {
       LoggerMiddleware,
     ],
     resolvers: [resolversPath],
+    pubSub,
     scalarsMap: [
       { type: Object, scalar: GraphQLJSON },
     ],
