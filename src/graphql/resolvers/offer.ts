@@ -1,13 +1,17 @@
-import { Arg, ObjectType, Int, Resolver, Query } from 'type-graphql';
+import { Arg, ObjectType, Int, Resolver, Root, Query, Subscription } from 'type-graphql';
 import { MongooseFilterQuery } from 'mongoose';
 
 import { Fields, FieldsMap } from '../decorators/fields';
 
 import { Offer, OfferModel } from '../../app/models/offer';
 import { PaginatedResponse } from '../types/paginated-response';
+import { PartialType } from '../types/partial-type';
 
 @ObjectType()
 class GetOffersResponse extends PaginatedResponse(Offer) { }
+
+@ObjectType()
+class OfferUpdatedResponse extends PartialType(Offer) { }
 
 @Resolver()
 export class OfferResolver {
@@ -28,5 +32,16 @@ export class OfferResolver {
     ]);
 
     return { items, total };
+  }
+
+  @Subscription({
+    topics: 'offer_updated',
+    filter: ({ args, payload }) => args.id_in?.includes(payload.id) ?? true,
+  })
+  offerUpdated(
+    @Root() offer: Offer,
+    @Arg('id_in', () => [String], { nullable: true }) _: string[] | null,
+  ): OfferUpdatedResponse {
+    return offer;
   }
 }

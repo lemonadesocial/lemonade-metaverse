@@ -4,9 +4,10 @@ import { Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 import Redis from 'ioredis';
 
 import { logger } from '../../helpers/pino';
-import * as web3 from '../../helpers/web3';
+import { pubSub } from '../../helpers/pub-sub';
 import * as enrich from '../enrich/queue';
 import * as indexer from '../../helpers/indexer';
+import * as web3 from '../../helpers/web3';
 
 import { OfferModel, Offer } from '../../models/offer';
 import { StateModel } from '../../models/state';
@@ -73,7 +74,7 @@ const process = async function (
   }));
 
   const docs = results.filter((result) => result !== null) as Offer[];
-  const { upsertedIds } = await OfferModel.bulkWrite(
+  const { upsertedIds = {} } = await OfferModel.bulkWrite(
     docs.map<BulkWriteOperation<Offer>>(({ id, ...offer }) => ({
       updateOne: {
         filter: { id },
@@ -83,19 +84,29 @@ const process = async function (
     }))
   );
 
-  const upserts = Object
-    .keys(upsertedIds || {})
-    .map((key) => docs[parseInt(key)]);
+  const promises: Promise<any>[] = [];
 
+  const upserts = Object.keys(upsertedIds).map((key) => docs[parseInt(key)]);
   if (upserts.length) {
-    await enrich.queue.addBulk(upserts.map((offer) => ({
-      name: 'enrich',
-      data: {
-        id: offer.id,
-        token_uri: offer.token_uri,
-      },
-    })));
+    promises.push(
+      enrich.queue.addBulk(upserts.map((offer) => ({
+        name: 'enrich',
+        data: {
+          id: offer.id,
+          token_uri: offer.token_uri,
+        },
+      })))
+    );
   }
+
+  const updates = docs.filter((_, i) => !upsertedIds[i]);
+  if (updates.length) {
+    promises.push(...updates.map((offer) =>
+      pubSub.publish('offer_updated', offer)
+    ));
+  }
+
+  await Promise.all(promises);
 };
 
 const poll = async (

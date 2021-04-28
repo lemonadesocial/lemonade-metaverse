@@ -13,6 +13,7 @@ import { OfferModel, Offer } from '../../models/offer';
 import { BuffereredQueue } from '../../utils/buffered-queue';
 import { logger } from '../../helpers/pino';
 import { parseSchema } from '../../utils/url';
+import { pubSub } from '../../helpers/pub-sub';
 
 import { ipfsGatewayUri, redisUri } from '../../../config';
 
@@ -56,12 +57,16 @@ const processor: Processor<JobData> = async (job) => {
 
   assert.ok(response.ok); // @todo: validate metadata
 
+  const token_metadata = await response.json();
+
   writer.enqueue({
     updateOne: {
       filter: { id },
-      update: { $set: { token_metadata: await response.json() } },
+      update: { $set: { token_metadata } },
     },
   });
+
+  await pubSub.publish('offer_updated', { id, token_metadata });
 
   stopTimer();
 };
