@@ -19,6 +19,7 @@ import { ipfsGatewayUri, redisUri } from '../../../config';
 
 import { JobData, QUEUE_NAME } from './shared';
 
+export const WORKER_CONCURRENCY = 10;
 export const WRITER_TIMEOUT = 1000;
 
 const durationSeconds = new Histogram({
@@ -78,7 +79,7 @@ export const start = async () => {
   queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
   await queueScheduler.waitUntilReady();
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri), concurrency: WORKER_CONCURRENCY });
   worker.on('failed', function onFailed(_, error) {
     logger.error(error, 'failed to enrich');
   });
