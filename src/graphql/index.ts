@@ -10,5 +10,6 @@ export const createServer = async () => {
     debug: apolloDebug,
     introspection: apolloIntrospection,
     schema: await schema.build(),
+    subscriptions: { keepAlive: 5000 },
   });
 };

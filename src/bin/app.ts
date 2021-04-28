@@ -86,6 +86,7 @@ const main = async () => {
 
   apolloServer = await graphql.createServer();
   apolloServer.applyMiddleware({ app: app as any });
+  apolloServer.installSubscriptionHandlers(server);
 };
 
 main().catch(fatalHandler);
