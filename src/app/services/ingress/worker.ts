@@ -17,23 +17,25 @@ import { Offer as OfferType, GetOffersQuery, GetOffersQueryVariables } from '../
 
 import { redisUri } from '../../../config';
 
-const JOB_INTERVAL = 1000;
+const CURRENCY_TTL = 10000; // the duration that ERC20 data stays cached
 const JOB_NAME = 'ingress';
-const LAST_BLOCK_KEY = 'ingress_last_block';
 const POLL_FIRST = 1000; // maximum objects returned per query
 const QUEUE_NAME = 'ingress';
 
-type JobData = null;
+type JobData = { lastBlock_gt?: string };
 
 const durationSeconds = new Histogram({
   name: 'metaverse_ingress_duration_seconds',
   help: 'Duration of metaverse ingress in seconds',
 });
 
+const jobOptions = { delay: 1000 };
+const stateQuery = { key: 'ingress_last_block' };
+
 const build = async (
   offer: OfferType,
 ): Promise<Offer> => {
-  const currency = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC20, offer.currency), 10000);
+  const currency = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC20, offer.currency), CURRENCY_TTL);
   const token = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC721Lemonade, offer.tokenContract));
 
   const [currency_name, currency_symbol, token_uri] = await Promise.all([
@@ -115,8 +117,8 @@ const poll = async (
   let skip = 0;
   const first = POLL_FIRST;
 
-  let length = 0;
   let lastBlock: string | undefined;
+  let length = 0;
   do {
     const { data } = await indexer.client.query<GetOffersQuery, GetOffersQueryVariables>({
       query: GetOffers,
@@ -137,50 +139,45 @@ const poll = async (
   return lastBlock;
 };
 
-const processor: Processor<JobData> = async () => {
+let queue: Queue | undefined;
+let queueScheduler: QueueScheduler | undefined;
+let worker: Worker<JobData> | undefined;
+
+const processor: Processor<JobData> = async (job) => {
   const stopTimer = durationSeconds.startTimer();
 
-  const query = { key: LAST_BLOCK_KEY };
-  const state = await StateModel.findOne(query, { value: 1 }).lean<{ value: string }>();
-
-  const lastBlock_gt = state?.value;
+  const { lastBlock_gt } = job.data;
   const lastBlock = await poll(lastBlock_gt);
 
-  if (lastBlock && lastBlock !== lastBlock_gt) {
-    await StateModel.updateOne(query, { $set: { value: lastBlock } }, { upsert: true });
-  }
+  await Promise.all([
+    lastBlock && lastBlock !== lastBlock_gt
+      ? StateModel.updateOne(stateQuery, { $set: { value: lastBlock } }, { upsert: true })
+      : null,
+    queue
+      ? queue.add(JOB_NAME, { lastBlock_gt: lastBlock || lastBlock_gt }, jobOptions)
+      : null,
+  ]);
 
   stopTimer();
 };
 
-let queueScheduler: QueueScheduler | undefined;
-let worker: Worker<JobData> | undefined;
-
-export const bootstrap = async () => {
-  const queue = new Queue(QUEUE_NAME, { connection: new Redis(redisUri) });
-  try {
-    await queue.waitUntilReady();
-
-    const repeatableJobs = await queue.getRepeatableJobs();
-    const jobs = repeatableJobs.filter((job) => job.name === JOB_NAME);
-
-    if (jobs.length) {
-      await Promise.all(jobs.map((job) =>
-        queue.removeRepeatableByKey(job.key)
-      ));
-    }
-
-    await queue.add(JOB_NAME, null, { repeat: { every: JOB_INTERVAL } });
-  } finally {
-    await queue.close();
-  }
-};
-
 export const start = async () => {
-  await enrich.waitUntilReady();
-
+  queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
   queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
-  await queueScheduler.waitUntilReady();
+  await Promise.all([
+    enrich.waitUntilReady(),
+    queue.waitUntilReady(),
+    queueScheduler.waitUntilReady(),
+  ]);
+
+  const count = await queue
+    .getJobCounts('active', 'waiting')
+    .then((counts) => Object.values(counts).reduce((acc, cur) => acc + cur, 0));
+  if (!count) {
+    const state = await StateModel.findOne(stateQuery, { value: 1 }).lean<{ value: string }>();
+    const job = await queue.add(JOB_NAME, { lastBlock_gt: state?.value }, jobOptions);
+    logger.info(job.asJSON(), 'created ingress job');
+  }
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
   worker.on('failed', function onFailed(_, error) {
@@ -194,7 +191,7 @@ export const stop = async () => {
   indexer.stop();
   web3.disconnect();
 
-  if (queueScheduler) await queueScheduler.close();
-
   await enrich.close();
+  if (queue) await queue.close();
+  if (queueScheduler) await queueScheduler.close();
 };

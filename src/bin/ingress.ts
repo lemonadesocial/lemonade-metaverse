@@ -54,7 +54,6 @@ const main = async () => {
   metrics.start(metricsPort);
   await db.connect();
 
-  await ingress.bootstrap();
   await ingress.start();
 
   logger.info('metaverse ingress started - version %s', sourceVersion);
