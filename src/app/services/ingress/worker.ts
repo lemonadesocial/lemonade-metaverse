@@ -120,10 +120,11 @@ const poll = async (
     const { data } = await indexer.client.query<GetOffersQuery, GetOffersQueryVariables>({
       query: GetOffers,
       variables: { lastBlock_gt, skip, first },
+      fetchPolicy: 'no-cache',
     });
 
     length = data?.offers?.length || 0;
-    logger.debug({ skip, first, length });
+    logger.debug({ lastBlock_gt, skip, first, length });
 
     if (length) {
       await process(data.offers);
