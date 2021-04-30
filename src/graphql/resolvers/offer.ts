@@ -31,6 +31,20 @@ export class OfferResolver {
   }
 
   @Subscription({
+    topics: 'offer_created',
+    filter: ({ args, payload }) =>
+      ((args.token_contract_eq && args.token_contract_eq === payload.token_contract) ?? true) &&
+      ((args.token_id_eq && args.token_id_eq === payload.token_id) ?? true),
+  })
+  offerCreated(
+    @Root() offer: Offer,
+    @Arg('token_contract_eq', () => String, { nullable: true }) _: string,
+    @Arg('token_id_eq', () => String, { nullable: true }) __: string,
+  ): Offer {
+    return offer;
+  }
+
+  @Subscription({
     topics: 'offer_updated',
     filter: ({ args, payload }) => args.id_in?.includes(payload.id) ?? true,
   })
