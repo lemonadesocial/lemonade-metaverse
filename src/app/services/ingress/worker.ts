@@ -93,10 +93,7 @@ const process = async function (
     promises.push(
       enrich.queue.addBulk(upserts.map((offer) => ({
         name: 'enrich',
-        data: {
-          id: offer.id,
-          token_uri: offer.token_uri,
-        },
+        data: { offer, upserted: true },
       })))
     );
   }

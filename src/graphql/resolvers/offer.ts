@@ -5,13 +5,9 @@ import { Fields, FieldsMap } from '../decorators/fields';
 
 import { Offer, OfferModel } from '../../app/models/offer';
 import { PaginatedResponse } from '../types/paginated-response';
-import { PartialType } from '../types/partial-type';
 
 @ObjectType()
 class GetOffersResponse extends PaginatedResponse(Offer) { }
-
-@ObjectType()
-class OfferUpdatedResponse extends PartialType(Offer) { }
 
 @Resolver()
 export class OfferResolver {
@@ -41,7 +37,7 @@ export class OfferResolver {
   offerUpdated(
     @Root() offer: Offer,
     @Arg('id_in', () => [String], { nullable: true }) _: string[] | null,
-  ): OfferUpdatedResponse {
+  ): Offer {
     return offer;
   }
 }

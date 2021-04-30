@@ -36,38 +36,38 @@ const writer = new BuffereredQueue<BulkWriteOperation<Offer>>(
 const processor: Processor<JobData> = async (job) => {
   const stopTimer = durationSeconds.startTimer();
 
-  const { id, token_uri } = job.data;
+  const { offer } = job.data;
 
   let response: Response;
-  const schema = parseSchema(token_uri);
+  const schema = parseSchema(offer.token_uri);
   switch (schema) {
     case 'http':
-      response = await fetch(token_uri, { agent: httpAgent });
+      response = await fetch(offer.token_uri, { agent: httpAgent });
       break;
     case 'https':
-      response = await fetch(token_uri, { agent: httpsAgent });
+      response = await fetch(offer.token_uri, { agent: httpsAgent });
       break;
     case 'ipfs': {
-      const url = path.join(ipfsGatewayUri, 'ipns', token_uri.substr('ipfs://'.length));
+      const url = path.join(ipfsGatewayUri, 'ipns', offer.token_uri.substr('ipfs://'.length));
       response = await fetch(url, { agent: httpsAgent });
       break; }
     default:
-      logger.debug(job, `unsupported schema ${schema}`);
+      logger.debug(job.toJSON(), `unsupported schema ${schema}`);
       return;
   }
 
-  assert.ok(response.ok); // @todo: validate metadata
+  assert.ok(response.ok);
 
-  const token_metadata = await response.json();
+  offer.token_metadata = await response.json(); // @todo: validate metadata
 
   writer.enqueue({
     updateOne: {
-      filter: { id },
-      update: { $set: { token_metadata } },
+      filter: { id: offer.id },
+      update: { $set: { token_metadata: offer.token_metadata } },
     },
   });
 
-  await pubSub.publish('offer_updated', { id, token_metadata });
+  await pubSub.publish('offer_updated', offer);
 
   stopTimer();
 };
