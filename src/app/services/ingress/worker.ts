@@ -100,9 +100,9 @@ const process = async function (
   const upserts = Object.keys(upsertedIds).map((key) => docs[parseInt(key)]);
   if (upserts.length) {
     promises.push(
-      enrich.queue.addBulk(upserts.map((offer) => ({
-        name: 'enrich',
-        data: { offer, upserted: true },
+      enrich.enqueue(...upserts.map((offer) => ({
+        offer,
+        upserted: true,
       })))
     );
   }
