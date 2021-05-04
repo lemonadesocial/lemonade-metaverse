@@ -1,6 +1,6 @@
-import { BulkWriteOperation } from 'mongodb';
+import { BulkWriteOperation, FilterQuery } from 'mongodb';
 import { Histogram } from 'prom-client';
-import { Processor, Queue, QueueScheduler, Worker } from 'bullmq';
+import { JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 import Redis from 'ioredis';
 
 import { logger } from '../../helpers/pino';
@@ -9,8 +9,8 @@ import * as enrich from '../enrich/queue';
 import * as indexer from '../../helpers/indexer';
 import * as web3 from '../../helpers/web3';
 
-import { OfferModel, Offer } from '../../models/offer';
-import { StateModel } from '../../models/state';
+import { Offer, OfferModel } from '../../models/offer';
+import { State, StateModel } from '../../models/state';
 
 import { GetOffers } from '../../../lib/lemonade-marketplace-subgraph/documents.generated';
 import { GetOffersQuery, GetOffersQueryVariables, Offer as OfferType } from '../../../lib/lemonade-marketplace-subgraph/types.generated';
@@ -22,15 +22,24 @@ const JOB_NAME = 'ingress';
 const POLL_FIRST = 1000; // maximum objects returned per query
 const QUEUE_NAME = 'ingress';
 
-type JobData = { lastBlock_gt?: string };
+interface JobData {
+  lastBlock_gt?: string,
+}
 
 const durationSeconds = new Histogram({
   name: 'metaverse_ingress_duration_seconds',
   help: 'Duration of metaverse ingress in seconds',
 });
-
-const jobOptions = { delay: 1000 };
-const stateQuery = { key: 'ingress_last_block' };
+const jobOptions: JobsOptions = {
+  attempts: Number.MAX_VALUE,
+  backoff: 1000,
+  delay: 1000,
+  removeOnComplete: true,
+  removeOnFail: true,
+};
+const stateQuery: FilterQuery<State> = {
+  key: 'ingress_last_block',
+};
 
 const build = async (
   offer: OfferType,
