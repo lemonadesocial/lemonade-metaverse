@@ -13,7 +13,7 @@ import { OfferModel, Offer } from '../../models/offer';
 import { StateModel } from '../../models/state';
 
 import { GetOffers } from '../../../lib/lemonade-marketplace-subgraph/documents.generated';
-import { Offer as OfferType, GetOffersQuery, GetOffersQueryVariables } from '../../../lib/lemonade-marketplace-subgraph/types.generated';
+import { GetOffersQuery, GetOffersQueryVariables, Offer as OfferType } from '../../../lib/lemonade-marketplace-subgraph/types.generated';
 
 import { redisUri } from '../../../config';
 

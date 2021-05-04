@@ -29,7 +29,7 @@ const durationSeconds = new Histogram({
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });
 const writer = new BuffereredQueue<BulkWriteOperation<Offer>>(
-  async (operations) => OfferModel.bulkWrite(operations).then(),
+  (operations) => OfferModel.bulkWrite(operations).then(),
   WRITER_TIMEOUT,
 );
 
