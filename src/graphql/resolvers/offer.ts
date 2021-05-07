@@ -1,10 +1,10 @@
-import { Arg, ObjectType, Int, Resolver, Root, Query, Subscription } from 'type-graphql';
+import { Arg, Args, ObjectType, Resolver, Root, Query, Subscription } from 'type-graphql';
 import { MongooseFilterQuery } from 'mongoose';
 
 import { Fields, FieldsMap } from '../decorators/fields';
 
 import { Offer, OfferModel } from '../../app/models/offer';
-import { PaginatedResponse } from '../types/paginated-response';
+import { PaginatedResponse, PaginatedResponseArgs } from '../types/paginated-response';
 
 @ObjectType()
 class GetOffersResponse extends PaginatedResponse(Offer) { }
@@ -14,8 +14,7 @@ export class OfferResolver {
   @Query(() => GetOffersResponse)
   async getOffers(
     @Arg('id_in', () => [String], { nullable: true }) id_in: string[] | null,
-    @Arg('skip', () => Int) skip: number,
-    @Arg('limit', () => Int) limit: number,
+    @Args() { skip, limit }: PaginatedResponseArgs,
     @Fields() fields: FieldsMap,
   ): Promise<GetOffersResponse> {
     const query: MongooseFilterQuery<Offer> = { };
