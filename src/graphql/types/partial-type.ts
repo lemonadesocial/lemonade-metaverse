@@ -5,19 +5,19 @@ export const PartialType = <TClassType extends ClassType>(
 ) => {
   const metadata = getMetadataStorage();
 
-  @ObjectType({ isAbstract: true })
   @InputType({ isAbstract: true })
-  class PartialClass extends BaseClass { }
+  @ObjectType({ isAbstract: true })
+  class PartialTypeClass extends BaseClass { }
 
   metadata.fields.forEach((f) => {
-    if (f.target === BaseClass || BaseClass.prototype instanceof f.target) {
-      metadata.fields.push({
-        ...f,
-        typeOptions: { ...f.typeOptions, nullable: true },
-        target: PartialClass,
-      });
-    }
+    if (f.target !== BaseClass) return;
+
+    metadata.fields.push({
+      ...f,
+      typeOptions: { ...f.typeOptions, nullable: true },
+      target: PartialTypeClass,
+    });
   });
 
-  return PartialClass as ClassType<Partial<InstanceType<TClassType>>>;
+  return PartialTypeClass as ClassType<Partial<InstanceType<TClassType>>>;
 };
