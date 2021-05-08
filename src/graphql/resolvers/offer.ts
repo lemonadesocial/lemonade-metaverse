@@ -1,25 +1,28 @@
-import { Arg, Args, ObjectType, Resolver, Root, Query, Subscription } from 'type-graphql';
-import { MongooseFilterQuery } from 'mongoose';
+import { Arg, Args, ObjectType, Resolver, InputType, Root, Query, Subscription } from 'type-graphql';
 
 import { Fields, FieldsMap } from '../decorators/fields';
 
 import { Offer, OfferModel } from '../../app/models/offer';
 import { PaginatedResponse, PaginatedResponseArgs } from '../types/paginated-response';
+import { WhereInput } from '../types/where-input';
+
+import { getQuery, validate } from '../utils/where';
 
 @ObjectType()
 class GetOffersResponse extends PaginatedResponse(Offer) { }
+
+@InputType()
+class OfferWhereInput extends WhereInput(Offer) { }
 
 @Resolver()
 export class OfferResolver {
   @Query(() => GetOffersResponse)
   async getOffers(
-    @Arg('id_in', () => [String], { nullable: true }) id_in: string[] | null,
-    @Args() { skip, limit }: PaginatedResponseArgs,
     @Fields() fields: FieldsMap,
+    @Args() { skip, limit }: PaginatedResponseArgs,
+    @Arg('where', () => OfferWhereInput, { nullable: true }) where?: OfferWhereInput | null,
   ): Promise<GetOffersResponse> {
-    const query: MongooseFilterQuery<Offer> = { };
-
-    if (id_in) query.id = { $in: id_in };
+    const query = where ? getQuery<Offer>(where) : {};
 
     const [items, total] = await Promise.all([
       fields.items ? OfferModel.find(query).skip(skip).limit(limit) : null,
@@ -31,25 +34,22 @@ export class OfferResolver {
 
   @Subscription({
     topics: 'offer_created',
-    filter: ({ args, payload }) =>
-      ((args.token_contract_eq && args.token_contract_eq === payload.token_contract) ?? true) &&
-      ((args.token_id_eq && args.token_id_eq === payload.token_id) ?? true),
+    filter: ({ args, payload }) => args.where ? validate(args.where, payload) : true,
   })
   offerCreated(
     @Root() offer: Offer,
-    @Arg('token_contract_eq', () => String, { nullable: true }) _: string,
-    @Arg('token_id_eq', () => String, { nullable: true }) __: string,
+    @Arg('where', () => OfferWhereInput, { nullable: true }) _?: OfferWhereInput | null,
   ): Offer {
     return offer;
   }
 
   @Subscription({
     topics: 'offer_updated',
-    filter: ({ args, payload }) => args.id_in?.includes(payload.id) ?? true,
+    filter: ({ args, payload }) => args.where ? validate(args.where, payload) : true,
   })
   offerUpdated(
     @Root() offer: Offer,
-    @Arg('id_in', () => [String], { nullable: true }) _: string[] | null,
+    @Arg('where', () => OfferWhereInput, { nullable: true }) _?: OfferWhereInput | null,
   ): Offer {
     return offer;
   }
