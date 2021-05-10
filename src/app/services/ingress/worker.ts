@@ -20,7 +20,7 @@ import { redisUri } from '../../../config';
 const CURRENCY_TTL = 10000; // the duration that ERC20 data stays cached
 const JOB_NAME = 'ingress';
 const POLL_FIRST = 1000; // maximum objects returned per query
-const QUEUE_NAME = 'ingress';
+const QUEUE_NAME = 'bullmq:ingress';
 
 interface JobData {
   lastBlock_gt?: string,
