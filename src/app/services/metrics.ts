@@ -22,6 +22,8 @@ export const start = (
   port?: number,
   onListening?: () => void,
 ) => {
+  prom.collectDefaultMetrics();
+
   const server = httpServer.listen(port, onListening);
 
   httpTerminator = createHttpTerminator({ server });
