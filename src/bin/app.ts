@@ -15,7 +15,7 @@ import * as redis from '../app/helpers/redis';
 
 import * as graphql from '../graphql';
 
-import { appPort, sourceVersion } from '../config';
+import { appPort, metricsPort, sourceVersion } from '../config';
 
 const errorHandler = pino.final(logger, function handler(err, logger, event: string) {
   logger.error(err, event);
@@ -65,7 +65,7 @@ process.on('SIGUSR2', async function onSigusr2Signal() {
 });
 
 const main = async () => {
-  metrics.start();
+  metrics.start(metricsPort);
   await db.connect();
 
   const server = app.listen(appPort, function onListening() {
