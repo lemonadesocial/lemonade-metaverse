@@ -1,8 +1,8 @@
-import { Offer } from '../../models/offer';
+import { Order } from '../../models/order';
 
 export const QUEUE_NAME = 'bullmq:enrich';
 
 export interface JobData {
-  offer: Offer
+  order: Order
   upserted: boolean;
 }

@@ -5,7 +5,7 @@ import { GraphQLJSONObject } from 'graphql-type-json';
 @ObjectType()
 @index({ id: 1 }, { unique: true })
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
-export class Offer {
+export class Order {
   /* Required properties */
 
   @Field()
@@ -22,19 +22,19 @@ export class Offer {
 
   @Field()
   @prop({ required: true })
-  public offer_contract!: string;
+  public order_contract!: string;
 
   @Field()
   @prop({ required: true })
-  public offer_id!: string;
+  public order_id!: string;
 
   @Field()
   @prop({ required: true })
-  public active!: boolean;
+  public open!: boolean;
 
   @Field()
   @prop({ required: true })
-  public seller!: string;
+  public maker!: string;
 
   @Field()
   @prop({ required: true })
@@ -54,6 +54,10 @@ export class Offer {
 
   @Field()
   @prop({ required: true })
+  public priceIsMinimum!: boolean;
+
+  @Field()
+  @prop({ required: true })
   public token_contract!: string;
 
   @Field()
@@ -68,11 +72,15 @@ export class Offer {
 
   @Field({ nullable: true })
   @prop()
-  public buyer?: string;
+  public taker?: string;
+
+  @Field({ nullable: true })
+  @prop()
+  public paid_amount?: string;
 
   @Field(() => GraphQLJSONObject)
   @prop()
   public token_metadata?: Record<string, unknown>;
 }
 
-export const OfferModel = getModelForClass(Offer);
+export const OrderModel = getModelForClass(Order);

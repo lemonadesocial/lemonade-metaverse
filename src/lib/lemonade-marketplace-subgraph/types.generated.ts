@@ -25,23 +25,30 @@ export type Block_height = {
 };
 
 
-export type Offer = {
-  __typename?: 'Offer';
+export type Order = {
+  __typename?: 'Order';
   id: Scalars['ID'];
   lastBlock: Scalars['BigInt'];
   createdAt: Scalars['BigInt'];
-  offerContract: Scalars['Bytes'];
-  offerId: Scalars['BigInt'];
-  active: Scalars['Boolean'];
-  seller: Scalars['Bytes'];
+  orderContract: Scalars['Bytes'];
+  orderId: Scalars['BigInt'];
+  open: Scalars['Boolean'];
+  maker: Scalars['Bytes'];
   currency: Scalars['Bytes'];
   price: Scalars['BigInt'];
+  priceIsMinimum: Scalars['Boolean'];
   tokenContract: Scalars['Bytes'];
   tokenId: Scalars['BigInt'];
-  buyer?: Maybe<Scalars['Bytes']>;
+  taker?: Maybe<Scalars['Bytes']>;
+  paidAmount?: Maybe<Scalars['BigInt']>;
 };
 
-export type Offer_filter = {
+export enum OrderDirection {
+  asc = 'asc',
+  desc = 'desc'
+}
+
+export type Order_filter = {
   id?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
   id_gt?: Maybe<Scalars['ID']>;
@@ -66,30 +73,30 @@ export type Offer_filter = {
   createdAt_lte?: Maybe<Scalars['BigInt']>;
   createdAt_in?: Maybe<Array<Scalars['BigInt']>>;
   createdAt_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  offerContract?: Maybe<Scalars['Bytes']>;
-  offerContract_not?: Maybe<Scalars['Bytes']>;
-  offerContract_in?: Maybe<Array<Scalars['Bytes']>>;
-  offerContract_not_in?: Maybe<Array<Scalars['Bytes']>>;
-  offerContract_contains?: Maybe<Scalars['Bytes']>;
-  offerContract_not_contains?: Maybe<Scalars['Bytes']>;
-  offerId?: Maybe<Scalars['BigInt']>;
-  offerId_not?: Maybe<Scalars['BigInt']>;
-  offerId_gt?: Maybe<Scalars['BigInt']>;
-  offerId_lt?: Maybe<Scalars['BigInt']>;
-  offerId_gte?: Maybe<Scalars['BigInt']>;
-  offerId_lte?: Maybe<Scalars['BigInt']>;
-  offerId_in?: Maybe<Array<Scalars['BigInt']>>;
-  offerId_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  active?: Maybe<Scalars['Boolean']>;
-  active_not?: Maybe<Scalars['Boolean']>;
-  active_in?: Maybe<Array<Scalars['Boolean']>>;
-  active_not_in?: Maybe<Array<Scalars['Boolean']>>;
-  seller?: Maybe<Scalars['Bytes']>;
-  seller_not?: Maybe<Scalars['Bytes']>;
-  seller_in?: Maybe<Array<Scalars['Bytes']>>;
-  seller_not_in?: Maybe<Array<Scalars['Bytes']>>;
-  seller_contains?: Maybe<Scalars['Bytes']>;
-  seller_not_contains?: Maybe<Scalars['Bytes']>;
+  orderContract?: Maybe<Scalars['Bytes']>;
+  orderContract_not?: Maybe<Scalars['Bytes']>;
+  orderContract_in?: Maybe<Array<Scalars['Bytes']>>;
+  orderContract_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  orderContract_contains?: Maybe<Scalars['Bytes']>;
+  orderContract_not_contains?: Maybe<Scalars['Bytes']>;
+  orderId?: Maybe<Scalars['BigInt']>;
+  orderId_not?: Maybe<Scalars['BigInt']>;
+  orderId_gt?: Maybe<Scalars['BigInt']>;
+  orderId_lt?: Maybe<Scalars['BigInt']>;
+  orderId_gte?: Maybe<Scalars['BigInt']>;
+  orderId_lte?: Maybe<Scalars['BigInt']>;
+  orderId_in?: Maybe<Array<Scalars['BigInt']>>;
+  orderId_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  open?: Maybe<Scalars['Boolean']>;
+  open_not?: Maybe<Scalars['Boolean']>;
+  open_in?: Maybe<Array<Scalars['Boolean']>>;
+  open_not_in?: Maybe<Array<Scalars['Boolean']>>;
+  maker?: Maybe<Scalars['Bytes']>;
+  maker_not?: Maybe<Scalars['Bytes']>;
+  maker_in?: Maybe<Array<Scalars['Bytes']>>;
+  maker_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  maker_contains?: Maybe<Scalars['Bytes']>;
+  maker_not_contains?: Maybe<Scalars['Bytes']>;
   currency?: Maybe<Scalars['Bytes']>;
   currency_not?: Maybe<Scalars['Bytes']>;
   currency_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -104,6 +111,10 @@ export type Offer_filter = {
   price_lte?: Maybe<Scalars['BigInt']>;
   price_in?: Maybe<Array<Scalars['BigInt']>>;
   price_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  priceIsMinimum?: Maybe<Scalars['Boolean']>;
+  priceIsMinimum_not?: Maybe<Scalars['Boolean']>;
+  priceIsMinimum_in?: Maybe<Array<Scalars['Boolean']>>;
+  priceIsMinimum_not_in?: Maybe<Array<Scalars['Boolean']>>;
   tokenContract?: Maybe<Scalars['Bytes']>;
   tokenContract_not?: Maybe<Scalars['Bytes']>;
   tokenContract_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -118,55 +129,60 @@ export type Offer_filter = {
   tokenId_lte?: Maybe<Scalars['BigInt']>;
   tokenId_in?: Maybe<Array<Scalars['BigInt']>>;
   tokenId_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  buyer?: Maybe<Scalars['Bytes']>;
-  buyer_not?: Maybe<Scalars['Bytes']>;
-  buyer_in?: Maybe<Array<Scalars['Bytes']>>;
-  buyer_not_in?: Maybe<Array<Scalars['Bytes']>>;
-  buyer_contains?: Maybe<Scalars['Bytes']>;
-  buyer_not_contains?: Maybe<Scalars['Bytes']>;
+  taker?: Maybe<Scalars['Bytes']>;
+  taker_not?: Maybe<Scalars['Bytes']>;
+  taker_in?: Maybe<Array<Scalars['Bytes']>>;
+  taker_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  taker_contains?: Maybe<Scalars['Bytes']>;
+  taker_not_contains?: Maybe<Scalars['Bytes']>;
+  paidAmount?: Maybe<Scalars['BigInt']>;
+  paidAmount_not?: Maybe<Scalars['BigInt']>;
+  paidAmount_gt?: Maybe<Scalars['BigInt']>;
+  paidAmount_lt?: Maybe<Scalars['BigInt']>;
+  paidAmount_gte?: Maybe<Scalars['BigInt']>;
+  paidAmount_lte?: Maybe<Scalars['BigInt']>;
+  paidAmount_in?: Maybe<Array<Scalars['BigInt']>>;
+  paidAmount_not_in?: Maybe<Array<Scalars['BigInt']>>;
 };
 
-export enum Offer_orderBy {
+export enum Order_orderBy {
   id = 'id',
   lastBlock = 'lastBlock',
   createdAt = 'createdAt',
-  offerContract = 'offerContract',
-  offerId = 'offerId',
-  active = 'active',
-  seller = 'seller',
+  orderContract = 'orderContract',
+  orderId = 'orderId',
+  open = 'open',
+  maker = 'maker',
   currency = 'currency',
   price = 'price',
+  priceIsMinimum = 'priceIsMinimum',
   tokenContract = 'tokenContract',
   tokenId = 'tokenId',
-  buyer = 'buyer'
-}
-
-export enum OrderDirection {
-  asc = 'asc',
-  desc = 'desc'
+  taker = 'taker',
+  paidAmount = 'paidAmount'
 }
 
 export type Query = {
   __typename?: 'Query';
-  offer?: Maybe<Offer>;
-  offers: Array<Offer>;
+  order?: Maybe<Order>;
+  orders: Array<Order>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
 
 
-export type QueryofferArgs = {
+export type QueryorderArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_height>;
 };
 
 
-export type QueryoffersArgs = {
+export type QueryordersArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<Offer_orderBy>;
+  orderBy?: Maybe<Order_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<Offer_filter>;
+  where?: Maybe<Order_filter>;
   block?: Maybe<Block_height>;
 };
 
@@ -177,25 +193,25 @@ export type Query_metaArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  offer?: Maybe<Offer>;
-  offers: Array<Offer>;
+  order?: Maybe<Order>;
+  orders: Array<Order>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
 
 
-export type SubscriptionofferArgs = {
+export type SubscriptionorderArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_height>;
 };
 
 
-export type SubscriptionoffersArgs = {
+export type SubscriptionordersArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<Offer_orderBy>;
+  orderBy?: Maybe<Order_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<Offer_filter>;
+  where?: Maybe<Order_filter>;
   block?: Maybe<Block_height>;
 };
 
@@ -235,17 +251,17 @@ export enum _SubgraphErrorPolicy_ {
   deny = 'deny'
 }
 
-export type GetOffersQueryVariables = Exact<{
+export type GetOrdersQueryVariables = Exact<{
   lastBlock_gt?: Maybe<Scalars['BigInt']>;
   skip: Scalars['Int'];
   first: Scalars['Int'];
 }>;
 
 
-export type GetOffersQuery = (
+export type GetOrdersQuery = (
   { __typename?: 'Query' }
-  & { offers: Array<(
-    { __typename?: 'Offer' }
-    & Pick<Offer, 'id' | 'lastBlock' | 'createdAt' | 'offerContract' | 'offerId' | 'active' | 'seller' | 'currency' | 'price' | 'tokenContract' | 'tokenId' | 'buyer'>
+  & { orders: Array<(
+    { __typename?: 'Order' }
+    & Pick<Order, 'id' | 'lastBlock' | 'createdAt' | 'orderContract' | 'orderId' | 'open' | 'maker' | 'currency' | 'price' | 'priceIsMinimum' | 'tokenContract' | 'tokenId' | 'taker' | 'paidAmount'>
   )> }
 );

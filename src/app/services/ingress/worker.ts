@@ -9,11 +9,11 @@ import * as enrich from '../enrich/queue';
 import * as indexer from '../../helpers/indexer';
 import * as web3 from '../../helpers/web3';
 
-import { Offer, OfferModel } from '../../models/offer';
+import { Order, OrderModel } from '../../models/order';
 import { State, StateModel } from '../../models/state';
 
-import { GetOffers } from '../../../lib/lemonade-marketplace-subgraph/documents.generated';
-import { GetOffersQuery, GetOffersQueryVariables, Offer as OfferType } from '../../../lib/lemonade-marketplace-subgraph/types.generated';
+import { GetOrders } from '../../../lib/lemonade-marketplace-subgraph/documents.generated';
+import { GetOrdersQuery, GetOrdersQueryVariables, Order as OrderType } from '../../../lib/lemonade-marketplace-subgraph/types.generated';
 
 import { redisUri } from '../../../config';
 
@@ -42,54 +42,56 @@ const stateQuery: FilterQuery<State> = {
 };
 
 const build = async (
-  offer: OfferType,
-): Promise<Offer> => {
-  const currency = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC20, offer.currency), CURRENCY_TTL);
-  const token = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC721Lemonade, offer.tokenContract));
+  order: OrderType,
+): Promise<Order> => {
+  const currency = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC20, order.currency), CURRENCY_TTL);
+  const token = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC721Lemonade, order.tokenContract));
 
   const [currency_name, currency_symbol, token_uri] = await Promise.all([
     currency.name<string>(),
     currency.symbol<string>(),
-    token.tokenURI<string>(offer.tokenId),
+    token.tokenURI<string>(order.tokenId),
   ]);
 
   return {
-    id: offer.id,
-    last_block: offer.lastBlock,
-    created_at: new Date(parseInt(offer.createdAt) * 1000),
-    offer_contract: offer.offerContract,
-    offer_id: offer.offerId,
-    active: offer.active,
-    seller: offer.seller,
-    currency_contract: offer.currency,
+    id: order.id,
+    last_block: order.lastBlock,
+    created_at: new Date(parseInt(order.createdAt) * 1000),
+    order_contract: order.orderContract,
+    order_id: order.orderId,
+    open: order.open,
+    maker: order.maker,
+    currency_contract: order.currency,
     currency_name,
     currency_symbol,
-    price: offer.price,
-    token_contract: offer.tokenContract,
-    token_id: offer.tokenId,
+    price: order.price,
+    priceIsMinimum: order.priceIsMinimum,
+    token_contract: order.tokenContract,
+    token_id: order.tokenId,
     token_uri,
-    buyer: offer.buyer || undefined,
+    taker: order.taker || undefined,
+    paid_amount: order.paidAmount || undefined,
   };
 }
 
 const process = async function (
-  offers: OfferType[],
+  orders: OrderType[],
 ) {
-  const results = await Promise.all(offers.map(async (offer) => {
+  const results = await Promise.all(orders.map(async (order) => {
     try {
-      return await build(offer);
+      return await build(order);
     } catch (e) {
       logger.warn(e);
       return null;
     }
   }));
 
-  const docs = results.filter((result) => result !== null) as Offer[];
-  const { upsertedIds = {} } = await OfferModel.bulkWrite(
-    docs.map<BulkWriteOperation<Offer>>(({ id, ...offer }) => ({
+  const docs = results.filter((result) => result !== null) as Order[];
+  const { upsertedIds = {} } = await OrderModel.bulkWrite(
+    docs.map<BulkWriteOperation<Order>>(({ id, ...order }) => ({
       updateOne: {
         filter: { id },
-        update: { $set: offer },
+        update: { $set: order },
         upsert: true,
       },
     }))
@@ -100,8 +102,8 @@ const process = async function (
   const upserts = Object.keys(upsertedIds).map((key) => docs[parseInt(key)]);
   if (upserts.length) {
     promises.push(
-      enrich.enqueue(...upserts.map((offer) => ({
-        offer,
+      enrich.enqueue(...upserts.map((order) => ({
+        order,
         upserted: true,
       })))
     );
@@ -109,8 +111,8 @@ const process = async function (
 
   const updates = docs.filter((_, i) => !upsertedIds[i]);
   if (updates.length) {
-    promises.push(...updates.map((offer) =>
-      pubSub.publish('offer_updated', offer)
+    promises.push(...updates.map((order) =>
+      pubSub.publish('order_updated', order)
     ));
   }
 
@@ -126,20 +128,20 @@ const poll = async (
   let lastBlock: string | undefined;
   let length = 0;
   do {
-    const { data } = await indexer.client.query<GetOffersQuery, GetOffersQueryVariables>({
-      query: GetOffers,
+    const { data } = await indexer.client.query<GetOrdersQuery, GetOrdersQueryVariables>({
+      query: GetOrders,
       variables: { lastBlock_gt, skip, first },
       fetchPolicy: 'no-cache',
     });
 
-    length = data?.offers?.length || 0;
+    length = data?.orders?.length || 0;
     logger.debug({ lastBlock_gt, skip, first, length });
 
     if (length) {
-      await process(data.offers);
+      await process(data.orders);
 
       skip += first;
-      lastBlock = data.offers[length - 1].lastBlock; // requires asc sort on lastBlock
+      lastBlock = data.orders[length - 1].lastBlock; // requires asc sort on lastBlock
     }
   } while (length);
 

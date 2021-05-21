@@ -8,7 +8,7 @@ import * as path from 'path';
 import fetch, { Response } from 'node-fetch';
 import Redis from 'ioredis';
 
-import { OfferModel, Offer } from '../../models/offer';
+import { OrderModel, Order } from '../../models/order';
 
 import { BuffereredQueue } from '../../utils/buffered-queue';
 import { logger } from '../../helpers/pino';
@@ -28,27 +28,27 @@ const durationSeconds = new Histogram({
 });
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });
-const writer = new BuffereredQueue<BulkWriteOperation<Offer>>(
-  (operations) => OfferModel.bulkWrite(operations).then(),
+const writer = new BuffereredQueue<BulkWriteOperation<Order>>(
+  (operations) => OrderModel.bulkWrite(operations).then(),
   WRITER_TIMEOUT,
 );
 
 const processor: Processor<JobData> = async (job) => {
   const stopTimer = durationSeconds.startTimer();
 
-  const { offer, upserted } = job.data;
+  const { order, upserted } = job.data;
 
   let response: Response;
-  const schema = parseSchema(offer.token_uri);
+  const schema = parseSchema(order.token_uri);
   switch (schema) {
     case 'http':
-      response = await fetch(offer.token_uri, { agent: httpAgent });
+      response = await fetch(order.token_uri, { agent: httpAgent });
       break;
     case 'https':
-      response = await fetch(offer.token_uri, { agent: httpsAgent });
+      response = await fetch(order.token_uri, { agent: httpsAgent });
       break;
     case 'ipfs': {
-      const url = path.join(ipfsGatewayUri, 'ipns', offer.token_uri.substr('ipfs://'.length));
+      const url = path.join(ipfsGatewayUri, 'ipns', order.token_uri.substr('ipfs://'.length));
       response = await fetch(url, { agent: httpsAgent });
       break; }
     default:
@@ -58,16 +58,16 @@ const processor: Processor<JobData> = async (job) => {
 
   assert.ok(response.ok);
 
-  offer.token_metadata = await response.json(); // @todo: validate metadata
+  order.token_metadata = await response.json(); // @todo: validate metadata
 
   writer.enqueue({
     updateOne: {
-      filter: { id: offer.id },
-      update: { $set: { token_metadata: offer.token_metadata } },
+      filter: { id: order.id },
+      update: { $set: { token_metadata: order.token_metadata } },
     },
   });
 
-  await pubSub.publish(upserted ? 'offer_created' : 'offer_updated', offer);
+  await pubSub.publish(upserted ? 'order_created' : 'order_updated', order);
 
   stopTimer();
 };
