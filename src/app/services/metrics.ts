@@ -1,30 +1,34 @@
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import * as http from 'http';
-import prom from 'prom-client';
+import * as prom from 'prom-client';
 
 import { logger } from '../helpers/pino';
 
-const httpServer = http.createServer(async (_, res) => {
+import { metricsPort, metricsSecret } from '../../config';
+
+const httpServer = http.createServer(async (req, res) => {
   try {
+    if (metricsSecret && req.headers.authorization?.split(' ')[1] !== metricsSecret) {
+      return res.writeHead(403);
+    }
+
     res.setHeader('Content-Type', prom.register.contentType);
-    res.end(await prom.register.metrics());
+    res.write(await prom.register.metrics());
   } catch (e) {
     logger.error(e);
 
     res.writeHead(500);
+  } finally {
     res.end();
   }
 });
 
 let httpTerminator: HttpTerminator | undefined;
 
-export const start = (
-  port?: number,
-  onListening?: () => void,
-) => {
+export const start = () => {
   prom.collectDefaultMetrics();
 
-  const server = httpServer.listen(port, onListening);
+  const server = httpServer.listen(metricsPort);
 
   httpTerminator = createHttpTerminator({ server });
 };

@@ -9,7 +9,7 @@ import * as enrich from '../app/services/enrich/worker';
 import * as metrics from '../app/services/metrics';
 import * as redis from '../app/helpers/redis';
 
-import { metricsPort, sourceVersion } from '../config';
+import { sourceVersion } from '../config';
 
 const errorHandler = pino.final(logger, function handler(err, logger, event: string) {
   logger.error(err, event);
@@ -55,7 +55,7 @@ process.on('SIGUSR2', async function onSigusr2Signal() {
 });
 
 const main = async () => {
-  metrics.start(metricsPort);
+  metrics.start();
   await db.connect();
 
   await enrich.start();
