@@ -36,7 +36,7 @@ const writer = new BuffereredQueue<BulkWriteOperation<Order>>(
 const processor: Processor<JobData> = async (job) => {
   const stopTimer = durationSeconds.startTimer();
 
-  const { order, upserted } = job.data;
+  const { order } = job.data;
 
   let response: Response;
   const schema = parseSchema(order.token_uri);
@@ -67,7 +67,7 @@ const processor: Processor<JobData> = async (job) => {
     },
   });
 
-  await pubSub.publish(upserted ? 'order_created' : 'order_updated', order);
+  await pubSub.publish('order_updated', order);
 
   stopTimer();
 };

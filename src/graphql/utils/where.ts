@@ -12,7 +12,7 @@ const beforeEnd = (
   return str.substr(-n) === end ? str.substr(0, str.length - n) : null;
 };
 
-export const getQuery = <T>(
+export const getFilter = <T>(
   where: Where<T>,
 ) => {
   const query: Record<string, unknown> = {};
