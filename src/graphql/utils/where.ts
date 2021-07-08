@@ -31,14 +31,14 @@ export const getQuery = <T>(
 
 export const validate = <T>(
   where: Where<T>,
-  doc: Record<string, unknown>,
+  doc: T,
 ) => {
   return Object.entries(where).every(([key, value]) => {
     let prop;
     if (prop = beforeEnd(key, '_eq')) {
-      return doc[prop] === value;
+      return doc[prop as keyof T] === value;
     } else if (value instanceof Array && (prop = beforeEnd(key, '_in'))) {
-      return value.includes(doc[prop]);
+      return value.includes(doc[prop as keyof T]);
     }
   });
 };
