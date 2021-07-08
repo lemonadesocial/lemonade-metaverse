@@ -25,7 +25,7 @@ export class OrderResolver {
     const query = where ? getQuery<Order>(where) : {};
 
     const [items, total] = await Promise.all([
-      fields.items ? OrderModel.find(query).skip(skip).limit(limit) : null,
+      fields.items ? OrderModel.find(query, Object.keys(fields.items)).skip(skip).limit(limit) : null,
       fields.total ? OrderModel.countDocuments(query) : null,
     ]);
 
