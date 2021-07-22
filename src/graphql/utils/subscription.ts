@@ -21,7 +21,7 @@ export const subscribe = <TResult, TPayload = TResult, TArgs = any, TContext = a
     for await (const payload of { [Symbol.asyncIterator]: () => pubSub.asyncIterator<TPayload>(topics) }) {
       const data = { payload, args, context, info };
 
-      if (!filter?.(data)) continue;
+      if (filter && !filter(data)) continue;
 
       yield process?.(data) || payload as unknown as TResult;
     }
