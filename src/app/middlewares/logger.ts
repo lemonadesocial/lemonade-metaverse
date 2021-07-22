@@ -6,10 +6,12 @@ import { Context, State } from '../types';
 
 export const loggerMiddleware = (): Middleware<State, Context> => {
   return async function loggerMiddleware(ctx, next) {
+    const { method, path, headers } = ctx;
+
     ctx.state.logger = logger.child({
-      method: ctx.method,
-      path: ctx.path,
-      userAgent: ctx.headers['user-agent'],
+      method,
+      path,
+      userAgent: headers['user-agent'],
     });
 
     await next();

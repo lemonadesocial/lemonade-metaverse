@@ -8,6 +8,8 @@ import * as path from 'path';
 import fetch, { Response } from 'node-fetch';
 import Redis from 'ioredis';
 
+import { JobData, QUEUE_NAME } from './shared';
+
 import { OrderModel, Order } from '../../models/order';
 
 import { BuffereredQueue } from '../../utils/buffered-queue';
@@ -17,25 +19,20 @@ import { pubSub } from '../../helpers/pub-sub';
 
 import { ipfsGatewayUri, redisUri } from '../../../config';
 
-import { JobData, QUEUE_NAME } from './shared';
-
-export const WORKER_CONCURRENCY = 10;
-export const WRITER_TIMEOUT = 1000;
+const WORKER_CONCURRENCY = 10;
+const WRITER_TIMEOUT = 1000;
 
 const durationSeconds = new Histogram({
   name: 'metaverse_enrich_duration_seconds',
   help: 'Duration of metaverse enrich in seconds',
 });
+
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });
-const writer = new BuffereredQueue<BulkWriteOperation<Order>>(
-  (operations) => OrderModel.bulkWrite(operations).then(),
-  WRITER_TIMEOUT,
-);
+const writer = new BuffereredQueue<BulkWriteOperation<Order>>((operations) => OrderModel.bulkWrite(operations).then(), WRITER_TIMEOUT);
 
 const processor: Processor<JobData> = async (job) => {
   const stopTimer = durationSeconds.startTimer();
-
   const { order } = job.data;
 
   let response: Response;
@@ -75,18 +72,23 @@ const processor: Processor<JobData> = async (job) => {
 let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
-export const start = async () => {
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
+export const start = async (): Promise<void> => {
+  queueScheduler = new QueueScheduler(QUEUE_NAME, {
+    connection: new Redis(redisUri),
+  });
   await queueScheduler.waitUntilReady();
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri), concurrency: WORKER_CONCURRENCY });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, {
+    connection: new Redis(redisUri),
+    concurrency: WORKER_CONCURRENCY,
+  });
   worker.on('failed', function onFailed(_, error) {
     logger.error(error, 'failed to enrich');
   });
   await worker.waitUntilReady();
 };
 
-export const stop = async () => {
+export const stop = async (): Promise<void> => {
   if (worker) await worker.close();
 
   if (queueScheduler) await queueScheduler.close();

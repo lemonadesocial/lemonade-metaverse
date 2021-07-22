@@ -25,7 +25,7 @@ const httpServer = http.createServer(async (req, res) => {
 
 let httpTerminator: HttpTerminator | undefined;
 
-export const start = () => {
+export const start = (): void => {
   prom.collectDefaultMetrics();
 
   const server = httpServer.listen(metricsPort);
@@ -33,6 +33,6 @@ export const start = () => {
   httpTerminator = createHttpTerminator({ server });
 };
 
-export const stop = async () => {
+export const stop = async (): Promise<void> => {
   if (httpTerminator) await httpTerminator.terminate();
 };

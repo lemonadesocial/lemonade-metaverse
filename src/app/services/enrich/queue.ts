@@ -5,10 +5,14 @@ import { JobData, QUEUE_NAME } from './shared';
 
 import { redisUri } from '../../../config';
 
-const queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
-const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
+const queue = new Queue<JobData>(QUEUE_NAME, {
+  connection: new Redis(redisUri),
+});
+const queueScheduler = new QueueScheduler(QUEUE_NAME, {
+  connection: new Redis(redisUri),
+});
 
-export const waitUntilReady = async () => {
+export const waitUntilReady = async (): Promise<void> => {
   await Promise.all([
     queue.waitUntilReady(),
     queueScheduler.waitUntilReady(),
@@ -17,8 +21,8 @@ export const waitUntilReady = async () => {
 
 export const enqueue = async (
   ...data: JobData[]
-) => {
-  return await queue.addBulk(data.map((data) => ({
+): Promise<void> => {
+  await queue.addBulk(data.map((data) => ({
     name: 'enrich',
     data,
     opts: {
@@ -30,7 +34,7 @@ export const enqueue = async (
   })));
 };
 
-export const close = async () => {
+export const close = async (): Promise<void> => {
   await queue.close();
   await queueScheduler.close();
 };

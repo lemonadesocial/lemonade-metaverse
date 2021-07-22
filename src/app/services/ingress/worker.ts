@@ -17,19 +17,16 @@ import { GetOrdersQuery, GetOrdersQueryVariables, Order as OrderType } from '../
 
 import { redisUri } from '../../../config';
 
-const CURRENCY_TTL = 10000; // the duration that ERC20 data stays cached
+const CURRENCY_TTL = 10000;
 const JOB_NAME = 'ingress';
-const POLL_FIRST = 1000; // maximum objects returned per query
+const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
-
-interface JobData {
-  lastBlock_gt?: string,
-}
 
 const durationSeconds = new Histogram({
   name: 'metaverse_ingress_duration_seconds',
   help: 'Duration of metaverse ingress in seconds',
 });
+
 const jobOptions: JobsOptions = {
   attempts: Number.MAX_VALUE,
   backoff: 1000,
@@ -74,9 +71,9 @@ const build = async (
   };
 }
 
-const process = async function (
+const process = async (
   orders: OrderType[],
-) {
+) => {
   const results = await Promise.all(orders.map(async (order) => {
     try {
       return await build(order);
@@ -148,14 +145,18 @@ const poll = async (
   return lastBlock;
 };
 
+interface JobData {
+  lastBlock_gt?: string;
+}
+
 let queue: Queue | undefined;
 let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
-const processor: Processor<JobData> = async (job) => {
+const processor: Processor<JobData> = async (
+  { data: { lastBlock_gt } },
+) => {
   const stopTimer = durationSeconds.startTimer();
-
-  const { lastBlock_gt } = job.data;
   const lastBlock = await poll(lastBlock_gt);
 
   await Promise.all([
@@ -170,9 +171,13 @@ const processor: Processor<JobData> = async (job) => {
   stopTimer();
 };
 
-export const start = async () => {
-  queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
+export const start = async (): Promise<void> => {
+  queue = new Queue<JobData>(QUEUE_NAME, {
+    connection: new Redis(redisUri),
+  });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, {
+    connection: new Redis(redisUri),
+  });
   await Promise.all([
     enrich.waitUntilReady(),
     queue.waitUntilReady(),
@@ -183,19 +188,21 @@ export const start = async () => {
     .getJobCounts('active', 'waiting')
     .then((counts) => Object.values(counts).reduce((acc, cur) => acc + cur, 0));
   if (!count) {
-    const state = await StateModel.findOne(stateQuery, { value: 1 }).lean<{ value: string }>();
+    const state = await StateModel.findOne(stateQuery, { value: 1 }, { lean: true });
     const job = await queue.add(JOB_NAME, { lastBlock_gt: state?.value }, jobOptions);
     logger.info(job.asJSON(), 'created ingress job');
   }
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, {
+    connection: new Redis(redisUri),
+  });
   worker.on('failed', function onFailed(_, error) {
     logger.error(error, 'failed to ingress');
   });
   await worker.waitUntilReady();
 };
 
-export const stop = async () => {
+export const stop = async (): Promise<void> => {
   if (worker) await worker.close();
   indexer.stop();
   web3.disconnect();

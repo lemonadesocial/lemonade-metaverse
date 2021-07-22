@@ -1,4 +1,5 @@
 import { buildSchema } from 'type-graphql';
+import { GraphQLSchema } from 'graphql';
 import * as path from 'path';
 import GraphQLJSON from 'graphql-type-json';
 
@@ -7,7 +8,7 @@ import { PrometheusMiddleware } from './middlewares/prometheus';
 
 import { pubSub } from '../app/helpers/pub-sub';
 
-export const build = async () => {
+export const build = async (): Promise<GraphQLSchema> => {
   const resolversPath = path.join(__dirname, '/resolvers/**/*.{ts,js}');
 
   return await buildSchema({

@@ -10,10 +10,10 @@ mongoose.set('useUnifiedTopology', true);
 
 export const connect = async (
   options?: mongoose.ConnectionOptions,
-) => {
+): Promise<typeof mongoose> => {
   return await mongoose.connect(databaseUri, options);
 };
 
-export const disconnect = async () => {
+export const disconnect = async (): Promise<void> => {
   await mongoose.disconnect();
 };

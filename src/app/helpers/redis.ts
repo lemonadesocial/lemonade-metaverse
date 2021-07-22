@@ -22,7 +22,7 @@ subscriber.on('error', function onError(err: Error) {
   logger.error(err);
 });
 
-export const disconnect = () => {
+export const disconnect = (): void => {
   redis.disconnect();
   publisher.disconnect(),
   subscriber.disconnect();

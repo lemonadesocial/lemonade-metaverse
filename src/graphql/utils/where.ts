@@ -14,7 +14,7 @@ const beforeEnd = (
 
 export const getFilter = <T>(
   where: Where<T>,
-) => {
+): MongooseFilterQuery<T> => {
   const query: Record<string, unknown> = {};
 
   Object.entries(where).forEach(([key, value]) => {
@@ -32,7 +32,7 @@ export const getFilter = <T>(
 export const validate = <T>(
   where: Where<T>,
   doc: T,
-) => {
+): boolean => {
   return Object.entries(where).every(([key, value]) => {
     let prop;
     if (prop = beforeEnd(key, '_eq')) {

@@ -12,7 +12,7 @@ const flatten = (
     (acc, fields) => Object.assign(acc, ...Object.values(fields).map((resolveTree) => ({ [resolveTree.name]: flatten(resolveTree) }))),
     {}
   );
-}
+};
 
 export const getFieldTree = (
   info: GraphQLResolveInfo,

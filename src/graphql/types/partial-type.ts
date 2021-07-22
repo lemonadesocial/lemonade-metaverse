@@ -2,7 +2,7 @@ import { ClassType, getMetadataStorage, InputType, ObjectType } from 'type-graph
 
 export const PartialType = <TClassType extends ClassType>(
   BaseClass: TClassType,
-) => {
+): ClassType<Partial<InstanceType<TClassType>>> => {
   const metadata = getMetadataStorage();
 
   @InputType({ isAbstract: true })
@@ -19,5 +19,5 @@ export const PartialType = <TClassType extends ClassType>(
     });
   });
 
-  return PartialTypeClass as ClassType<Partial<InstanceType<TClassType>>>;
+  return PartialTypeClass;
 };

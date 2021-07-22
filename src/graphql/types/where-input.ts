@@ -5,7 +5,7 @@ export type Where<T> = { [K in keyof T as `${K & string}_eq`]?: T[K] | null; }
 
 export const WhereInput = <TClassType extends ClassType>(
   BaseClass: TClassType,
-) => {
+): ClassType<Where<InstanceType<TClassType>>> => {
   const metadata = getMetadataStorage();
 
   @InputType({ isAbstract: true })
@@ -32,5 +32,5 @@ export const WhereInput = <TClassType extends ClassType>(
     );
   });
 
-  return WhereInputClass as ClassType<Where<InstanceType<TClassType>>>;
+  return WhereInputClass;
 };

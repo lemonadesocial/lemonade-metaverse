@@ -13,11 +13,16 @@ export class PaginatedResponseArgs {
   public limit!: number;
 }
 
+interface PaginatedResponseType<TItemsFieldValue> {
+  items?: TItemsFieldValue[] | null;
+  total?: number | null;
+}
+
 export const PaginatedResponse = <TItemsFieldValue>(
   itemsFieldValue: ClassType<TItemsFieldValue> | string | number | boolean,
-) => {
+): abstract new (...args: any[]) => PaginatedResponseType<TItemsFieldValue> => {
   @ObjectType({ isAbstract: true })
-  abstract class PaginatedResponseClass {
+  abstract class PaginatedResponseClass implements PaginatedResponseType<TItemsFieldValue> {
     @Field(() => [itemsFieldValue], { nullable: true })
     public items?: TItemsFieldValue[] | null;
 

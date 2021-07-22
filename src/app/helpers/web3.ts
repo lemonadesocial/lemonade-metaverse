@@ -27,17 +27,16 @@ const provider = new Web3.providers.WebsocketProvider(web3Uri, {
 
 export const web3 = new Web3(provider);
 
-export const disconnect = () => {
+export const disconnect = (): void => {
   provider.disconnect(1000, 'closing');
 };
 
 export const proxy = (
   contract: Contract,
   ttl?: number,
-) => {
-  type T = { [K: string]: <R>(...args: any[]) => Promise<R> };
-  return new Proxy<T>({}, {
-    get<R>(_: T, method: string) {
+): { [K: string]: <R>(...args: any[]) => Promise<R> } => {
+  return new Proxy({}, {
+    get<R>(_: any, method: string) {
       return async (...args: any[]) => {
         const key = [contract.options.address, method, ...args].join(':');
 

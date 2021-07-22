@@ -25,7 +25,7 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 app.on('error', (error: Error, ctx?: ParameterizedContext) => {
-  const ctxLogger = ctx?.state.logger || logger;
+  const contextualizedLogger = ctx?.state.logger || logger;
 
-  ctxLogger.error(error);
+  contextualizedLogger.error(error);
 });

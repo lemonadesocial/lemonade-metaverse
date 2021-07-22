@@ -13,6 +13,6 @@ export const client = new ApolloClient({
   }),
 });
 
-export const stop = () => {
+export const stop = (): void => {
   client.stop();
 };
