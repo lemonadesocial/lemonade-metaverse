@@ -31,7 +31,7 @@ const findOrders = async (
 };
 
 @Resolver()
-class OrdersQueryResolver {
+class _OrdersQueryResolver {
   @Query(() => OrdersResponse)
   async orders(
     @Info() info: GraphQLResolveInfo,
@@ -43,7 +43,7 @@ class OrdersQueryResolver {
 }
 
 @Resolver()
-class OrdersSubscriptionResolver {
+class _OrdersSubscriptionResolver {
   @Subscription({
     subscribe: subscribe<OrdersResponse, Order>('order_updated', {
       init: async function* ({ args, info }) {
