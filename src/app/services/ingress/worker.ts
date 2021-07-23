@@ -76,7 +76,9 @@ const process = async (
 ) => {
   const results = await Promise.all(orders.map(async (order) => {
     try {
-      return await build(order);
+      const result = await build(order);
+      logger.info(result, 'ingress');
+      return result;
     } catch (e) {
       logger.warn(e);
       return null;
