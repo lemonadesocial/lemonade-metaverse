@@ -14,6 +14,7 @@ export const ipfsGatewayUri = process.env.IPFS_GATEWAY_URI || 'https://ipfs.io';
 export const metricsPort = parseInt(process.env.METRICS_PORT || '9100');
 export const metricsSecret = process.env.METRICS_SECRET;
 export const redisUri = process.env.REDIS_URI;
+export const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
 export const sourceVersion = process.env.SOURCE_VERSION || 'unknown';
 export const web3Uri = process.env.WEB3_URI || 'dummy';
 

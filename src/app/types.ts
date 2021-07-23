@@ -1,5 +1,5 @@
+import { pino } from 'pino';
 import * as koa from 'koa';
-import * as pino from 'pino';
 
 export interface State {
   logger: pino.BaseLogger;

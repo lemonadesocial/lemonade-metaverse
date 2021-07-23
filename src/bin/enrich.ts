@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'reflect-metadata';
 import 'source-map-support/register';
-import * as pino from 'pino';
+import { pino } from 'pino';
 
 import { logger } from '../app/helpers/pino';
 import * as db from '../app/helpers/db';
@@ -60,7 +60,7 @@ const main = async () => {
 
   await enrich.start();
 
-  logger.info('metaverse enrich started - version %s', sourceVersion);
+  logger.info({ version: sourceVersion }, 'metaverse enrich started');
 };
 
 main().catch(fatalHandler);

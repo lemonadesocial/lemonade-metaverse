@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import 'source-map-support/register';
 import { ApolloServer } from 'apollo-server-koa';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
-import * as pino from 'pino';
+import { pino } from 'pino';
 import * as prom from 'prom-client';
 import * as util from 'util';
 
@@ -69,7 +69,7 @@ const main = async () => {
   await db.connect();
 
   const server = app.listen(appPort, function onListening() {
-    logger.info('metaverse app started - version %s', sourceVersion)
+    logger.info({ version: sourceVersion }, 'metaverse app started');
   });
 
   httpTerminator = createHttpTerminator({ server });
