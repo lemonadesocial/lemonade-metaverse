@@ -7,7 +7,6 @@ plugins:
 
 extends:
   - 'eslint:recommended'
-  - 'plugin:@typescript-eslint/recommended'
 
 rules:
   'comma-dangle':
@@ -16,11 +15,20 @@ rules:
   'quotes':
     - 1
     - 'single'
-  '@typescript-eslint/no-explicit-any':
-    - 0
-  '@typescript-eslint/no-unused-vars':
-    - 1
-    - argsIgnorePattern: '^_'
-      varsIgnorePattern: 'Resolver$'
-  '@typescript-eslint/no-var-requires':
-    - 0
+
+overrides:
+  - files:
+    - 'src/**/*.ts'
+
+    extends:
+      - 'plugin:@typescript-eslint/recommended'
+
+    rules:
+      '@typescript-eslint/no-explicit-any':
+        - 0
+      '@typescript-eslint/no-unused-vars':
+        - 1
+        - argsIgnorePattern: '^_'
+          varsIgnorePattern: 'Resolver$'
+      '@typescript-eslint/no-var-requires':
+        - 0
