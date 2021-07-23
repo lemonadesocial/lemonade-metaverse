@@ -30,5 +30,3 @@ overrides:
         - 1
         - argsIgnorePattern: '^_'
           varsIgnorePattern: 'Resolver$'
-      '@typescript-eslint/no-var-requires':
-        - 0

@@ -6,8 +6,10 @@ import { redis } from './redis';
 
 import { web3Uri } from '../../config';
 
+/* eslint-disable @typescript-eslint/no-var-requires */
 export const jsonERC20 = require('../../../assets/abis/ERC20.json');
 export const jsonERC721Lemonade = require('../../../assets/abis/ERC721Lemonade.json');
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 const LRU_MAX = 100;
 const LRU_MAX_AGE = 500;
