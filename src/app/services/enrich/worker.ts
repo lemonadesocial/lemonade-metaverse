@@ -65,6 +65,7 @@ const processor: Processor<JobData> = async (job) => {
   });
 
   await pubSub.publish('order_updated', order);
+  logger.info(order, 'enrich');
 
   stopTimer();
 };
