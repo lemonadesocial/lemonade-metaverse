@@ -1,5 +1,5 @@
 import { BulkWriteOperation, FilterQuery } from 'mongodb';
-import { Histogram } from 'prom-client';
+import { Counter, Histogram } from 'prom-client';
 import { JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 import Redis from 'ioredis';
 
@@ -22,7 +22,12 @@ const JOB_NAME = 'ingress';
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
 
-const durationSeconds = new Histogram({
+const ingressesTotal = new Counter({
+  labelNames: ['status'],
+  name: 'metaverse_ingresses_total',
+  help: 'Total number of metaverse ingresses',
+});
+const ingressDurationSeconds = new Histogram({
   name: 'metaverse_ingress_duration_seconds',
   help: 'Duration of metaverse ingress in seconds',
 });
@@ -158,19 +163,28 @@ let worker: Worker<JobData> | undefined;
 const processor: Processor<JobData> = async (
   { data: { lastBlock_gt } },
 ) => {
-  const stopTimer = durationSeconds.startTimer();
-  const lastBlock = await poll(lastBlock_gt);
+  const stopTimer = ingressDurationSeconds.startTimer();
 
-  await Promise.all([
-    lastBlock && lastBlock !== lastBlock_gt
-      ? StateModel.updateOne(stateQuery, { $set: { value: lastBlock } }, { upsert: true })
-      : null,
-    queue
-      ? queue.add(JOB_NAME, { lastBlock_gt: lastBlock || lastBlock_gt }, jobOptions)
-      : null,
-  ]);
+  try {
+    const lastBlock = await poll(lastBlock_gt);
 
-  stopTimer();
+    await Promise.all([
+      lastBlock && lastBlock !== lastBlock_gt
+        ? StateModel.updateOne(stateQuery, { $set: { value: lastBlock } }, { upsert: true })
+        : null,
+      queue
+        ? queue.add(JOB_NAME, { lastBlock_gt: lastBlock || lastBlock_gt }, jobOptions)
+        : null,
+    ]);
+
+    ingressesTotal.labels('success').inc();
+
+    stopTimer();
+  } catch (err) {
+    ingressesTotal.labels('fail').inc();
+
+    throw err;
+  }
 };
 
 export const start = async (): Promise<void> => {
