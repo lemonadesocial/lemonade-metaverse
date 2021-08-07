@@ -9,7 +9,7 @@
     "build": "tsc",
     "codegen": "graphql-codegen --config codegen.yml",
     "watch": "tsc -w",
-    "start:dev": "ts-node-dev --respawn --transpile-only src/bin/app.ts"
+    "start:dev": "ts-node-dev --transpile-only src/bin/app.ts"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.21.3",
