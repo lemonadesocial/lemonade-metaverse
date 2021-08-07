@@ -8,9 +8,7 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
 
-export const connect = async (
-  options?: mongoose.ConnectionOptions,
-): Promise<typeof mongoose> => {
+export const connect = async (options?: mongoose.ConnectionOptions): Promise<typeof mongoose> => {
   return await mongoose.connect(databaseUri, options);
 };
 

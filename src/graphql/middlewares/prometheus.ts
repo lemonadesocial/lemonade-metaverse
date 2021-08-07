@@ -15,6 +15,7 @@ const graphqlRequestDurationSeconds = new prom.Histogram({
 
 export const PrometheusMiddleware: MiddlewareFn = async ({ info }, next) => {
   const start = process.hrtime();
+
   try {
     await next();
   } finally {

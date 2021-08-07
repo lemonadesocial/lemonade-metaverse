@@ -16,6 +16,7 @@ export const prometheusMiddleware = (): Middleware => {
 
   return async function prometheusMiddleware(ctx, next) {
     const start = process.hrtime();
+
     try {
       await next();
     } finally {
