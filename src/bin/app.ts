@@ -60,10 +60,6 @@ process.on('SIGTERM', async function onSigtermSignal() {
   await shutdown();
 });
 
-process.on('SIGUSR2', async function onSigusr2Signal() {
-  await shutdown();
-});
-
 const main = async () => {
   metrics.start();
   await db.connect();
