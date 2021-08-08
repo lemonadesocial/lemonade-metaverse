@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 import { indexerHttpUri } from '../../config';
 
 export const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({ addTypename: false }),
   link: new HttpLink({
     fetch,
     uri: indexerHttpUri,
