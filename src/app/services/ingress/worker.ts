@@ -8,7 +8,6 @@ import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
 import * as enrich from '../enrich/queue';
 import * as indexer from '../../helpers/indexer';
-import * as web3 from '../../helpers/web3';
 
 import { Order, OrderKind, OrderModel } from '../../models/order';
 import { StateModel } from '../../models/state';
@@ -208,7 +207,6 @@ export const start = async (): Promise<void> => {
 export const stop = async (): Promise<void> => {
   if (worker) await worker.close();
   indexer.stop();
-  web3.disconnect();
 
   await enrich.close();
   if (queue) await queue.close();
