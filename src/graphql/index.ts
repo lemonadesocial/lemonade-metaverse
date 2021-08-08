@@ -1,15 +1,44 @@
 import { ApolloServer } from 'apollo-server-koa';
+import { execute, subscribe } from 'graphql';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import * as http from 'http';
 
-import * as schema from './schema';
+import { build as buildSchema } from './schema';
 
 import { apolloDebug, apolloIntrospection } from '../config';
 
-export const createServer = async (): Promise<ApolloServer> => {
-  return new ApolloServer({
+const KEEP_ALIVE = 5000;
+
+export const createServers = async (
+  server: http.Server,
+): Promise<{
+  apolloServer: ApolloServer;
+  subscriptionServer: SubscriptionServer,
+}> => {
+  const schema = await buildSchema();
+
+  const apolloServer = new ApolloServer({
     context: ({ ctx }) => ({ app: ctx }),
     debug: apolloDebug,
     introspection: apolloIntrospection,
-    schema: await schema.build(),
-    subscriptions: { keepAlive: 5000 },
+    schema,
   });
+
+  const subscriptionServer = SubscriptionServer.create(
+    {
+      schema,
+      execute,
+      subscribe,
+      keepAlive: KEEP_ALIVE,
+    },
+    {
+      path: apolloServer.graphqlPath,
+      server,
+    }
+  );
+
+  return {
+    apolloServer,
+    subscriptionServer,
+  };
 };

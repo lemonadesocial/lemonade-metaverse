@@ -4,6 +4,7 @@ import 'source-map-support/register';
 import { ApolloServer } from 'apollo-server-koa';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import { pino } from 'pino';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
 import * as prom from 'prom-client';
 import * as util from 'util';
 
@@ -36,11 +37,13 @@ const fatalHandler = pino.final(logger, function handler(err, logger) {
 
 let apolloServer: ApolloServer | undefined;
 let httpTerminator: HttpTerminator | undefined;
+let subscriptionServer: SubscriptionServer | undefined;
 
 const shutdown = async () => {
   try {
-    if (httpTerminator) await httpTerminator.terminate();
     if (apolloServer) await apolloServer.stop();
+    if (subscriptionServer) subscriptionServer.close();
+    if (httpTerminator) await httpTerminator.terminate();
 
     await db.disconnect();
     await metrics.stop();
@@ -80,9 +83,11 @@ const main = async () => {
     collect: async function() { this.set(await getServerConnections()); },
   });
 
-  apolloServer = await graphql.createServer();
-  apolloServer.applyMiddleware({ app: app as any });
-  apolloServer.installSubscriptionHandlers(server);
+  ({ apolloServer, subscriptionServer } = await graphql.createServers(server));
+
+  await apolloServer.start();
+
+  apolloServer.applyMiddleware({ app });
 };
 
 main().catch(fatalHandler);
