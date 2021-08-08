@@ -4,6 +4,6 @@ import { Token } from '../../models/token';
 export const QUEUE_NAME = 'bullmq:enrich';
 
 export interface JobData {
-  order: Order;
+  order?: Order;
   token: Token;
 }

@@ -75,7 +75,7 @@ const processor: Processor<JobData> = async (job) => {
 
   logger.info({ order, token }, 'enrich');
 
-  await pubSub.publish('order_updated', { ...order, token });
+  if (order) await pubSub.publish('order_updated', { ...order, token });
 
   stopTimer();
 };
