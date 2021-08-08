@@ -1,74 +1,90 @@
 import { Field, ObjectType } from 'type-graphql';
-import { getModelForClass, index, prop, modelOptions, Severity } from '@typegoose/typegoose';
-import { GraphQLJSONObject } from 'graphql-type-json';
+import { getModelForClass, index, prop } from '@typegoose/typegoose';
+
+import { Token } from './token';
+
+export enum OrderKind {
+  Auction = 'AUCTION',
+  Direct = 'DIRECT',
+}
 
 @ObjectType()
-@index({ id: 1 }, { unique: true })
-@modelOptions({ options: { allowMixed: Severity.ALLOW } })
-export class Order {
-  /* Required properties */
-
+export class Currency {
   @Field()
   @prop({ required: true })
   public id!: string;
 
   @Field()
   @prop({ required: true })
-  public last_block!: string;
+  public name!: string;
 
   @Field()
   @prop({ required: true })
-  public created_at!: Date;
+  public symbol!: string;
+}
+
+@ObjectType()
+@index({ id: 1 }, { unique: true })
+export class Order {
+  @Field()
+  @prop({ required: true })
+  public id!: string;
 
   @Field()
   @prop({ required: true })
-  public order_contract!: string;
+  public lastBlock!: string;
 
   @Field()
   @prop({ required: true })
-  public order_id!: string;
+  public contract!: string;
+
+  @Field()
+  @prop({ required: true })
+  public orderId!: string;
+
+  @Field()
+  @prop({ required: true })
+  public createdAt!: Date;
+
+  @Field()
+  @prop({ required: true, enum: OrderKind })
+  public kind!: OrderKind;
 
   @Field()
   @prop({ required: true })
   public open!: boolean;
 
+  @Field({ nullable: true })
+  @prop()
+  public openFrom?: Date;
+
+  @Field({ nullable: true })
+  @prop()
+  public openTo?: Date;
+
   @Field()
   @prop({ required: true })
   public maker!: string;
 
-  @Field()
-  @prop({ required: true })
-  public currency_contract!: string;
-
-  @Field()
-  @prop({ required: true })
-  public currency_name!: string;
-
-  @Field()
-  @prop({ required: true })
-  public currency_symbol!: string;
+  @Field(() => Currency)
+  @prop({ required: true, _id: false })
+  public currency!: Currency;
 
   @Field()
   @prop({ required: true })
   public price!: string;
 
-  @Field()
-  @prop({ required: true })
-  public priceIsMinimum!: boolean;
+  @Field(() => Token)
+  @prop({ required: true, type: () => String })
+  public token!: Token | string;
 
-  @Field()
-  @prop({ required: true })
-  public token_contract!: string;
+  @Field({ nullable: true })
+  @prop()
+  public bidder?: string;
 
-  @Field()
-  @prop({ required: true })
-  public token_id!: string;
-
-  @Field()
-  @prop({ required: true })
-  public token_uri!: string;
-
-  /* Optional properties */
+  @Field({ nullable: true })
+  @prop()
+  public bidAmount?: string;
 
   @Field({ nullable: true })
   @prop()
@@ -76,11 +92,7 @@ export class Order {
 
   @Field({ nullable: true })
   @prop()
-  public paid_amount?: string;
-
-  @Field(() => GraphQLJSONObject)
-  @prop()
-  public token_metadata?: Record<string, unknown>;
+  public paidAmount?: string;
 }
 
 export const OrderModel = getModelForClass(Order);

@@ -11,16 +11,31 @@ export const GetOrders = gql`
   ) {
     id
     lastBlock
-    createdAt
-    orderContract
+    contract
     orderId
+    createdAt
+    kind
     open
+    openFrom
+    openTo
     maker
-    currency
+    currency {
+      id
+      name
+      symbol
+    }
     price
-    priceIsMinimum
-    tokenContract
-    tokenId
+    token {
+      id
+      contract
+      createdAt
+      creator
+      owner
+      tokenId
+      uri
+    }
+    bidder
+    bidAmount
     taker
     paidAmount
   }

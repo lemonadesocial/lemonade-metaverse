@@ -1,18 +1,34 @@
 query GetOrders($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
   orders(orderBy: lastBlock, orderDirection: asc, where: { lastBlock_gt: $lastBlock_gt }, skip: $skip, first: $first) {
     id
-    lastBlock
-    createdAt
-    orderContract
-    orderId
 
+    lastBlock
+    contract
+    orderId
+    createdAt
+
+    kind
     open
+    openFrom
+    openTo
     maker
-    currency
+    currency {
+      id
+      name
+      symbol
+    }
     price
-    priceIsMinimum
-    tokenContract
-    tokenId
+    token {
+      id
+      contract
+      createdAt
+      creator
+      owner
+      tokenId
+      uri
+    }
+    bidder
+    bidAmount
     taker
     paidAmount
   }

@@ -1,24 +1,26 @@
-import { BulkWriteOperation, FilterQuery } from 'mongodb';
+import { BulkWriteOperation } from 'mongodb';
 import { Counter, Histogram } from 'prom-client';
 import { JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 import Redis from 'ioredis';
 
+import { excludeNull } from '../../utils/object';
 import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
 import * as enrich from '../enrich/queue';
 import * as indexer from '../../helpers/indexer';
 import * as web3 from '../../helpers/web3';
 
-import { Order, OrderModel } from '../../models/order';
-import { State, StateModel } from '../../models/state';
+import { Order, OrderKind, OrderModel } from '../../models/order';
+import { StateModel } from '../../models/state';
+import { Token, TokenModel } from '../../models/token';
 
-import { GetOrders } from '../../../lib/lemonade-marketplace-subgraph/documents.generated';
-import { GetOrdersQuery, GetOrdersQueryVariables, Order as OrderType } from '../../../lib/lemonade-marketplace-subgraph/types.generated';
+import { GetOrders } from '../../../lib/lemonade-marketplace/documents.generated';
+import { GetOrdersQuery, GetOrdersQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 
 import { redisUri } from '../../../config';
 
-const CURRENCY_TTL = 10000;
-const JOB_NAME = 'ingress';
+type GetOrdersOrder = GetOrdersQuery['orders'] extends (infer T)[] ? T : never;
+
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
 
@@ -39,93 +41,79 @@ const jobOptions: JobsOptions = {
   removeOnComplete: true,
   removeOnFail: true,
 };
-const stateQuery: FilterQuery<State> = {
-  key: 'ingress_last_block',
+const stateQuery = { key: 'ingress_last_block' };
+
+const buildOrder = ({ createdAt, kind, openFrom, openTo, token, ...order }: GetOrdersOrder): Order => {
+  return {
+    createdAt: new Date(parseInt(createdAt) * 1000),
+    kind: kind as string as OrderKind,
+    openFrom: openFrom ? new Date(parseInt(openFrom) * 1000) : undefined,
+    openTo: openTo ? new Date(parseInt(openTo) * 1000) : undefined,
+    token: token.id,
+    ...excludeNull(order),
+  };
 };
 
-const build = async (
-  order: OrderType,
-): Promise<Order> => {
-  const currency = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC20, order.currency), CURRENCY_TTL);
-  const token = web3.proxy(new web3.web3.eth.Contract(web3.jsonERC721Lemonade, order.tokenContract));
+const buildToken = ({ token: { createdAt, ...token } }: GetOrdersOrder): Token => {
+  return {
+    createdAt: createdAt ? new Date(parseInt(createdAt) * 1000) : undefined,
+    ...excludeNull(token),
+  };
+};
 
-  const [currency_name, currency_symbol, token_uri] = await Promise.all([
-    currency.name<string>(),
-    currency.symbol<string>(),
-    token.tokenURI<string>(order.tokenId),
+const process = async (dataOrders: GetOrdersOrder[]) => {
+  const orders = dataOrders.map(buildOrder);
+  const tokens = dataOrders.map(buildToken);
+
+  const [_, { upsertedIds = {} }] = await Promise.all([
+    OrderModel.bulkWrite(
+      orders.map<BulkWriteOperation<Order>>(({ id, ...order }) => ({
+        updateOne: {
+          filter: { id },
+          update: { $set: order },
+          upsert: true,
+        },
+      })),
+      { ordered: false },
+    ),
+    TokenModel.bulkWrite(
+      tokens.map<BulkWriteOperation<Token>>(({ id, ...token }) => ({
+        updateOne: {
+          filter: { id },
+          update: { $set: token },
+          upsert: true,
+        },
+      })),
+      { ordered: false },
+    ),
   ]);
 
-  return {
-    id: order.id,
-    last_block: order.lastBlock,
-    created_at: new Date(parseInt(order.createdAt) * 1000),
-    order_contract: order.orderContract,
-    order_id: order.orderId,
-    open: order.open,
-    maker: order.maker,
-    currency_contract: order.currency,
-    currency_name,
-    currency_symbol,
-    price: order.price,
-    priceIsMinimum: order.priceIsMinimum,
-    token_contract: order.tokenContract,
-    token_id: order.tokenId,
-    token_uri,
-    taker: order.taker || undefined,
-    paid_amount: order.paidAmount || undefined,
-  };
-}
+  const promises: Promise<unknown>[] = [];
+  const upsertedIdxs = Object.keys(upsertedIds).map((key) => parseInt(key));
 
-const process = async (
-  orders: OrderType[],
-) => {
-  const results = await Promise.all(orders.map(async (order) => {
-    try {
-      const result = await build(order);
-      logger.info(result, 'ingress');
-      return result;
-    } catch (e) {
-      logger.warn(e);
-      return null;
-    }
-  }));
-
-  const docs = results.filter((result) => result !== null) as Order[];
-  const { upsertedIds = {} } = await OrderModel.bulkWrite(
-    docs.map<BulkWriteOperation<Order>>(({ id, ...order }) => ({
-      updateOne: {
-        filter: { id },
-        update: { $set: order },
-        upsert: true,
-      },
-    }))
-  );
-
-  const promises: Promise<any>[] = [];
-
-  const upserts = Object.keys(upsertedIds).map((key) => docs[parseInt(key)]);
-  if (upserts.length) {
+  if (upsertedIdxs.length) {
     promises.push(
-      enrich.enqueue(...upserts.map((order) => ({
-        order,
-        upserted: true,
+      enrich.enqueue(...upsertedIdxs.map((i) => ({
+        order: orders[i],
+        token: tokens[i],
       })))
     );
   }
 
-  const updates = docs.filter((_, i) => !upsertedIds[i]);
-  if (updates.length) {
-    promises.push(...updates.map((order) =>
-      pubSub.publish('order_updated', order)
-    ));
+  for (const i of dataOrders.keys()) {
+    logger.info({ order: orders[i], token: tokens[i] }, 'ingress');
+
+    if (i in upsertedIdxs) continue;
+
+    promises.push(
+      pubSub.publish('order_updated', { ...orders[i], token: tokens[i] })
+    );
   }
 
   await Promise.all(promises);
 };
 
-const poll = async (
-  lastBlock_gt?: string,
-) => {
+const poll = async (lastBlock_gt?: string) => {
   let skip = 0;
   const first = POLL_FIRST;
 
@@ -160,9 +148,7 @@ let queue: Queue | undefined;
 let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
-const processor: Processor<JobData> = async (
-  { data: { lastBlock_gt } },
-) => {
+const processor: Processor<JobData> = async ({ data: { lastBlock_gt } }) => {
   const stopTimer = ingressDurationSeconds.startTimer();
 
   try {
@@ -172,9 +158,7 @@ const processor: Processor<JobData> = async (
       lastBlock && lastBlock !== lastBlock_gt
         ? StateModel.updateOne(stateQuery, { $set: { value: lastBlock } }, { upsert: true })
         : null,
-      queue
-        ? queue.add(JOB_NAME, { lastBlock_gt: lastBlock || lastBlock_gt }, jobOptions)
-        : null,
+      queue!.add('*', { lastBlock_gt: lastBlock || lastBlock_gt }, jobOptions),
     ]);
 
     ingressesTotal.labels('success').inc();
@@ -188,12 +172,8 @@ const processor: Processor<JobData> = async (
 };
 
 export const start = async (): Promise<void> => {
-  queue = new Queue<JobData>(QUEUE_NAME, {
-    connection: new Redis(redisUri),
-  });
-  queueScheduler = new QueueScheduler(QUEUE_NAME, {
-    connection: new Redis(redisUri),
-  });
+  queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
   await Promise.all([
     enrich.waitUntilReady(),
     queue.waitUntilReady(),
@@ -202,13 +182,11 @@ export const start = async (): Promise<void> => {
 
   if (!await queue.count()) {
     const state = await StateModel.findOne(stateQuery, { value: 1 }, { lean: true });
-    const job = await queue.add(JOB_NAME, { lastBlock_gt: state?.value }, jobOptions);
+    const job = await queue.add('*', { lastBlock_gt: state?.value }, jobOptions);
     logger.info(job.asJSON(), 'created ingress job');
   }
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, {
-    connection: new Redis(redisUri),
-  });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
   worker.on('failed', function onFailed(_, error) {
     logger.error(error, 'failed to ingress');
   });

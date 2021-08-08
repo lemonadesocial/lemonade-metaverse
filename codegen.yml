@@ -1,20 +1,20 @@
 overwrite: true
-schema: 'https://api.thegraph.com/subgraphs/name/lemonadesocial/lemonade-marketplace-subgraph'
+schema: 'https://api.studio.thegraph.com/query/5003/lemonade-marketplace/v0.0.10'
 config:
   scalars:
     BigInt: string
     Bytes: string
 generates:
-  src/lib/lemonade-marketplace-subgraph/documents.generated.ts:
+  src/lib/lemonade-marketplace/documents.generated.ts:
     documents:
-      - src/lib/lemonade-marketplace-subgraph/schema.graphql
+      - src/lib/lemonade-marketplace/schema.graphql
     plugins:
       - typescript-document-nodes
     config:
       namingConvention: keep
-  src/lib/lemonade-marketplace-subgraph/types.generated.ts:
+  src/lib/lemonade-marketplace/types.generated.ts:
     documents:
-      - src/lib/lemonade-marketplace-subgraph/schema.graphql
+      - src/lib/lemonade-marketplace/schema.graphql
     plugins:
       - typescript
       - typescript-operations

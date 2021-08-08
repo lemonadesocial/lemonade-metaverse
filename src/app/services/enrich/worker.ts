@@ -4,13 +4,12 @@ import { Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
 import * as http from 'http';
 import * as https from 'https';
-import * as path from 'path';
-import fetch, { Response } from 'node-fetch';
+import fetch, { Response, RequestInit } from 'node-fetch';
 import Redis from 'ioredis';
 
 import { JobData, QUEUE_NAME } from './shared';
 
-import { OrderModel, Order } from '../../models/order';
+import { Token, TokenModel } from '../../models/token';
 
 import { BuffereredQueue } from '../../utils/buffered-queue';
 import { logger } from '../../helpers/pino';
@@ -19,6 +18,8 @@ import { pubSub } from '../../helpers/pub-sub';
 
 import { ipfsGatewayUri, redisUri } from '../../../config';
 
+const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
+const FETCH_TIMEOUT = 5000;
 const WORKER_CONCURRENCY = 10;
 const WRITER_TIMEOUT = 1000;
 
@@ -29,43 +30,52 @@ const durationSeconds = new Histogram({
 
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });
-const writer = new BuffereredQueue<BulkWriteOperation<Order>>((operations) => OrderModel.bulkWrite(operations).then(), WRITER_TIMEOUT);
+const requestInit: RequestInit = {
+  headers: { 'User-Agent': FETCH_HEADERS_USER_AGENT },
+  timeout: FETCH_TIMEOUT,
+};
+
+const writer = new BuffereredQueue<BulkWriteOperation<Token>>(
+  (operations) => TokenModel.bulkWrite(operations, { ordered: false }).then(),
+  WRITER_TIMEOUT
+);
 
 const processor: Processor<JobData> = async (job) => {
   const stopTimer = durationSeconds.startTimer();
-  const { order } = job.data;
+
+  const { order, token } = job.data;
 
   let response: Response;
-  const schema = parseSchema(order.token_uri);
+  const schema = parseSchema(token.uri);
   switch (schema) {
     case 'http':
-      response = await fetch(order.token_uri, { agent: httpAgent });
+      response = await fetch(token.uri, { agent: httpAgent, ...requestInit });
       break;
     case 'https':
-      response = await fetch(order.token_uri, { agent: httpsAgent });
+      response = await fetch(token.uri, { agent: httpsAgent, ...requestInit });
       break;
-    case 'ipfs': {
-      const url = path.join(ipfsGatewayUri, 'ipns', order.token_uri.substr('ipfs://'.length));
-      response = await fetch(url, { agent: httpsAgent });
-      break; }
+    case 'ipfs':
+      response = await fetch(`${ipfsGatewayUri}/ipfs/${token.uri.substr('ipfs://'.length)}`, { agent: httpsAgent, ...requestInit });
+      break;
     default:
       logger.debug(job.toJSON(), `unsupported schema ${schema}`);
       return;
   }
 
-  assert.ok(response.ok);
+  assert.ok(response.ok, response.statusText);
 
-  order.token_metadata = await response.json(); // @todo: validate metadata
+  token.metadata = await response.json(); // @todo: validate metadata
 
   writer.enqueue({
     updateOne: {
-      filter: { id: order.id },
-      update: { $set: { token_metadata: order.token_metadata } },
+      filter: { id: token.id },
+      update: { $set: { metadata: token.metadata } },
     },
   });
 
-  await pubSub.publish('order_updated', order);
-  logger.info(order, 'enrich');
+  logger.info({ order, token }, 'enrich');
+
+  await pubSub.publish('order_updated', { ...order, token });
 
   stopTimer();
 };
@@ -74,9 +84,7 @@ let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
 export const start = async (): Promise<void> => {
-  queueScheduler = new QueueScheduler(QUEUE_NAME, {
-    connection: new Redis(redisUri),
-  });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
   await queueScheduler.waitUntilReady();
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, {
