@@ -1,32 +1,13 @@
-import { Arg, Args, Field, ObjectType, Resolver, Info, InputType, Root, Query, Subscription } from 'type-graphql';
+import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 
-import { Currency, Order, OrderModel } from '../../app/models/order';
-import { PaginatedResponse, PaginatedResponseArgs } from '../types/paginated-response';
-import { Token } from '../../app/models/token';
-import { WhereInput } from '../types/where-input';
+import { Order, OrderModel } from '../../app/models/order';
+import { OrdersResponse, OrderWhere } from '../types/order';
+import { PaginatedResponseArgs } from '../types/paginated-response';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { subscribe } from '../utils/subscription';
-
-@ObjectType()
-class OrdersResponse extends PaginatedResponse(Order) { }
-
-@InputType()
-class OrderCurrencyWhere extends WhereInput(Currency) { }
-
-@InputType()
-class OrderTokenWhere extends WhereInput(Token) { }
-
-@InputType()
-class OrderWhere extends WhereInput(Order) {
-  @Field(() => OrderCurrencyWhere, { nullable: true })
-  currency?: OrderCurrencyWhere;
-
-  @Field(() => OrderTokenWhere, { nullable: true })
-  token?: OrderTokenWhere;
-}
 
 const findOrders = async (
   { skip, limit, where }: PaginatedResponseArgs & { where?: OrderWhere | null },
@@ -78,7 +59,7 @@ class _OrdersSubscriptionResolver {
       init: async function* ({ args, info }) {
         if (args.query) yield findOrders(args, info);
       },
-      filter: ({ payload, args: { where } }) => where ? validate(where, payload) : true,
+      filter: ({ payload, args }) => args.where ? validate(args.where, payload) : true,
       process: ({ payload }) => ({ items: [payload] }),
     }),
   })
