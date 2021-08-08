@@ -1,6 +1,3 @@
-/* eslint-disable no-cond-assign */
-import { MongooseFilterQuery } from 'mongoose';
-
 import { Where } from '../types/where-input';
 
 const beforeEnd = (
@@ -14,31 +11,45 @@ const beforeEnd = (
 
 export const getFilter = <T>(
   where: Where<T>,
-): MongooseFilterQuery<T> => {
+  props: string[] = [],
+): Record<string, unknown> => {
   const query: Record<string, unknown> = {};
 
   Object.entries(where).forEach(([key, value]) => {
     let prop;
-    if (prop = beforeEnd(key, '_eq')) {
-      query[prop] = value;
+    let condition;
+
+    if ((prop = beforeEnd(key, '_eq'))) {
+      condition = value;
     } else if (value instanceof Array && (prop = beforeEnd(key, '_in'))) {
-      query[prop] = { $in: value };
+      condition = { $in: value };
+    }
+
+    if (prop && condition) {
+      query[props.concat(prop).join('.')] = condition;
+    } else if (Object.prototype.toString.call(value) === '[object Object]') {
+      Object.assign(query, getFilter(value as Where<unknown>, props.concat(key)));
     }
   });
 
-  return query as MongooseFilterQuery<T>;
+  return query;
 };
 
-export const validate = <T>(
+export const validate = <T extends Record<string, any>>(
   where: Where<T>,
   doc: T,
 ): boolean => {
   return Object.entries(where).every(([key, value]) => {
     let prop;
-    if (prop = beforeEnd(key, '_eq')) {
-      return doc[prop as keyof T] === value;
+
+    if ((prop = beforeEnd(key, '_eq'))) {
+      return doc[prop] === value;
     } else if (value instanceof Array && (prop = beforeEnd(key, '_in'))) {
-      return value.includes(doc[prop as keyof T]);
+      return value.includes(doc[prop]);
+    }
+
+    if (Object.prototype.toString.call(value) === '[object Object]') {
+      return validate(value as Where<unknown>, doc[key]);
     }
   });
 };
