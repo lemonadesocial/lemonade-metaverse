@@ -1,18 +1,27 @@
 import { ClassType, getMetadataStorage, InputType } from 'type-graphql';
 
-export type Where<T> = { [K in keyof T as `${K & string}_eq`]?: T[K] | null; }
-  & { [K in keyof T as `${K & string}_in`]?: T[K][] | null; };
+type WhereType<T> =
+    { [K in keyof T as `${K & string}_eq`]?: T[K]; }
+  & { [K in keyof T as `${K & string}_in`]?: T[K][]; };
+type WhereKeys<T> = { [K in keyof T]: T[K] extends Record<string, any> ? never : K }[keyof T];
+
+export type Where<T> = WhereType<Pick<T, WhereKeys<T>>>;
 
 export const WhereInput = <TClassType extends ClassType>(
   BaseClass: TClassType,
 ): ClassType<Where<InstanceType<TClassType>>> => {
   const metadata = getMetadataStorage();
+  const targets = metadata.objectTypes.map(({ target }) => target);
 
   @InputType({ isAbstract: true })
   class WhereInputClass { }
 
   metadata.fields.forEach((f) => {
     if (f.target !== BaseClass) return;
+
+    const typeValue = f.getType();
+
+    if (typeValue instanceof Function && targets.includes(typeValue)) return;
 
     metadata.fields.push(
       {
