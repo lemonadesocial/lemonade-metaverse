@@ -22,10 +22,6 @@ export class Token {
   @prop()
   public creator?: string;
 
-  @Field({ nullable: true })
-  @prop()
-  public owner?: string;
-
   @Field()
   @prop({ required: true })
   public tokenId!: string;

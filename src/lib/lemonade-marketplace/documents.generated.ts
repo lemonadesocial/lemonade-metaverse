@@ -37,7 +37,6 @@ export const Poll = gql`
       contract
       createdAt
       creator
-      owner
       tokenId
       uri
     }

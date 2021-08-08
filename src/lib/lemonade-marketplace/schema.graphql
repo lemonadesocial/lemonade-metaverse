@@ -31,7 +31,6 @@ query Poll($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
       contract
       createdAt
       creator
-      owner
       tokenId
       uri
     }
