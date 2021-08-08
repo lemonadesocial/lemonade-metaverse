@@ -1,7 +1,14 @@
 import gql from 'graphql-tag';
 
-export const GetOrders = gql`
-    query GetOrders($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
+export const Poll = gql`
+    query Poll($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
+  _meta {
+    block {
+      hash
+      number
+    }
+    hasIndexingErrors
+  }
   orders(
     orderBy: lastBlock
     orderDirection: asc

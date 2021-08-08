@@ -1,4 +1,12 @@
-query GetOrders($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
+query Poll($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
+  _meta {
+    block {
+      hash
+      number
+    }
+    hasIndexingErrors
+  }
+
   orders(orderBy: lastBlock, orderDirection: asc, where: { lastBlock_gt: $lastBlock_gt }, skip: $skip, first: $first) {
     id
 

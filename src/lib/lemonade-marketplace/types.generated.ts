@@ -744,11 +744,11 @@ export enum _SubgraphErrorPolicy_ {
   deny = 'deny'
 }
 
-export type GetOrdersQueryVariables = Exact<{
+export type PollQueryVariables = Exact<{
   lastBlock_gt?: Maybe<Scalars['BigInt']>;
   skip: Scalars['Int'];
   first: Scalars['Int'];
 }>;
 
 
-export type GetOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: Maybe<string>, openTo?: Maybe<string>, maker: string, price: string, bidder?: Maybe<string>, bidAmount?: Maybe<string>, taker?: Maybe<string>, paidAmount?: Maybe<string>, currency: { __typename?: 'Currency', id: string, name: string, symbol: string }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: Maybe<string>, creator?: Maybe<string>, owner?: Maybe<string>, tokenId: string, uri: string } }> };
+export type PollQuery = { __typename?: 'Query', _meta?: Maybe<{ __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', hash?: Maybe<string>, number: number } }>, orders: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: Maybe<string>, openTo?: Maybe<string>, maker: string, price: string, bidder?: Maybe<string>, bidAmount?: Maybe<string>, taker?: Maybe<string>, paidAmount?: Maybe<string>, currency: { __typename?: 'Currency', id: string, name: string, symbol: string }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: Maybe<string>, creator?: Maybe<string>, owner?: Maybe<string>, tokenId: string, uri: string } }> };

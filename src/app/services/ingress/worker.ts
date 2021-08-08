@@ -14,12 +14,12 @@ import { Order, OrderKind, OrderModel } from '../../models/order';
 import { StateModel } from '../../models/state';
 import { Token, TokenModel } from '../../models/token';
 
-import { GetOrders } from '../../../lib/lemonade-marketplace/documents.generated';
-import { GetOrdersQuery, GetOrdersQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
+import { Poll } from '../../../lib/lemonade-marketplace/documents.generated';
+import { PollQuery, PollQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 
 import { redisUri } from '../../../config';
 
-type GetOrdersOrder = GetOrdersQuery['orders'] extends (infer T)[] ? T : never;
+type PollOrder = PollQuery['orders'] extends (infer T)[] ? T : never;
 
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
@@ -43,7 +43,7 @@ const jobOptions: JobsOptions = {
 };
 const stateQuery = { key: 'ingress_last_block' };
 
-const buildOrder = ({ createdAt, kind, openFrom, openTo, token, ...order }: GetOrdersOrder): Order => {
+const buildOrder = ({ createdAt, kind, openFrom, openTo, token, ...order }: PollOrder): Order => {
   return {
     createdAt: new Date(parseInt(createdAt) * 1000),
     kind: kind as string as OrderKind,
@@ -54,14 +54,14 @@ const buildOrder = ({ createdAt, kind, openFrom, openTo, token, ...order }: GetO
   };
 };
 
-const buildToken = ({ token: { createdAt, ...token } }: GetOrdersOrder): Token => {
+const buildToken = ({ token: { createdAt, ...token } }: PollOrder): Token => {
   return {
     createdAt: createdAt ? new Date(parseInt(createdAt) * 1000) : undefined,
     ...excludeNull(token),
   };
 };
 
-const process = async (dataOrders: GetOrdersOrder[]) => {
+const process = async (dataOrders: PollOrder[]) => {
   const orders = dataOrders.map(buildOrder);
   const tokens = dataOrders.map(buildToken);
 
@@ -120,11 +120,23 @@ const poll = async (lastBlock_gt?: string) => {
   let lastBlock: string | undefined;
   let length = 0;
   do {
-    const { data } = await indexer.client.query<GetOrdersQuery, GetOrdersQueryVariables>({
-      query: GetOrders,
+    const { data } = await indexer.client.query<PollQuery, PollQueryVariables>({
+      query: Poll,
       variables: { lastBlock_gt, skip, first },
       fetchPolicy: 'no-cache',
     });
+
+    if (data._meta) {
+      const { block, hasIndexingErrors } = data._meta;
+
+      if (lastBlock_gt && block.number < parseInt(lastBlock_gt)) {
+        logger.warn({ block, hasIndexingErrors, lastBlock_gt }, 'subgraph is reindexing');
+      }
+
+      if (hasIndexingErrors) {
+        logger.warn({ block, hasIndexingErrors }, 'subgraph encountered indexing errors at some past block');
+      }
+    }
 
     length = data?.orders?.length || 0;
     logger.debug({ lastBlock_gt, skip, first, length });
