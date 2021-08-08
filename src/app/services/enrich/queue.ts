@@ -5,12 +5,8 @@ import { JobData, QUEUE_NAME } from './shared';
 
 import { redisUri } from '../../../config';
 
-const queue = new Queue<JobData>(QUEUE_NAME, {
-  connection: new Redis(redisUri),
-});
-const queueScheduler = new QueueScheduler(QUEUE_NAME, {
-  connection: new Redis(redisUri),
-});
+const queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
+const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
 
 export const waitUntilReady = async (): Promise<void> => {
   await Promise.all([
@@ -19,11 +15,9 @@ export const waitUntilReady = async (): Promise<void> => {
   ]);
 };
 
-export const enqueue = async (
-  ...data: JobData[]
-): Promise<void> => {
+export const enqueue = async (...data: JobData[]): Promise<void> => {
   await queue.addBulk(data.map((data) => ({
-    name: 'enrich',
+    name: '*',
     data,
     opts: {
       attempts: 10,
