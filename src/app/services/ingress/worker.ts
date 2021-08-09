@@ -114,7 +114,6 @@ const poll = async (lastBlock_gt?: string) => {
     const { data } = await indexer.client.query<IngressQuery, IngressQueryVariables>({
       query: Ingress,
       variables: { lastBlock_gt, skip, first },
-      fetchPolicy: 'no-cache',
     });
 
     if (data._meta) {

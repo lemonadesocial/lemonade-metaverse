@@ -81,7 +81,6 @@ export const getTokensOf = async (variables: TokensOfQueryVariables): Promise<To
   const { data: { tokens } } = await indexer.client.query<TokensOfQuery, TokensOfQueryVariables>({
     query: TokensOf,
     variables,
-    fetchPolicy: 'no-cache',
   });
 
   if (!tokens.length) return [];
