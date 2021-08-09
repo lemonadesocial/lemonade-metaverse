@@ -1,5 +1,5 @@
-import { Field, ObjectType } from 'type-graphql';
 import { getModelForClass, index, prop } from '@typegoose/typegoose';
+import { registerEnumType, Field, ObjectType } from 'type-graphql';
 
 import { Token } from './token';
 
@@ -7,6 +7,7 @@ export enum OrderKind {
   Auction = 'AUCTION',
   Direct = 'DIRECT',
 }
+registerEnumType(OrderKind, { name: 'OrderKind' });
 
 @ObjectType()
 export class Currency {
@@ -44,7 +45,7 @@ export class Order {
 
   @Field()
   @prop({ required: true })
-  public createdAt!: Date;
+  public createdAt!: string;
 
   @Field()
   @prop({ required: true, enum: OrderKind })
@@ -56,11 +57,11 @@ export class Order {
 
   @Field({ nullable: true })
   @prop()
-  public openFrom?: Date;
+  public openFrom?: string;
 
   @Field({ nullable: true })
   @prop()
-  public openTo?: Date;
+  public openTo?: string;
 
   @Field()
   @prop({ required: true })
@@ -76,7 +77,7 @@ export class Order {
 
   @Field(() => Token)
   @prop({ required: true, type: () => String })
-  public token!: Token | string;
+  public token!: string | Token;
 
   @Field({ nullable: true })
   @prop()

@@ -2,11 +2,12 @@ import { Arg, Args, Resolver, Info, Query } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 
 import { PaginatedResponseArgs } from '../types/paginated-response';
-import { TokenModel } from '../../app/models/token';
+import { Token, TokenModel } from '../../app/models/token';
 import { TokensResponse, TokenWhere } from '../types/token';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter } from '../utils/where';
+import { getTokensOf } from '../../app/services/token';
 
 @Resolver()
 class _TokensQueryResolver {
@@ -30,5 +31,13 @@ class _TokensQueryResolver {
     ]);
 
     return { items, total };
+  }
+
+  @Query(() => [Token])
+  async tokensOf(
+    @Args() { skip, limit }: PaginatedResponseArgs,
+    @Arg('owner', () => String) owner: string,
+  ): Promise<Token[]> {
+    return await getTokensOf({ owner, skip, first: limit });
   }
 }

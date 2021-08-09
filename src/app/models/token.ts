@@ -16,7 +16,7 @@ export class Token {
 
   @Field({ nullable: true })
   @prop()
-  public createdAt?: Date;
+  public createdAt?: string;
 
   @Field({ nullable: true })
   @prop()

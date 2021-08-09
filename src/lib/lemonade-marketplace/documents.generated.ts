@@ -47,3 +47,15 @@ export const Poll = gql`
   }
 }
     `;
+export const TokensOf = gql`
+    query TokensOf($owner: Bytes!, $skip: Int!, $first: Int!) {
+  tokens(where: {owner: $owner}, skip: $skip, first: $first) {
+    id
+    contract
+    createdAt
+    creator
+    tokenId
+    uri
+  }
+}
+    `;

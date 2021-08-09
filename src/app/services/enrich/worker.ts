@@ -69,13 +69,15 @@ const processor: Processor<JobData> = async (job) => {
   writer.enqueue({
     updateOne: {
       filter: { id: token.id },
-      update: { $set: { metadata: token.metadata } },
+      update: { $set: token },
+      upsert: true,
     },
   });
 
   logger.info({ order, token }, 'enrich');
 
   if (order) await pubSub.publish('order_updated', { ...order, token });
+  else await pubSub.publish('token_updated', token);
 
   stopTimer();
 };

@@ -15,10 +15,11 @@ import { Token, TokenModel } from '../../models/token';
 
 import { Poll } from '../../../lib/lemonade-marketplace/documents.generated';
 import { PollQuery, PollQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
+import { Unpacked } from '../../types';
 
 import { redisUri } from '../../../config';
 
-type PollOrder = PollQuery['orders'] extends (infer T)[] ? T : never;
+type PollOrder = Unpacked<PollQuery['orders']>;
 
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
@@ -42,27 +43,18 @@ const jobOptions: JobsOptions = {
 };
 const stateQuery = { key: 'ingress_last_block' };
 
-const buildOrder = ({ createdAt, kind, openFrom, openTo, token, ...order }: PollOrder): Order => {
-  return {
-    createdAt: new Date(parseInt(createdAt) * 1000),
-    kind: kind as string as OrderKind,
-    openFrom: openFrom ? new Date(parseInt(openFrom) * 1000) : undefined,
-    openTo: openTo ? new Date(parseInt(openTo) * 1000) : undefined,
-    token: token.id,
-    ...excludeNull(order),
-  };
-};
+const process = async (items: PollOrder[]) => {
+  const orders = items.map(({ kind, token, ...order }: PollOrder): Order => {
+    return {
+      kind: kind as string as OrderKind,
+      token: token.id,
+      ...excludeNull(order),
+    };
+  });
 
-const buildToken = ({ token: { createdAt, ...token } }: PollOrder): Token => {
-  return {
-    createdAt: createdAt ? new Date(parseInt(createdAt) * 1000) : undefined,
-    ...excludeNull(token),
-  };
-};
-
-const process = async (dataOrders: PollOrder[]) => {
-  const orders = dataOrders.map(buildOrder);
-  const tokens = dataOrders.map(buildToken);
+  const tokens = items.map(({ token }: PollOrder): Token => {
+    return excludeNull(token);
+  });
 
   const [_, { upsertedIds = {} }] = await Promise.all([
     OrderModel.bulkWrite(
@@ -99,7 +91,7 @@ const process = async (dataOrders: PollOrder[]) => {
     );
   }
 
-  for (const i of dataOrders.keys()) {
+  for (const i of items.keys()) {
     logger.info({ order: orders[i], token: tokens[i] }, 'ingress');
 
     if (i in upsertedIdxs) continue;

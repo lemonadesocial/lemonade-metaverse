@@ -40,3 +40,14 @@ query Poll($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
     paidAmount
   }
 }
+
+query TokensOf($owner: Bytes!, $skip: Int!, $first: Int!) {
+  tokens(where: { owner: $owner }, skip: $skip, first: $first) {
+    id
+    contract
+    createdAt
+    creator
+    tokenId
+    uri
+  }
+}
