@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
-export const Poll = gql`
-    query Poll($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
+export const Ingress = gql`
+    query Ingress($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
   _meta {
     block {
       hash

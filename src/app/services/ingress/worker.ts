@@ -13,13 +13,13 @@ import { Order, OrderKind, OrderModel } from '../../models/order';
 import { StateModel } from '../../models/state';
 import { Token, TokenModel } from '../../models/token';
 
-import { Poll } from '../../../lib/lemonade-marketplace/documents.generated';
-import { PollQuery, PollQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
+import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
+import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 import { Unpacked } from '../../types';
 
 import { redisUri } from '../../../config';
 
-type PollOrder = Unpacked<PollQuery['orders']>;
+type IngressOrder = Unpacked<IngressQuery['orders']>;
 
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
@@ -43,8 +43,8 @@ const jobOptions: JobsOptions = {
 };
 const stateQuery = { key: 'ingress_last_block' };
 
-const process = async (items: PollOrder[]) => {
-  const orders = items.map(({ kind, token, ...order }: PollOrder): Order => {
+const process = async (items: IngressOrder[]) => {
+  const orders = items.map(({ kind, token, ...order }: IngressOrder): Order => {
     return {
       kind: kind as string as OrderKind,
       token: token.id,
@@ -52,7 +52,7 @@ const process = async (items: PollOrder[]) => {
     };
   });
 
-  const tokens = items.map(({ token }: PollOrder): Token => {
+  const tokens = items.map(({ token }: IngressOrder): Token => {
     return excludeNull(token);
   });
 
@@ -111,8 +111,8 @@ const poll = async (lastBlock_gt?: string) => {
   let lastBlock: string | undefined;
   let length = 0;
   do {
-    const { data } = await indexer.client.query<PollQuery, PollQueryVariables>({
-      query: Poll,
+    const { data } = await indexer.client.query<IngressQuery, IngressQueryVariables>({
+      query: Ingress,
       variables: { lastBlock_gt, skip, first },
       fetchPolicy: 'no-cache',
     });

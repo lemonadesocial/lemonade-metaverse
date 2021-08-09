@@ -1,4 +1,4 @@
-query Poll($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
+query Ingress($lastBlock_gt: BigInt = -1, $skip: Int!, $first: Int!) {
   _meta {
     block {
       hash
