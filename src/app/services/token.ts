@@ -5,8 +5,7 @@ import * as indexer from '../helpers/indexer';
 
 import { Token, TokenModel } from '../models/token';
 
-import { KeysOfBoth, Unpacked } from '../types';
-import { Token as TokenType, TokensOfQuery, TokensOfQueryVariables } from '../../lib/lemonade-marketplace/types.generated';
+import { TokensOfQuery, TokensOfQueryVariables } from '../../lib/lemonade-marketplace/types.generated';
 import { TokensOf } from '../../lib/lemonade-marketplace/documents.generated';
 
 const TIMEOUT = 10000;
@@ -48,16 +47,16 @@ const waitForEnrich = async (tokens: Token[]) => {
   }
 }
 
-type FetchToken<T> = Pick<Token, KeysOfBoth<Token, T> | 'metadata'>;
+type FetchToken<T> = Pick<Token, keyof Token & keyof T | 'metadata'>;
 
-const fetch = async <T extends Pick<TokenType, 'id'>>(
+const fetch = async <T extends { id: string }>(
   items: T[],
 ): Promise<FetchToken<T>[]> => {
   const docs = await TokenModel.find(
     { id: { $in: items.map(({ id }) => id) } },
     { id: 1, metadata: 1 },
   ).lean();
-  const map = docs.reduce((acc, doc) => ({ ...acc, [doc.id]: doc }), {} as Record<string, Unpacked<typeof docs>>);
+  const map = Object.fromEntries(docs.map((doc) => [doc.id as string, doc]));
 
   const tokens: FetchToken<T>[] = [];
   const missing: Token[] = [];
