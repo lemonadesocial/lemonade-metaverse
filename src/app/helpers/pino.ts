@@ -11,7 +11,7 @@ if (slackWebhookUrl) {
   const level = isDevelopment ? 'debug' : 'info';
 
   targets.push(
-    { level, target: '../../../lib/logger.mjs', options: { slackWebhookUrl } }
+    { level, target: '../../../lib/logger.mjs', options: { keepAlive: true, webhookUrl: slackWebhookUrl } }
   );
 }
 

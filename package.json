@@ -50,6 +50,7 @@
     "mongoose": "~5.13.3",
     "node-fetch": "^2.6.1",
     "pino": "^7.0.0-rc.2",
+    "pino-slack-transport": "^1.0.1",
     "prom-client": "^13.1.0",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.19",

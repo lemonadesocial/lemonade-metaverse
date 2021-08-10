@@ -6403,6 +6403,14 @@ pino-abstract-transport@^0.2.0:
   dependencies:
     split2 "^3.2.2"
 
+pino-slack-transport@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/pino-slack-transport/-/pino-slack-transport-1.0.1.tgz#f7c14f1c733bac8b86352424f7167ac2242d51e5"
+  integrity sha512-9ClEp0cwwlivEAAplKii2qGGW/xKrc58aXKOGewJOrYSbxVZHMqTKs1iCYdEfQdhhN6cmCfzHrJLmBJjSa1bcA==
+  dependencies:
+    node-fetch "^2.6.1"
+    pino-abstract-transport "^0.2.0"
+
 pino-std-serializers@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/pino-std-serializers/-/pino-std-serializers-4.0.0.tgz#1791ccd2539c091ae49ce9993205e2cd5dbba1e2"
