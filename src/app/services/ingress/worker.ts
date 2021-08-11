@@ -182,7 +182,7 @@ export const start = async (): Promise<void> => {
     queueScheduler.waitUntilReady(),
   ]);
 
-  if (!await queue.count()) {
+  if (!await queue.getJobCountByTypes('active', 'waiting', 'paused', 'delayed')) {
     const state = await StateModel.findOne(stateQuery, { value: 1 }, { lean: true });
     const job = await queue.add('*', { lastBlock_gt: state?.value }, jobOptions);
     logger.info(job.asJSON(), 'created ingress job');
