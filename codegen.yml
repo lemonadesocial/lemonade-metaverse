@@ -1,5 +1,5 @@
 overwrite: true
-schema: 'https://api.studio.thegraph.com/query/5003/lemonade-marketplace/v0.0.10'
+schema: 'https://api.thegraph.com/subgraphs/name/lemonadesocial/lemonade-marketplace'
 config:
   scalars:
     BigInt: string
