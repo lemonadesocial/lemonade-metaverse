@@ -10,27 +10,27 @@ export class Token {
   @prop({ required: true })
   public id!: string;
 
-  @Field()
+  @Field({ description: 'The contract address.' })
   @prop({ required: true })
   public contract!: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'When this token was created.' })
   @prop()
   public createdAt?: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'The creator.' })
   @prop()
   public creator?: string;
 
-  @Field()
+  @Field({ description: 'The token ID.' })
   @prop({ required: true })
   public tokenId!: string;
 
-  @Field()
+  @Field({ description: 'The metadata URI.' })
   @prop({ required: true })
   public uri!: string;
 
-  @Field(() => GraphQLJSONObject, { nullable: true })
+  @Field(() => GraphQLJSONObject, { nullable: true, description: 'The actual metadata.' })
   @prop()
   public metadata?: Record<string, unknown>;
 }
