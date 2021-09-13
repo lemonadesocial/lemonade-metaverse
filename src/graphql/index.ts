@@ -10,37 +10,26 @@ import { apolloDebug, apolloIntrospection, isProduction } from '../config';
 
 const KEEP_ALIVE = 5000;
 
-export const createServers = async (
-  server: http.Server,
-): Promise<{
-  apolloServer: ApolloServer;
-  subscriptionServer: SubscriptionServer,
-}> => {
-  const apolloServer = new ApolloServer({
-    context: ({ ctx }) => ({ app: ctx }),
-    debug: apolloDebug,
-    introspection: apolloIntrospection,
-    plugins: [
-      isProduction ? ApolloServerPluginLandingPageDisabled() : ApolloServerPluginLandingPageGraphQLPlayground(),
-    ],
-    schema,
-  });
+export const apolloServer = new ApolloServer({
+  context: ({ ctx }) => ({ app: ctx }),
+  debug: apolloDebug,
+  introspection: apolloIntrospection,
+  plugins: [
+    isProduction
+      ? ApolloServerPluginLandingPageDisabled()
+      : ApolloServerPluginLandingPageGraphQLPlayground(),
+  ],
+  schema,
+});
 
-  const subscriptionServer = SubscriptionServer.create(
+export const createSubscriptionServer = (server: http.Server): SubscriptionServer => {
+  return SubscriptionServer.create(
     {
-      schema,
       execute,
-      subscribe,
       keepAlive: KEEP_ALIVE,
+      schema,
+      subscribe,
     },
-    {
-      path: apolloServer.graphqlPath,
-      server,
-    }
+    { server }
   );
-
-  return {
-    apolloServer,
-    subscriptionServer,
-  };
 };

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import 'reflect-metadata';
 import 'source-map-support/register';
-import { ApolloServer } from 'apollo-server-koa';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import { pino } from 'pino';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
@@ -14,7 +13,7 @@ import * as db from '../app/helpers/db';
 import * as metrics from '../app/services/metrics';
 import * as redis from '../app/helpers/redis';
 
-import * as graphql from '../graphql';
+import { apolloServer, createSubscriptionServer } from '../graphql';
 
 import { appPort, sourceVersion } from '../config';
 
@@ -35,19 +34,20 @@ const fatalHandler = pino.final(logger, function handler(err, logger) {
   process.exit(1);
 });
 
-let apolloServer: ApolloServer | undefined;
 let httpTerminator: HttpTerminator | undefined;
 let subscriptionServer: SubscriptionServer | undefined;
 
 const shutdown = async () => {
   try {
-    if (apolloServer) await apolloServer.stop();
     if (subscriptionServer) subscriptionServer.close();
     if (httpTerminator) await httpTerminator.terminate();
 
-    await db.disconnect();
-    await metrics.stop();
     redis.disconnect();
+    await Promise.all([
+      apolloServer.stop(),
+      db.disconnect(),
+      metrics.stop(),
+    ]);
 
     process.exit(0);
   } catch (err) {
@@ -65,13 +65,19 @@ process.on('SIGTERM', async function onSigtermSignal() {
 
 const main = async () => {
   metrics.start();
-  await db.connect();
+  await Promise.all([
+    apolloServer.start(),
+    db.connect(),
+  ]);
 
   const server = app.listen(appPort, function onListening() {
     logger.info({ version: sourceVersion }, 'metaverse app started');
   });
 
+  apolloServer.applyMiddleware({ app });
+
   httpTerminator = createHttpTerminator({ server });
+  subscriptionServer = createSubscriptionServer(server);
 
   const getServerConnections = util
     .promisify(server.getConnections)
@@ -82,12 +88,6 @@ const main = async () => {
     help: 'Number of open HTTP connections',
     collect: async function() { this.set(await getServerConnections()); },
   });
-
-  ({ apolloServer, subscriptionServer } = await graphql.createServers(server));
-
-  await apolloServer.start();
-
-  apolloServer.applyMiddleware({ app });
 };
 
 main().catch(fatalHandler);
