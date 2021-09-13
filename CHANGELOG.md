@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.1.0...v1.1.1) (2021-09-13)
+
+
+### Bug Fixes
+
+* **ingress:** fix multiple ingress jobs being created ([2fccdbf](https://github.com/lemonadesocial/lemonade-metaverse/commit/2fccdbf90918442bb76bcc79fb6a9783585d0644))
+
 ## [1.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.0.0...v1.1.0) (2021-08-09)
 
 
