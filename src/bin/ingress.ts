@@ -32,9 +32,11 @@ const shutdown = async () => {
   try {
     await ingress.stop();
 
-    await db.disconnect();
-    await metrics.stop();
     redis.disconnect();
+    await Promise.all([
+      db.disconnect(),
+      metrics.stop(),
+    ]);
 
     process.exit(0);
   } catch (err) {
