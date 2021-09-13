@@ -1,25 +1,22 @@
-import { buildSchema } from 'type-graphql';
-import { GraphQLSchema } from 'graphql';
+import { buildSchemaSync } from 'type-graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
 import * as path from 'path';
-import GraphQLJSON from 'graphql-type-json';
 
 import { LoggerMiddleware } from './middlewares/logger';
 import { PrometheusMiddleware } from './middlewares/prometheus';
 
 import { pubSub } from '../app/helpers/pub-sub';
 
-export const build = async (): Promise<GraphQLSchema> => {
-  const resolversPath = path.join(__dirname, '/resolvers/**/*.{ts,js}');
+const resolversPath = path.join(__dirname, '/resolvers/**/*.{ts,js}');
 
-  return await buildSchema({
-    globalMiddlewares: [
-      PrometheusMiddleware,
-      LoggerMiddleware,
-    ],
-    resolvers: [resolversPath],
-    pubSub,
-    scalarsMap: [
-      { type: Object, scalar: GraphQLJSON },
-    ],
-  });
-};
+export const schema = buildSchemaSync({
+  globalMiddlewares: [
+    PrometheusMiddleware,
+    LoggerMiddleware,
+  ],
+  resolvers: [resolversPath],
+  pubSub,
+  scalarsMap: [
+    { type: Object, scalar: GraphQLJSONObject },
+  ],
+});

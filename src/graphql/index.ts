@@ -4,7 +4,7 @@ import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import * as http from 'http';
 
-import { build as buildSchema } from './schema';
+import { schema } from './schema';
 
 import { apolloDebug, apolloIntrospection, isProduction } from '../config';
 
@@ -16,8 +16,6 @@ export const createServers = async (
   apolloServer: ApolloServer;
   subscriptionServer: SubscriptionServer,
 }> => {
-  const schema = await buildSchema();
-
   const apolloServer = new ApolloServer({
     context: ({ ctx }) => ({ app: ctx }),
     debug: apolloDebug,
