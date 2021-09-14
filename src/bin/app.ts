@@ -62,6 +62,8 @@ process.on('SIGTERM', async function onSigtermSignal() {
 
 const main = async () => {
   const httpServer = http.createServer(app.callback());
+  httpServer.keepAliveTimeout = 400 * 1000;
+
   apolloServer = createApolloServer(httpServer);
 
   metrics.start();
