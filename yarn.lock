@@ -2224,10 +2224,10 @@ body-parser@1.19.0, body-parser@^1.16.0:
     raw-body "2.4.0"
     type-is "~1.6.17"
 
-boolean@^3.0.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/boolean/-/boolean-3.1.2.tgz#e30f210a26b02458482a8cc353ab06f262a780c2"
-  integrity sha512-YN6UmV0FfLlBVvRvNPx3pz5W/mUoYB24J4WSXOKP/OOJpi+Oq6WYqPaNTHzjI0QzwWtnvEd5CGYyQPgp1jFxnw==
+boolean@^3.0.2, boolean@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/boolean/-/boolean-3.1.4.tgz#f51a2fb5838a99e06f9b6ec1edb674de67026435"
+  integrity sha512-3hx0kwU3uzG6ReQ3pnaFQPSktpBw6RHN3/ivDKEuU8g1XSfafowyvDnadjv1xp8IZqhtSukxlwv9bF6FhX8m0w==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -3845,9 +3845,9 @@ fast-json-stable-stringify@^2.0.0, fast-json-stable-stringify@^2.1.0:
   integrity sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==
 
 fast-json-stringify@^2.5.2:
-  version "2.7.8"
-  resolved "https://registry.yarnpkg.com/fast-json-stringify/-/fast-json-stringify-2.7.8.tgz#e280ebbad34738591c24fbf2da72921173dbb83c"
-  integrity sha512-HRSGwEWe0/5EH7GEaWg1by4dInnBb1WFf4umMPr+lL5xb0VP0VbpNGklp4L0/BseD+BmtIZpjqJjnLFwaQ21dg==
+  version "2.7.9"
+  resolved "https://registry.yarnpkg.com/fast-json-stringify/-/fast-json-stringify-2.7.9.tgz#f9086584bb54f54181b07669173695ca090fcfce"
+  integrity sha512-FC9RJtux5cyojLEbpLyt6cMo6lkJPsfvx0E5O/I5fFkcnYVOSFjg53VUeVWudYXNJOS9Mmjx7totdrLCUWHPTA==
   dependencies:
     ajv "^6.11.0"
     deepmerge "^4.2.2"
@@ -3860,11 +3860,11 @@ fast-levenshtein@^2.0.6:
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
 fast-printf@^1.6.4:
-  version "1.6.6"
-  resolved "https://registry.yarnpkg.com/fast-printf/-/fast-printf-1.6.6.tgz#7e9af8dabedf7a0b9760feae4d10b651d0d6a03b"
-  integrity sha512-Uz/uW6R1Fd8YqCGeoQosRIfB4dBbr8uMbFVdEci2AyXYcfucFqhpSMAGs8skRRdZd+MGCDBu48+B8Zmu7Pta5A==
+  version "1.6.9"
+  resolved "https://registry.yarnpkg.com/fast-printf/-/fast-printf-1.6.9.tgz#212f56570d2dc8ccdd057ee93d50dd414d07d676"
+  integrity sha512-FChq8hbz65WMj4rstcQsFB0O7Cy++nmbNfLYnD9cYv2cRn8EG6k/MGn9kO/tjO66t09DLDugj3yL+V2o6Qftrg==
   dependencies:
-    boolean "^3.0.2"
+    boolean "^3.1.4"
 
 fast-redact@^3.0.0:
   version "3.0.1"

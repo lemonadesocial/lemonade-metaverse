@@ -43,6 +43,7 @@
     "graphql-redis-subscriptions": "^2.4.0",
     "graphql-tag": "^2.12.5",
     "graphql-type-json": "^0.3.2",
+    "http-terminator": "^3.0.0",
     "ioredis": "^4.27.7",
     "koa": "^2.13.1",
     "lru-cache": "^6.0.0",
