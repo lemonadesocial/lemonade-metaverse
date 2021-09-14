@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import 'reflect-metadata';
 import 'source-map-support/register';
-import { createHttpTerminator, HttpTerminator } from 'http-terminator';
+import { ApolloServer } from 'apollo-server-koa';
 import { pino } from 'pino';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
+import * as http from 'http';
 import * as prom from 'prom-client';
 import * as util from 'util';
 
@@ -13,9 +13,11 @@ import * as db from '../app/helpers/db';
 import * as metrics from '../app/services/metrics';
 import * as redis from '../app/helpers/redis';
 
-import { apolloServer, createSubscriptionServer } from '../graphql';
-
 import { appPort, sourceVersion } from '../config';
+
+import { createApolloServer } from '../graphql';
+
+let apolloServer: ApolloServer | undefined;
 
 const errorHandler = pino.final(logger, function handler(err, logger, event: string) {
   logger.error(err, event);
@@ -34,17 +36,12 @@ const fatalHandler = pino.final(logger, function handler(err, logger) {
   process.exit(1);
 });
 
-let httpTerminator: HttpTerminator | undefined;
-let subscriptionServer: SubscriptionServer | undefined;
-
 const shutdown = async () => {
   try {
-    if (subscriptionServer) subscriptionServer.close();
-    if (httpTerminator) await httpTerminator.terminate();
+    if (apolloServer) await apolloServer.stop();
 
     redis.disconnect();
     await Promise.all([
-      apolloServer.stop(),
       db.disconnect(),
       metrics.stop(),
     ]);
@@ -64,24 +61,24 @@ process.on('SIGTERM', async function onSigtermSignal() {
 });
 
 const main = async () => {
+  const httpServer = http.createServer(app.callback());
+  apolloServer = createApolloServer(httpServer);
+
   metrics.start();
   await Promise.all([
     apolloServer.start(),
     db.connect(),
   ]);
 
-  const server = app.listen(appPort, function onListening() {
+  apolloServer.applyMiddleware({ app });
+
+  httpServer.listen(appPort, function onListening() {
     logger.info({ version: sourceVersion }, 'metaverse app started');
   });
 
-  apolloServer.applyMiddleware({ app });
-
-  httpTerminator = createHttpTerminator({ server });
-  subscriptionServer = createSubscriptionServer(server);
-
   const getServerConnections = util
-    .promisify(server.getConnections)
-    .bind(server);
+    .promisify(httpServer.getConnections)
+    .bind(httpServer);
 
   new prom.Gauge({
     name: 'http_open_connections',
