@@ -72,7 +72,7 @@ const main = async () => {
     db.connect(),
   ]);
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: {} });
 
   httpServer.listen(appPort, function onListening() {
     logger.info({ version: sourceVersion }, 'metaverse app started');
