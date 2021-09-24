@@ -35,8 +35,10 @@ export class BufferQueue<T> {
       this.timer = null;
     }
 
-    const items = this.buffer.splice(0, this.buffer.length);
+    const size = this.buffer.length;
 
-    await this.fn(items);
+    if (size) {
+      await this.fn(this.buffer.splice(0, size));
+    }
   }
 }
