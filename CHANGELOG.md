@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.1.1...v1.2.0) (2021-09-24)
+
+
+### Features
+
+* **graphql:** enable CORS middleware ([ebd5929](https://github.com/lemonadesocial/lemonade-metaverse/commit/ebd59297ba469c0acdcf4ab333edb5fcf5fd676d))
+* increase keep alive timeout ([41dfe3a](https://github.com/lemonadesocial/lemonade-metaverse/commit/41dfe3afd9a1026d7649bb67a1a8c609c0bc23cf))
+* use apollo drain HTTP server plugin and refactor bootstrap ([b2545b8](https://github.com/lemonadesocial/lemonade-metaverse/commit/b2545b8d42c94ff48aec0848f66eb76729185275))
+
+
+### Bug Fixes
+
+* **utils:** don't execute callback when (manually) flushing empty queue ([2688d39](https://github.com/lemonadesocial/lemonade-metaverse/commit/2688d39bb242dc4d38d39561959e895ecb7b7d3b))
+
 ### [1.1.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.1.0...v1.1.1) (2021-09-13)
 
 
