@@ -1,4 +1,4 @@
-export class BuffereredQueue<T> {
+export class BufferQueue<T> {
   private readonly fn: (items: T[]) => Promise<void>;
   private readonly timeout: number;
   private readonly size?: number;

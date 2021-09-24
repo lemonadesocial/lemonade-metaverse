@@ -11,7 +11,7 @@ import { JobData, QUEUE_NAME } from './shared';
 
 import { Token, TokenModel } from '../../models/token';
 
-import { BuffereredQueue } from '../../utils/buffered-queue';
+import { BufferQueue } from '../../utils/buffer-queue';
 import { logger } from '../../helpers/pino';
 import { parseSchema } from '../../utils/url';
 import { pubSub } from '../../helpers/pub-sub';
@@ -35,7 +35,7 @@ const requestInit: RequestInit = {
   timeout: FETCH_TIMEOUT,
 };
 
-const writer = new BuffereredQueue<BulkWriteOperation<Token>>(
+const writer = new BufferQueue<BulkWriteOperation<Token>>(
   (operations) => TokenModel.bulkWrite(operations, { ordered: false }).then(),
   WRITER_TIMEOUT
 );
