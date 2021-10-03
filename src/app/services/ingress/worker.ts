@@ -1,6 +1,6 @@
 import { BulkWriteOperation } from 'mongodb';
 import { Counter, Histogram } from 'prom-client';
-import { JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
+import { Job, JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 import Redis from 'ioredis';
 
 import { excludeNull } from '../../utils/object';
@@ -173,6 +173,15 @@ const processor: Processor<JobData> = async ({ data: { lastBlock_gt } }) => {
   }
 };
 
+const meta = ({ timestamp }: Job<JobData>) => {
+  const delay = Date.now() - timestamp;
+
+  return {
+    timestamp: new Date(timestamp).toUTCString(),
+    delay: (delay / 1000).toFixed(1) + 's',
+  };
+};
+
 export const start = async (): Promise<void> => {
   queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
   queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
@@ -190,7 +199,10 @@ export const start = async (): Promise<void> => {
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
   worker.on('failed', function onFailed(job, error) {
-    if (job.attemptsMade > 1) logger.error(error, 'failed two consecutive ingresses');
+    if (job.attemptsMade > 1) logger.error({ ...meta(job), err: error }, 'failed two consecutive ingresses');
+  });
+  worker.on('completed', function onCompleted(job) {
+    if (job.attemptsMade > 1) logger.info({ ...meta(job) }, 'completed ingress');
   });
   await worker.waitUntilReady();
 };
