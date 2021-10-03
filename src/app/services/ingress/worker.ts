@@ -189,8 +189,8 @@ export const start = async (): Promise<void> => {
   }
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
-  worker.on('failed', function onFailed(_, error) {
-    logger.error(error, 'failed to ingress');
+  worker.on('failed', function onFailed(job, error) {
+    if (job.attemptsMade > 1) logger.error(error, 'failed two consecutive ingresses');
   });
   await worker.waitUntilReady();
 };
