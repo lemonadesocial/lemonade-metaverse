@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.3.0...v1.4.0) (2021-10-03)
+
+
+### Features
+
+* **ingress:** log ingress recovery and add some meta data ([87b2237](https://github.com/lemonadesocial/lemonade-metaverse/commit/87b223740e79d97628ccf65dca5f67025859b2f0))
+
 ## [1.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.2.0...v1.3.0) (2021-10-03)
 
 
