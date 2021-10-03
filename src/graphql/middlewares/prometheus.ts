@@ -1,5 +1,5 @@
 import { MiddlewareFn } from 'type-graphql';
-import prom from 'prom-client';
+import * as prom from 'prom-client';
 
 const labelNames = ['operation', 'field_name'];
 const graphqlRequestsTotal = new prom.Counter({
@@ -14,15 +14,17 @@ const graphqlRequestDurationSeconds = new prom.Histogram({
 });
 
 export const PrometheusMiddleware: MiddlewareFn = async ({ info }, next) => {
-  const start = process.hrtime();
+  const graphqlRequestDurationTimer = graphqlRequestDurationSeconds.startTimer();
 
   try {
     await next();
   } finally {
-    const delta = process.hrtime(start);
-    const values = [info.operation.operation, info.fieldName];
+    const labels = {
+      operation: info.operation.operation,
+      field_name: info.fieldName,
+    };
 
-    graphqlRequestsTotal.labels(...values).inc();
-    graphqlRequestDurationSeconds.labels(...values).observe(delta[0] + delta[1] / 1e9);
+    graphqlRequestsTotal.inc(labels);
+    graphqlRequestDurationTimer(labels);
   }
 };

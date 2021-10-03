@@ -151,26 +151,18 @@ let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
 const processor: Processor<JobData> = async ({ data: { lastBlock_gt } }) => {
-  const stopTimer = ingressDurationSeconds.startTimer();
+  const ingressDurationTimer = ingressDurationSeconds.startTimer();
 
-  try {
-    const lastBlock = await poll(lastBlock_gt);
+  const lastBlock = await poll(lastBlock_gt);
 
-    await Promise.all([
-      lastBlock && lastBlock !== lastBlock_gt
-        ? StateModel.updateOne(stateQuery, { $set: { value: lastBlock } }, { upsert: true })
-        : null,
-      queue!.add('*', { lastBlock_gt: lastBlock || lastBlock_gt }, jobOptions),
-    ]);
+  await Promise.all([
+    lastBlock && lastBlock !== lastBlock_gt
+      ? StateModel.updateOne(stateQuery, { $set: { value: lastBlock } }, { upsert: true })
+      : null,
+    queue!.add('*', { lastBlock_gt: lastBlock || lastBlock_gt }, jobOptions),
+  ]);
 
-    ingressesTotal.labels('success').inc();
-
-    stopTimer();
-  } catch (err) {
-    ingressesTotal.labels('fail').inc();
-
-    throw err;
-  }
+  ingressDurationTimer();
 };
 
 const meta = ({ timestamp }: Job<JobData>) => {
@@ -199,9 +191,11 @@ export const start = async (): Promise<void> => {
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
   worker.on('failed', function onFailed(job, error) {
+    ingressesTotal.inc({ status: 'fail' });
     if (job.attemptsMade > 1) logger.error({ ...meta(job), err: error }, 'failed two consecutive ingresses');
   });
   worker.on('completed', function onCompleted(job) {
+    ingressesTotal.inc({ status: 'success' });
     if (job.attemptsMade > 1) logger.info({ ...meta(job) }, 'completed ingress');
   });
   await worker.waitUntilReady();

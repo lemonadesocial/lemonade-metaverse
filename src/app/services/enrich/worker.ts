@@ -41,7 +41,7 @@ const writer = new BufferQueue<BulkWriteOperation<Token>>(
 );
 
 const processor: Processor<JobData> = async (job) => {
-  const stopTimer = durationSeconds.startTimer();
+  const durationTimer = durationSeconds.startTimer();
 
   const { order, token } = job.data;
 
@@ -79,7 +79,7 @@ const processor: Processor<JobData> = async (job) => {
   if (order) await pubSub.publish('order_updated', { ...order, token });
   else await pubSub.publish('token_updated', token);
 
-  stopTimer();
+  durationTimer();
 };
 
 let queueScheduler: QueueScheduler | undefined;
