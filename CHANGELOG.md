@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.4.0...v1.5.0) (2021-10-06)
+
+
+### Features
+
+* **codegen:** get schema URL for environment variable ([8e068a6](https://github.com/lemonadesocial/lemonade-metaverse/commit/8e068a66f5ec30eeb72726b0b21e00ac2b0709ca))
+* **config:** parse some environment variables as URLs ([3d24665](https://github.com/lemonadesocial/lemonade-metaverse/commit/3d246654425c72c8a6c37e1621b421c711204e74))
+* **config:** use env-var for parsing ([2f6da4d](https://github.com/lemonadesocial/lemonade-metaverse/commit/2f6da4d18c2db50f93fad9e07ad5a0046edc6f0c))
+* **config:** use sensible indexer url default ([e8d24d4](https://github.com/lemonadesocial/lemonade-metaverse/commit/e8d24d4aa6940b1db9e2076f2275502b26044276))
+
 ## [1.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.3.0...v1.4.0) (2021-10-03)
 
 
