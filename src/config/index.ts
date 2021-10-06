@@ -2,7 +2,6 @@ import * as env from 'env-var';
 
 export const apolloDebug = env.get('APOLLO_DEBUG').asBool();
 export const apolloIntrospection = env.get('APOLLO_INTROSPECTION').asBool();
-export const appKey = env.get('APP_KEY').default('dummy').asString();
 export const appPort = env.get('APP_PORT').default(4000).asIntPositive();
 export const databaseDebug = env.get('DATABASE_DEBUG').asBool();
 export const databaseUrl = env.get('DATABASE_URL').default('mongodb://localhost').asUrlString();
