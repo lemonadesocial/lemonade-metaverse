@@ -17,7 +17,7 @@ import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 import { Unpacked } from '../../types';
 
-import { redisUri } from '../../../config';
+import { redisUrl } from '../../../config';
 
 type IngressOrder = Unpacked<IngressQuery['orders']>;
 
@@ -175,8 +175,8 @@ const meta = ({ timestamp }: Job<JobData>) => {
 };
 
 export const start = async (): Promise<void> => {
-  queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
+  queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUrl) });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUrl) });
   await Promise.all([
     enrich.waitUntilReady(),
     queue.waitUntilReady(),
@@ -189,7 +189,7 @@ export const start = async (): Promise<void> => {
     logger.info(job.asJSON(), 'created ingress job');
   }
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUri) });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUrl) });
   worker.on('failed', function onFailed(job, error) {
     ingressesTotal.inc({ status: 'fail' });
     if (job.attemptsMade > 1) logger.error({ ...meta(job), err: error }, 'failed two consecutive ingresses');

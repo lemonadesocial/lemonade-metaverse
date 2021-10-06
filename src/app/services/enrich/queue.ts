@@ -3,10 +3,10 @@ import Redis from 'ioredis';
 
 import { JobData, QUEUE_NAME } from './shared';
 
-import { redisUri } from '../../../config';
+import { redisUrl } from '../../../config';
 
-const queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUri) });
-const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
+const queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUrl) });
+const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUrl) });
 
 export const waitUntilReady = async (): Promise<void> => {
   await Promise.all([

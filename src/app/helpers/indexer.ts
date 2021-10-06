@@ -3,7 +3,7 @@ import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import fetch from 'node-fetch';
 
-import { indexerHttpUri } from '../../config';
+import { indexerUrl } from '../../config';
 
 export const client = new ApolloClient({
   cache: new InMemoryCache({ addTypename: false }),
@@ -12,7 +12,7 @@ export const client = new ApolloClient({
   },
   link: new HttpLink({
     fetch,
-    uri: indexerHttpUri,
+    uri: indexerUrl,
   }),
 });
 

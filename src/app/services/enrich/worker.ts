@@ -16,7 +16,7 @@ import { logger } from '../../helpers/pino';
 import { parseSchema } from '../../utils/url';
 import { pubSub } from '../../helpers/pub-sub';
 
-import { ipfsGatewayUri, redisUri } from '../../../config';
+import { ipfsGatewayUrl, redisUrl } from '../../../config';
 
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
 const FETCH_TIMEOUT = 5000;
@@ -55,7 +55,7 @@ const processor: Processor<JobData> = async (job) => {
       response = await fetch(token.uri, { agent: httpsAgent, ...requestInit });
       break;
     case 'ipfs':
-      response = await fetch(`${ipfsGatewayUri}/ipfs/${token.uri.substr('ipfs://'.length)}`, { agent: httpsAgent, ...requestInit });
+      response = await fetch(`${ipfsGatewayUrl}ipfs/${token.uri.substr('ipfs://'.length)}`, { agent: httpsAgent, ...requestInit });
       break;
     default:
       logger.debug(job.toJSON(), `unsupported schema ${schema}`);
@@ -86,11 +86,11 @@ let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
 export const start = async (): Promise<void> => {
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUri) });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUrl) });
   await queueScheduler.waitUntilReady();
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, {
-    connection: new Redis(redisUri),
+    connection: new Redis(redisUrl),
     concurrency: WORKER_CONCURRENCY,
   });
   worker.on('failed', function onFailed(_, error) {
