@@ -47,7 +47,6 @@
     "http-terminator": "^3.0.0",
     "ioredis": "^4.27.7",
     "koa": "^2.13.1",
-    "lru-cache": "^6.0.0",
     "mongoose": "~5.13.3",
     "node-fetch": "^2.6.1",
     "pino": "^7.0.0-rc.2",
@@ -55,7 +54,6 @@
     "prom-client": "^13.1.0",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.19",
-    "type-graphql": "^1.1.1",
-    "web3": "^1.5.1"
+    "type-graphql": "^1.1.1"
   }
 }
