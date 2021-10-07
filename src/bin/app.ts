@@ -47,7 +47,7 @@ const shutdown = async () => {
     ]);
 
     process.exit(0);
-  } catch (err) {
+  } catch (err: any) {
     fatalHandler(err);
   }
 };

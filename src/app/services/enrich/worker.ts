@@ -1,4 +1,4 @@
-import { BulkWriteOperation } from 'mongodb';
+import { AnyBulkWriteOperation } from 'mongodb';
 import { Histogram } from 'prom-client';
 import { Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
@@ -35,7 +35,7 @@ const requestInit: RequestInit = {
   timeout: FETCH_TIMEOUT,
 };
 
-const writer = new BufferQueue<BulkWriteOperation<Token>>(
+const writer = new BufferQueue<AnyBulkWriteOperation<Token>>(
   (operations) => TokenModel.bulkWrite(operations, { ordered: false }).then(),
   WRITER_TIMEOUT
 );

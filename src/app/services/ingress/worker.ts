@@ -1,4 +1,4 @@
-import { BulkWriteOperation } from 'mongodb';
+import { AnyBulkWriteOperation } from 'mongodb';
 import { Counter, Histogram } from 'prom-client';
 import { Job, JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 import Redis from 'ioredis';
@@ -58,7 +58,7 @@ const process = async (items: IngressOrder[]) => {
 
   const [_, { upsertedIds = {} }] = await Promise.all([
     OrderModel.bulkWrite(
-      orders.map<BulkWriteOperation<Order>>(({ id, ...order }) => ({
+      orders.map<AnyBulkWriteOperation<Order>>(({ id, ...order }) => ({
         updateOne: {
           filter: { id },
           update: { $set: order },
@@ -68,7 +68,7 @@ const process = async (items: IngressOrder[]) => {
       { ordered: false },
     ),
     TokenModel.bulkWrite(
-      tokens.map<BulkWriteOperation<Token>>(({ id, ...token }) => ({
+      tokens.map<AnyBulkWriteOperation<Token>>(({ id, ...token }) => ({
         updateOne: {
           filter: { id },
           update: { $set: token },

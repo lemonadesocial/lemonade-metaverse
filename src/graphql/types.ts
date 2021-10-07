@@ -4,5 +4,5 @@ import { ParameterizedContext } from '../app/types';
 
 export interface Context {
   app?: ParameterizedContext;
-  logger: pino.BaseLogger;
+  logger: pino.Logger;
 }
