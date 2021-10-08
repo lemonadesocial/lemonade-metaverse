@@ -19,7 +19,7 @@ import { pubSub } from '../../helpers/pub-sub';
 import { ipfsGatewayUrl, redisUrl } from '../../../config';
 
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
-const FETCH_TIMEOUT = 5000;
+const FETCH_TIMEOUT = 10000;
 const WORKER_CONCURRENCY = 10;
 const WRITER_TIMEOUT = 1000;
 
