@@ -15,11 +15,10 @@ import { Token, TokenModel } from '../../models/token';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
-import { Unpacked } from '../../types';
 
 import { redisUrl } from '../../../config';
 
-type IngressOrder = Unpacked<IngressQuery['orders']>;
+type IngressOrder = IngressQuery['orders'][number];
 
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';

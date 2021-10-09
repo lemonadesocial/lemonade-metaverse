@@ -1,8 +1,6 @@
 import { pino } from 'pino';
 import * as koa from 'koa';
 
-export type Unpacked<T> = T extends (infer U)[] ? U : never;
-
 export interface State {
   logger: pino.BaseLogger;
 }
