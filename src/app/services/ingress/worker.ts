@@ -36,7 +36,7 @@ const ingressDurationSeconds = new Histogram({
 
 const jobOptions: JobsOptions = {
   attempts: Number.MAX_VALUE,
-  backoff: 2000,
+  backoff: 1000,
   delay: 1000,
   removeOnComplete: true,
   removeOnFail: true,
