@@ -24,8 +24,21 @@ export const getFieldProjection = (
   fieldTree: FieldTree,
   keys: string[] = [],
 ): FieldProjection => {
-  return Object.entries(fieldTree as Record<string, FieldTree>).reduce((acc, [key, value]) => ({
-    ...acc,
-    ...Object.keys(value).length ? getFieldProjection(value, keys.concat(key)) : { [keys.concat(key).join('.')]: 1 },
-  }), {});
+  return Object.entries(fieldTree as Record<string, FieldTree>).reduce((acc, [key, value]) => {
+    if (Object.keys(value).length) {
+      const expandedField = getExpandedField(key);
+
+      return expandedField
+        ? { ...acc, [keys.concat(expandedField).join('.')]: 1 }
+        : { ...acc, ...getFieldProjection(value, keys.concat(key)) };
+    }
+
+    return { ...acc, [keys.concat(key).join('.')]: 1 };
+  }, {});
+};
+
+export const getExpandedField = (field: string): string | null => {
+  if (!field.endsWith('_expanded')) return null;
+
+  return field.substr(0, field.length - 9);
 };
