@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.5.1...v1.6.0) (2021-10-12)
+
+
+### Features
+
+* **graphql:** add expanded directive to do lookup foreign data ([3922891](https://github.com/lemonadesocial/lemonade-metaverse/commit/39228917f4c282dc4f40f05fcf87846dfa821336))
+* **order:** add maker expanded ([d217a3c](https://github.com/lemonadesocial/lemonade-metaverse/commit/d217a3c6ecbf38684a526882f33828e33b9f5b1a))
+* **user:** add user model ([f662687](https://github.com/lemonadesocial/lemonade-metaverse/commit/f66268793d57778cac81e146fa12a992aa42a95d))
+
 ### [1.5.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.5.0...v1.5.1) (2021-10-07)
 
 ## [1.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.4.0...v1.5.0) (2021-10-06)
