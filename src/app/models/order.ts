@@ -1,5 +1,5 @@
 import { getModelForClass, index, prop } from '@typegoose/typegoose';
-import { Directive, Extensions, registerEnumType, Field, ObjectType } from 'type-graphql';
+import { Directive, registerEnumType, Field, ObjectType } from 'type-graphql';
 
 import { Token } from './token';
 import { User } from './user';
