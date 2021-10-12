@@ -1,7 +1,8 @@
 import { getModelForClass, index, prop } from '@typegoose/typegoose';
-import { registerEnumType, Field, ObjectType } from 'type-graphql';
+import { Directive, Extensions, registerEnumType, Field, ObjectType } from 'type-graphql';
 
 import { Token } from './token';
+import { User } from './user';
 
 export enum OrderKind {
   Auction = 'AUCTION',
@@ -27,6 +28,8 @@ export class Currency {
 @ObjectType()
 @index({ id: 1 }, { unique: true })
 export class Order {
+  /* Persisted properties */
+
   @Field()
   @prop({ required: true })
   public id!: string;
@@ -94,6 +97,12 @@ export class Order {
   @Field({ nullable: true, description: 'The paid amount.' })
   @prop()
   public paidAmount?: string;
+
+  /* GraphQL properties */
+
+  @Directive('@expanded(modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public maker_expanded?: never;
 }
 
 export const OrderModel = getModelForClass(Order);
