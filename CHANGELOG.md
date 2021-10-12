@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.6.0...v1.7.0) (2021-10-12)
+
+
+### Features
+
+* **user:** add user _id field ([9473bd2](https://github.com/lemonadesocial/lemonade-metaverse/commit/9473bd20123279d63c3caa0d33569430dd5c0e11))
+
 ## [1.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.5.1...v1.6.0) (2021-10-12)
 
 
