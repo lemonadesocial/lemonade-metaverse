@@ -5,6 +5,9 @@ import mongoose from 'mongoose';
 @ObjectType()
 export class User {
   @Field()
+  public _id!: string;
+
+  @Field()
   @prop({ required: true })
   public name!: string;
 
