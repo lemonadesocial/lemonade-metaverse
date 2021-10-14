@@ -22,6 +22,7 @@ export const enqueue = async (...data: JobData[]): Promise<void> => {
     opts: {
       attempts: 10,
       backoff: { type: 'exponential', delay: 1000 },
+      jobId: data.token.id,
       removeOnComplete: true,
       removeOnFail: true,
     },
