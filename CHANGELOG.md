@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.7.0...v1.8.0) (2021-10-14)
+
+
+### Features
+
+* **enrich:** avoid duplicates in queue ([23d55cc](https://github.com/lemonadesocial/lemonade-metaverse/commit/23d55cc26047de19c1b38876c9a9b31e064b2b0d))
+* **token:** always fetch from indexer and add contract and tokenId args ([9569c6a](https://github.com/lemonadesocial/lemonade-metaverse/commit/9569c6a4459f04268a53fb0096b9120cb0a261b1))
+
 ## [1.7.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.6.0...v1.7.0) (2021-10-12)
 
 
