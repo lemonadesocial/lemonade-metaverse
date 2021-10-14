@@ -1,43 +1,23 @@
-import { Arg, Args, Resolver, Info, Query } from 'type-graphql';
-import { GraphQLResolveInfo } from 'graphql';
+import { Arg, Args, Resolver, Query } from 'type-graphql';
 
 import { PaginatedResponseArgs } from '../types/paginated-response';
-import { Token, TokenModel } from '../../app/models/token';
-import { TokensResponse, TokenWhere } from '../types/token';
+import { Token } from '../../app/models/token';
 
-import { getFieldTree, getFieldProjection } from '../utils/field';
-import { getFilter } from '../utils/where';
-import { getTokensOf } from '../../app/services/token';
+import { getTokens } from '../../app/services/token';
 
 @Resolver()
 class _TokensQueryResolver {
-  @Query(() => TokensResponse)
-  async tokens(
-    @Info() info: GraphQLResolveInfo,
-    @Args() { skip, limit }: PaginatedResponseArgs,
-    @Arg('where', () => TokenWhere, { nullable: true }) where?: TokenWhere | null,
-  ): Promise<TokensResponse> {
-    const fields = getFieldTree(info);
-    const query = where ? getFilter(where) : {};
-
-    const [items, total] = await Promise.all([
-      fields.items && TokenModel.aggregate([
-        { $match: query },
-        { $skip: skip },
-        { $limit: limit },
-        { $project: getFieldProjection(fields.items) },
-      ]),
-      fields.total && TokenModel.countDocuments(query),
-    ]);
-
-    return { items, total };
-  }
-
   @Query(() => [Token])
-  async tokensOf(
+  async tokens(
     @Args() { skip, limit }: PaginatedResponseArgs,
-    @Arg('owner', () => String) owner: string,
+    @Arg('contract', () => String, { nullable: true }) contract?: string,
+    @Arg('tokenId', () => String, { nullable: true }) tokenId?: string,
+    @Arg('owner', () => String, { nullable: true }) owner?: string,
   ): Promise<Token[]> {
-    return await getTokensOf({ owner, skip, first: limit });
+    return await getTokens({
+      where: { contract, tokenId, owner },
+      skip,
+      first: limit,
+    });
   }
 }

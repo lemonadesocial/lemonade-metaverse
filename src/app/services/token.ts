@@ -5,8 +5,8 @@ import * as indexer from '../helpers/indexer';
 
 import { Token, TokenModel } from '../models/token';
 
-import { TokensOfQuery, TokensOfQueryVariables } from '../../lib/lemonade-marketplace/types.generated';
-import { TokensOf } from '../../lib/lemonade-marketplace/documents.generated';
+import { GetTokensQuery, GetTokensQueryVariables } from '../../lib/lemonade-marketplace/types.generated';
+import { GetTokens } from '../../lib/lemonade-marketplace/documents.generated';
 
 const TIMEOUT = 10000;
 
@@ -76,9 +76,9 @@ const fetch = async <T extends { id: string }>(
   return tokens;
 }
 
-export const getTokensOf = async (variables: TokensOfQueryVariables): Promise<Token[]> => {
-  const { data: { tokens } } = await indexer.client.query<TokensOfQuery, TokensOfQueryVariables>({
-    query: TokensOf,
+export const getTokens = async (variables: GetTokensQueryVariables): Promise<Token[]> => {
+  const { data: { tokens } } = await indexer.client.query<GetTokensQuery, GetTokensQueryVariables>({
+    query: GetTokens,
     variables,
   });
 

@@ -47,9 +47,9 @@ export const Ingress = gql`
   }
 }
     `;
-export const TokensOf = gql`
-    query TokensOf($owner: Bytes!, $skip: Int!, $first: Int!) {
-  tokens(where: {owner: $owner}, skip: $skip, first: $first) {
+export const GetTokens = gql`
+    query GetTokens($where: Token_filter, $skip: Int!, $first: Int!) {
+  tokens(where: $where, skip: $skip, first: $first) {
     id
     contract
     createdAt
