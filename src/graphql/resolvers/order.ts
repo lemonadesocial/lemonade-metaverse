@@ -19,8 +19,6 @@ const findOrders = async (
   const [items, total] = await Promise.all([
     fields.items && OrderModel.aggregate([
       { $match: query },
-      { $skip: skip },
-      { $limit: limit },
       ...fields.items.token ? [
         {
           $lookup: {
@@ -32,6 +30,8 @@ const findOrders = async (
         },
         { $unwind: '$token' },
       ] : [],
+      { $skip: skip },
+      { $limit: limit },
       { $project: getFieldProjection(fields.items) },
     ]),
     fields.total && OrderModel.countDocuments(query),
