@@ -102,7 +102,7 @@ export class Order {
 
   @Directive('@expanded(modelName: "User", foreignField: "wallets")')
   @Field(() => User, { nullable: true })
-  public maker_expanded?: never;
+  public makerExpanded?: never;
 }
 
 export const OrderModel = getModelForClass(Order);

@@ -38,7 +38,7 @@ export const getFieldProjection = (
 };
 
 export const getExpandedField = (field: string): string | null => {
-  if (!field.endsWith('_expanded')) return null;
+  if (!field.endsWith('Expanded')) return null;
 
-  return field.substr(0, field.length - 9);
+  return field.substr(0, field.length - 8);
 };
