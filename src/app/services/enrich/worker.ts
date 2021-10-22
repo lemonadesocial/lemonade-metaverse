@@ -13,7 +13,7 @@ import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
 import { logger } from '../../helpers/pino';
-import { parseSchema } from '../../utils/url';
+import { parseScheme } from '../../utils/url';
 import { pubSub } from '../../helpers/pub-sub';
 
 import { ipfsGatewayUrl, redisUrl } from '../../../config';
@@ -46,8 +46,8 @@ const processor: Processor<JobData> = async (job) => {
   const { order, token } = job.data;
 
   let response: Response;
-  const schema = parseSchema(token.uri);
-  switch (schema) {
+  const scheme = parseScheme(token.uri);
+  switch (scheme) {
     case 'http':
       response = await fetch(token.uri, { agent: httpAgent, ...requestInit });
       break;
@@ -58,7 +58,7 @@ const processor: Processor<JobData> = async (job) => {
       response = await fetch(`${ipfsGatewayUrl}ipfs/${token.uri.substr('ipfs://'.length)}`, { agent: httpsAgent, ...requestInit });
       break;
     default:
-      logger.debug(job.toJSON(), `unsupported schema ${schema}`);
+      logger.debug(job.toJSON(), `unsupported schema ${scheme}`);
       return;
   }
 
