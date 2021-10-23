@@ -20,6 +20,7 @@ import { redisUrl } from '../../../config';
 
 type IngressOrder = IngressQuery['orders'][number];
 
+const JOB_MAX_DELAY = 10000;
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
 
@@ -164,12 +165,14 @@ const processor: Processor<JobData> = async ({ data: { lastBlock_gt } }) => {
   ingressDurationTimer();
 };
 
-const meta = ({ timestamp }: Job<JobData>) => {
+const getLog = ({ timestamp }: Job<JobData>) => {
   const delay = Date.now() - timestamp;
 
+  if (delay < JOB_MAX_DELAY) return null;
+
   return {
-    timestamp: new Date(timestamp).toUTCString(),
     delay: (delay / 1000).toFixed(1) + 's',
+    timestamp: new Date(timestamp).toUTCString(),
   };
 };
 
@@ -189,13 +192,17 @@ export const start = async (): Promise<void> => {
   }
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUrl) });
-  worker.on('failed', function onFailed(job, error) {
+  worker.on('failed', function onFailed(job, err) {
     ingressesTotal.inc({ status: 'fail' });
-    if (job.attemptsMade > 1) logger.error({ ...meta(job), err: error }, 'failed two consecutive ingresses');
+
+    const data = getLog(job);
+    if (data) logger.error({ ...data, err }, 'failed ingress');
   });
   worker.on('completed', function onCompleted(job) {
     ingressesTotal.inc({ status: 'success' });
-    if (job.attemptsMade > 1) logger.info({ ...meta(job) }, 'completed ingress');
+
+    const data = getLog(job);
+    if (data) logger.info(data, 'completed ingress');
   });
   await worker.waitUntilReady();
 };
