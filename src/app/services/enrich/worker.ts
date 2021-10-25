@@ -1,20 +1,22 @@
 import { AnyBulkWriteOperation } from 'mongodb';
 import { Histogram } from 'prom-client';
-import { Processor, QueueScheduler, Worker } from 'bullmq';
+import { Job, Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
 import * as http from 'http';
 import * as https from 'https';
 import fetch, { Response, RequestInit } from 'node-fetch';
 import Redis from 'ioredis';
 
-import { JobData, QUEUE_NAME } from './shared';
+import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 
+import { Order } from '../../models/order';
 import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
 import { logger } from '../../helpers/pino';
 import { parseScheme } from '../../utils/url';
 import { pubSub } from '../../helpers/pub-sub';
+import { redis } from '../../helpers/redis';
 
 import { ipfsGatewayUrl, redisUrl } from '../../../config';
 
@@ -40,10 +42,25 @@ const writer = new BufferQueue<AnyBulkWriteOperation<Token>>(
   WRITER_TIMEOUT
 );
 
+const getOrders = async (job: Job<JobData>) => {
+  const key = `${ORDERS_KEY}:${job.id}`;
+  const [
+    [err1, members],
+    [err2],
+  ] = await redis.multi([
+    ['call', 'SMEMBERS', key],
+    ['call', 'DEL', key],
+  ]).exec();
+
+  if (err1) throw err1;
+  if (err2) throw err2;
+  return (members as string[]).map((value) => JSON.parse(value) as Order);
+};
+
 const processor: Processor<JobData> = async (job) => {
   const durationTimer = durationSeconds.startTimer();
 
-  const { order, token } = job.data;
+  const { token } = job.data;
 
   let response: Response;
   const scheme = parseScheme(token.uri);
@@ -74,10 +91,20 @@ const processor: Processor<JobData> = async (job) => {
     },
   });
 
-  logger.info({ order, token }, 'enrich');
+  const [orders] = await Promise.all([
+    getOrders(job),
+    pubSub.publish('token_updated', token),
+  ]);
 
-  if (order) await pubSub.publish('order_updated', { ...order, token });
-  else await pubSub.publish('token_updated', token);
+  if (orders.length) {
+    for (const order of orders) {
+      logger.info({ order, token }, 'enrich order');
+
+      await pubSub.publish('order_updated', { ...order, token });
+    }
+  } else {
+    logger.info({ token }, 'enrich token');
+  }
 
   durationTimer();
 };

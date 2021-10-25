@@ -18,8 +18,6 @@ import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marke
 
 import { redisUrl } from '../../../config';
 
-type IngressOrder = IngressQuery['orders'][number];
-
 const JOB_MAX_DELAY = 10000;
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
@@ -41,86 +39,133 @@ const jobOptions: JobsOptions = {
   removeOnComplete: true,
   removeOnFail: true,
 };
-const stateQuery = { key: 'ingress_last_block' };
+const stateQuery = { key: 'ingress' };
 
-const process = async (items: IngressOrder[]) => {
-  const orders = items.map(({ kind, token, ...order }: IngressOrder): Order => {
-    return {
-      kind: kind as string as OrderKind,
-      token: token.id,
-      ...excludeNull(order),
+const process = async (data: IngressQuery) => {
+  const orders: Order[] = [];
+  const ordersToken: Record<string, Token> = {};
+  const tokens: Token[] = [];
+  const tokensOrders: Record<string, Order[]> = {};
+
+  data.orders?.forEach((item) => {
+    const order = {
+      ...excludeNull(item),
+      kind: item.kind as string as OrderKind,
+      token: item.token.id,
     };
+    const token = excludeNull(item.token);
+
+    orders.push(order);
+    ordersToken[order.id] = token;
+
+    // multiple orders can have the same token, which are all closed except potentially the last
+    if (tokensOrders[token.id]) return tokensOrders[token.id].push(order);
+
+    tokens.push(token);
+    tokensOrders[token.id] = [order];
   });
 
-  const tokens = items.map(({ token }: IngressOrder): Token => {
-    return excludeNull(token);
+  data.tokens?.forEach((item) => {
+    // when processing data of multiple blocks, the token can be in both tokens and orders
+    if (tokensOrders[item.id]) return;
+
+    const token = excludeNull(item);
+
+    tokens.push(token);
   });
 
-  const [_, { upsertedIds = {} }] = await Promise.all([
-    OrderModel.bulkWrite(
-      orders.map<AnyBulkWriteOperation<Order>>(({ id, ...order }) => ({
-        updateOne: {
-          filter: { id },
-          update: { $set: order },
-          upsert: true,
-        },
-      })),
-      { ordered: false },
-    ),
-    TokenModel.bulkWrite(
-      tokens.map<AnyBulkWriteOperation<Token>>(({ id, ...token }) => ({
-        updateOne: {
-          filter: { id },
-          update: { $set: token },
-          upsert: true,
-        },
-      })),
-      { ordered: false },
-    ),
+  const [docs] = await Promise.all([
+    tokens.length
+      ? TokenModel.find(
+        { id: { $in: tokens.map(({ id }) => id) }, metadata: { $exists: true } },
+        { id: 1, metadata: 1 },
+      ).lean()
+      : undefined,
+    tokens.length
+      ? TokenModel.bulkWrite(
+        tokens.map<AnyBulkWriteOperation<Token>>(({ id, ...token }) => ({
+          updateOne: {
+            filter: { id },
+            update: { $set: token },
+            upsert: true,
+          },
+        })),
+        { ordered: false },
+      )
+      : undefined,
+    orders.length
+      ? OrderModel.bulkWrite(
+        orders.map<AnyBulkWriteOperation<Order>>(({ id, ...order }) => ({
+          updateOne: {
+            filter: { id },
+            update: { $set: order },
+            upsert: true,
+          },
+        })),
+        { ordered: false },
+      )
+      : undefined,
   ]);
 
   const promises: Promise<unknown>[] = [];
-  const upsertedIdxs = Object.keys(upsertedIds).map((key) => parseInt(key));
+  const map = docs ? Object.fromEntries(docs.map((doc) => [doc.id as string, doc])) : {};
 
-  if (upsertedIdxs.length) {
+  const missing = tokens.filter(({ id }) => !map[id]);
+  if (missing.length) {
     promises.push(
-      enrich.enqueue(...upsertedIdxs.map((i) => ({
-        order: orders[i],
-        token: tokens[i],
-      })))
+      enrich.enqueue(...missing.map((token) => ({
+        orders: tokensOrders[token.id],
+        token,
+      }))),
     );
   }
 
-  for (const i of items.keys()) {
-    logger.info({ order: orders[i], token: tokens[i] }, 'ingress');
+  orders.forEach((order) => {
+    if (!map[order.id]) return; // deligate to enrich
 
-    if (i in upsertedIdxs) continue;
+    const token: Token = {
+      ...ordersToken[order.id],
+      ...map[order.id],
+    };
+
+    logger.info({ order, token }, 'enrich order');
 
     promises.push(
-      pubSub.publish('order_updated', { ...orders[i], token: tokens[i] })
+      pubSub.publish('order_updated', { ...order, token })
     );
-  }
+  });
 
   await Promise.all(promises);
 };
 
-const poll = async (lastBlock_gt?: string) => {
-  let skip = 0;
-  const first = POLL_FIRST;
+const poll = async (data: JobData): Promise<JobData> => {
+  const { orders_lastBlock_gt, tokens_createdAt_gt } = data;
+  const nextData = { ...data };
 
-  let lastBlock: string | undefined;
-  let length = 0;
+  let orders_skip = 0;
+  let orders_first = POLL_FIRST;
+  let tokens_skip = 0;
+  let tokens_first = POLL_FIRST;
   do {
     const { data } = await indexer.client.query<IngressQuery, IngressQueryVariables>({
       query: Ingress,
-      variables: { lastBlock_gt, skip, first },
+      variables: {
+        orders_include: orders_first > 0,
+        orders_lastBlock_gt,
+        orders_skip,
+        orders_first,
+        tokens_include: tokens_first > 0,
+        tokens_createdAt_gt,
+        tokens_skip,
+        tokens_first,
+      },
     });
 
     if (data._meta) {
       const { block, hasIndexingErrors } = data._meta;
 
-      if (lastBlock_gt && block.number < parseInt(lastBlock_gt)) {
-        logger.warn({ block, hasIndexingErrors, lastBlock_gt }, 'subgraph is reindexing');
+      if (orders_lastBlock_gt && block.number < parseInt(orders_lastBlock_gt)) {
+        logger.warn({ block, hasIndexingErrors, orders_lastBlock_gt }, 'subgraph is reindexing');
       }
 
       if (hasIndexingErrors) {
@@ -128,38 +173,50 @@ const poll = async (lastBlock_gt?: string) => {
       }
     }
 
-    length = data?.orders?.length || 0;
-    logger.debug({ lastBlock_gt, skip, first, length });
+    const orders_length = data.orders?.length || 0;
+    const tokens_length = data.tokens?.length || 0;
 
-    if (length) {
-      await process(data.orders);
+    if (orders_length || tokens_length) {
+      await process(data);
 
-      skip += first;
-      lastBlock = data.orders[length - 1].lastBlock; // requires asc sort on lastBlock
+      if (orders_length) {
+        nextData.orders_lastBlock_gt = data.orders![orders_length - 1].lastBlock;
+        orders_skip += orders_length;
+      }
+
+      if (tokens_length) {
+        nextData.tokens_createdAt_gt = data.tokens![tokens_length - 1].createdAt!;
+        tokens_skip += tokens_length;
+      }
     }
-  } while (length);
 
-  return lastBlock;
+    if (orders_length < orders_first) orders_first = 0;
+    if (tokens_length < tokens_first) tokens_first = 0;
+  } while (orders_first || tokens_first);
+
+  return nextData;
 };
 
 interface JobData {
-  lastBlock_gt?: string;
+  orders_lastBlock_gt?: string;
+  tokens_createdAt_gt?: string;
 }
 
 let queue: Queue | undefined;
 let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
-const processor: Processor<JobData> = async ({ data: { lastBlock_gt } }) => {
+const processor: Processor<JobData> = async ({ data }) => {
   const ingressDurationTimer = ingressDurationSeconds.startTimer();
 
-  const lastBlock = await poll(lastBlock_gt);
+  const nextData = await poll(data);
+
+  const keys = Object.keys(nextData) as (keyof JobData)[];
+  const hasChanged = keys.length !== Object.keys(data).length || keys.some((x) => nextData[x] !== data[x]);
 
   await Promise.all([
-    lastBlock && lastBlock !== lastBlock_gt
-      ? StateModel.updateOne(stateQuery, { $set: { value: lastBlock } }, { upsert: true })
-      : null,
-    queue!.add('*', { lastBlock_gt: lastBlock || lastBlock_gt }, jobOptions),
+    hasChanged ? StateModel.updateOne(stateQuery, { $set: nextData }, { upsert: true }) : null,
+    queue!.add('*', nextData, jobOptions),
   ]);
 
   ingressDurationTimer();
@@ -187,7 +244,7 @@ export const start = async (): Promise<void> => {
 
   if (!await queue.getJobCountByTypes('active', 'waiting', 'paused', 'delayed')) {
     const state = await StateModel.findOne(stateQuery, { value: 1 }, { lean: true });
-    const job = await queue.add('*', { lastBlock_gt: state?.value }, jobOptions);
+    const job = await queue.add('*', state?.value || {}, jobOptions);
     logger.info(job.asJSON(), 'created ingress job');
   }
 

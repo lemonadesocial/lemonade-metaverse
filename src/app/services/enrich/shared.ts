@@ -1,9 +1,9 @@
-import { Order } from '../../models/order';
 import { Token } from '../../models/token';
+
+export const ORDERS_KEY = 'enrich:orders';
 
 export const QUEUE_NAME = 'bullmq:enrich';
 
 export interface JobData {
-  order?: Order;
   token: Token;
 }

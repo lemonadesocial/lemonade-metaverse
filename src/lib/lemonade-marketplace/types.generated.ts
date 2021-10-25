@@ -368,6 +368,7 @@ export type Query_metaArgs = {
 export type QuerybidArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -377,6 +378,7 @@ export type QuerybidsArgs = {
   orderBy?: Maybe<Bid_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Bid_filter>;
 };
 
@@ -387,6 +389,7 @@ export type QuerycurrenciesArgs = {
   orderBy?: Maybe<Currency_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Currency_filter>;
 };
 
@@ -394,12 +397,14 @@ export type QuerycurrenciesArgs = {
 export type QuerycurrencyArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryorderArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -409,6 +414,7 @@ export type QueryordersArgs = {
   orderBy?: Maybe<Order_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Order_filter>;
 };
 
@@ -416,6 +422,7 @@ export type QueryordersArgs = {
 export type QuerytokenArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -425,6 +432,7 @@ export type QuerytokensArgs = {
   orderBy?: Maybe<Token_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Token_filter>;
 };
 
@@ -432,6 +440,7 @@ export type QuerytokensArgs = {
 export type QuerytransferArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -441,6 +450,7 @@ export type QuerytransfersArgs = {
   orderBy?: Maybe<Transfer_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Transfer_filter>;
 };
 
@@ -469,6 +479,7 @@ export type Subscription_metaArgs = {
 export type SubscriptionbidArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -478,6 +489,7 @@ export type SubscriptionbidsArgs = {
   orderBy?: Maybe<Bid_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Bid_filter>;
 };
 
@@ -488,6 +500,7 @@ export type SubscriptioncurrenciesArgs = {
   orderBy?: Maybe<Currency_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Currency_filter>;
 };
 
@@ -495,12 +508,14 @@ export type SubscriptioncurrenciesArgs = {
 export type SubscriptioncurrencyArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionorderArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -510,6 +525,7 @@ export type SubscriptionordersArgs = {
   orderBy?: Maybe<Order_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Order_filter>;
 };
 
@@ -517,6 +533,7 @@ export type SubscriptionordersArgs = {
 export type SubscriptiontokenArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -526,6 +543,7 @@ export type SubscriptiontokensArgs = {
   orderBy?: Maybe<Token_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Token_filter>;
 };
 
@@ -533,6 +551,7 @@ export type SubscriptiontokensArgs = {
 export type SubscriptiontransferArgs = {
   block?: Maybe<Block_height>;
   id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -542,6 +561,7 @@ export type SubscriptiontransfersArgs = {
   orderBy?: Maybe<Transfer_orderBy>;
   orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Transfer_filter>;
 };
 
@@ -741,14 +761,21 @@ export enum _SubgraphErrorPolicy_ {
   deny = 'deny'
 }
 
+export type tokenFieldsFragment = { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string };
+
 export type IngressQueryVariables = Exact<{
-  lastBlock_gt?: Maybe<Scalars['BigInt']>;
-  skip: Scalars['Int'];
-  first: Scalars['Int'];
+  orders_include: Scalars['Boolean'];
+  orders_lastBlock_gt?: Maybe<Scalars['BigInt']>;
+  orders_skip: Scalars['Int'];
+  orders_first: Scalars['Int'];
+  tokens_include: Scalars['Boolean'];
+  tokens_createdAt_gt?: Maybe<Scalars['BigInt']>;
+  tokens_skip: Scalars['Int'];
+  tokens_first: Scalars['Int'];
 }>;
 
 
-export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', hash?: string | null | undefined, number: number } } | null | undefined, orders: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name: string, symbol: string }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string } }> };
+export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', hash?: string | null | undefined, number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name: string, symbol: string }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string } }> | null | undefined, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string }> | null | undefined };
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;

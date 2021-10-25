@@ -80,7 +80,7 @@ export class Order {
 
   @Field(() => Token, { description: 'The ERC721 token.' })
   @prop({ required: true, type: () => String })
-  public token!: string | Token;
+  public token!: string;
 
   @Field({ nullable: true, description: 'The highest bidder (for auctions).' })
   @prop()
