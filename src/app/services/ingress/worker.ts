@@ -19,7 +19,6 @@ import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marke
 
 import { redisUrl } from '../../../config';
 
-const JOB_MAX_DELAY = 10000;
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
 
@@ -223,10 +222,8 @@ const processor: Processor<JobData> = async ({ data }) => {
   ingressDurationTimer();
 };
 
-const getLog = ({ timestamp }: Job<JobData>) => {
+const getDrift = ({ timestamp }: Job<JobData>) => {
   const delay = Date.now() - timestamp;
-
-  if (delay < JOB_MAX_DELAY) return null;
 
   return {
     delay: (delay / 1000).toFixed(1) + 's',
@@ -253,14 +250,12 @@ export const start = async (): Promise<void> => {
   worker.on('failed', function onFailed(job, err) {
     ingressesTotal.inc({ status: 'fail' });
 
-    const data = getLog(job);
-    if (data) logger.error({ ...data, err }, 'failed ingress');
+    if (job.attemptsMade === 1) logger.error(err, 'failed ingress');
   });
   worker.on('completed', function onCompleted(job) {
     ingressesTotal.inc({ status: 'success' });
 
-    const data = getLog(job);
-    if (data) logger.info(data, 'completed ingress');
+    if (job.attemptsMade > 1) logger.info({ drift: getDrift(job) }, 'completed ingress');
   });
   await worker.waitUntilReady();
 };
