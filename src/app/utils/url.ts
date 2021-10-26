@@ -1,9 +1,20 @@
-import * as assert from 'assert';
+import { URL } from 'url';
 
-export const parseScheme = (url: string): string => {
-  const pos = url.indexOf('://');
+import { ipfsGatewayUrl } from '../../config';
 
-  assert.notStrictEqual(pos, -1, `failed to parse scheme of ${url}`);
+export const getFetchableUrl = (url: string): {
+  protocol: 'http:' | 'https:';
+  href: string;
+} => {
+  const { protocol, href } = new URL(url);
 
-  return url.substr(0, pos);
+  switch (protocol) {
+    case 'http:':
+    case 'https:':
+      return { protocol, href };
+    case 'ipfs:':
+      return { protocol: 'https:', href: `${ipfsGatewayUrl}ipfs/${href.substr('ipfs://'.length)}` };
+    default:
+      throw new Error(`unsupported protocol ${protocol}`);
+  }
 };

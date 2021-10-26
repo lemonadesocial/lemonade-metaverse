@@ -13,12 +13,12 @@ import { Order } from '../../models/order';
 import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
+import { getFetchableUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
-import { parseScheme } from '../../utils/url';
 import { pubSub } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
 
-import { ipfsGatewayUrl, redisUrl } from '../../../config';
+import { redisUrl } from '../../../config';
 
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
 const FETCH_TIMEOUT = 10000;
@@ -62,21 +62,15 @@ const processor: Processor<JobData> = async (job) => {
 
   const { token } = job.data;
 
+  const url = getFetchableUrl(token.uri);
   let response: Response;
-  const scheme = parseScheme(token.uri);
-  switch (scheme) {
-    case 'http':
-      response = await fetch(token.uri, { agent: httpAgent, ...requestInit });
+  switch (url.protocol) {
+    case 'http:':
+      response = await fetch(url, { agent: httpAgent, ...requestInit });
       break;
-    case 'https':
-      response = await fetch(token.uri, { agent: httpsAgent, ...requestInit });
+    case 'https:':
+      response = await fetch(url, { agent: httpsAgent, ...requestInit });
       break;
-    case 'ipfs':
-      response = await fetch(`${ipfsGatewayUrl}ipfs/${token.uri.substr('ipfs://'.length)}`, { agent: httpsAgent, ...requestInit });
-      break;
-    default:
-      logger.debug(job.toJSON(), `unsupported schema ${scheme}`);
-      return;
   }
 
   assert.ok(response.ok, response.statusText);
