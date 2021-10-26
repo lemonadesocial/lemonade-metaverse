@@ -4,7 +4,7 @@ import { Job, Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
 import * as http from 'http';
 import * as https from 'https';
-import fetch, { Response, RequestInit } from 'node-fetch';
+import fetch, { RequestInit } from 'node-fetch';
 import Redis from 'ioredis';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
@@ -30,9 +30,11 @@ const durationSeconds = new Histogram({
   help: 'Duration of metaverse enrich in seconds',
 });
 
-const httpAgent = new http.Agent({ keepAlive: true });
-const httpsAgent = new https.Agent({ keepAlive: true });
-const requestInit: RequestInit = {
+const fetchAgent: Record<string, http.Agent> = {
+  'http:': new http.Agent({ keepAlive: true }),
+  'https:': new https.Agent({ keepAlive: true }),
+};
+const fetchInit: RequestInit = {
   headers: { 'User-Agent': FETCH_HEADERS_USER_AGENT },
   timeout: FETCH_TIMEOUT,
 };
@@ -61,17 +63,8 @@ const processor: Processor<JobData> = async (job) => {
   const durationTimer = durationSeconds.startTimer();
 
   const { token } = job.data;
-
   const url = getFetchableUrl(token.uri);
-  let response: Response;
-  switch (url.protocol) {
-    case 'http:':
-      response = await fetch(url, { agent: httpAgent, ...requestInit });
-      break;
-    case 'https:':
-      response = await fetch(url, { agent: httpsAgent, ...requestInit });
-      break;
-  }
+  const response = await fetch(url, { agent: fetchAgent[url.protocol], ...fetchInit });
 
   assert.ok(response.ok, response.statusText);
 
