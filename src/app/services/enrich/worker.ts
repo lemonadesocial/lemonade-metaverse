@@ -13,7 +13,7 @@ import { Order } from '../../models/order';
 import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
-import { getFetchableUrl } from '../../utils/url';
+import { getFetchableUrl, getSimpleFetchableUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
@@ -68,7 +68,7 @@ const processor: Processor<JobData> = async (job) => {
 
   assert.ok(response.ok, response.statusText);
 
-  token.metadata = await response.json(); // @todo: validate metadata
+  token.metadata = await response.json() as Record<string, unknown>; // @todo: validate metadata
 
   writer.enqueue({
     updateOne: {
@@ -82,15 +82,16 @@ const processor: Processor<JobData> = async (job) => {
     getOrders(job),
     pubSub.publish('token_updated', token),
   ]);
+  const imageUrl = getSimpleFetchableUrl(token.metadata.image);
 
   if (orders.length) {
     for (const order of orders) {
-      logger.info({ order, token }, 'enrich order');
+      logger.info({ order, token, imageUrl }, 'enrich order');
 
       await pubSub.publish('order_updated', { ...order, token });
     }
   } else {
-    logger.info({ token }, 'enrich token');
+    logger.info({ token, imageUrl }, 'enrich token');
   }
 
   durationTimer();

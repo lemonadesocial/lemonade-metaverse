@@ -4,6 +4,7 @@ import { Job, JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bull
 import Redis from 'ioredis';
 
 import { excludeNull } from '../../utils/object';
+import { getSimpleFetchableUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
 import * as enrich from '../enrich/queue';
@@ -79,7 +80,7 @@ const process = async (data: IngressQuery) => {
       ? TokenModel.find(
         { id: { $in: tokens.map(({ id }) => id) }, metadata: { $exists: true } },
         { id: 1, metadata: 1 },
-      ).lean()
+      ).lean<{ id: string; metadata: Record<string, unknown> }[]>()
       : undefined,
     tokens.length
       ? TokenModel.bulkWrite(
@@ -108,7 +109,7 @@ const process = async (data: IngressQuery) => {
   ]);
 
   const promises: Promise<unknown>[] = [];
-  const map = docs ? Object.fromEntries(docs.map((doc) => [doc.id as string, doc])) : {};
+  const map = docs ? Object.fromEntries(docs.map((doc) => [doc.id, doc])) : {};
 
   const missing = tokens.filter(({ id }) => !map[id]);
   if (missing.length) {
@@ -123,12 +124,12 @@ const process = async (data: IngressQuery) => {
   orders.forEach((order) => {
     if (!map[order.id]) return; // deligate to enrich
 
-    const token: Token = {
+    const token = {
       ...ordersToken[order.id],
       ...map[order.id],
     };
 
-    logger.info({ order, token }, 'enrich order');
+    logger.info({ order, token, imageUrl: getSimpleFetchableUrl(token.metadata.image) }, 'enrich order');
 
     promises.push(
       pubSub.publish('order_updated', { ...order, token })
