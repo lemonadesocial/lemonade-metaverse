@@ -5070,14 +5070,7 @@ pify@^3.0.0:
   resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
   integrity sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=
 
-pino-abstract-transport@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/pino-abstract-transport/-/pino-abstract-transport-0.2.0.tgz#e27d58d7bb16735c587c54e1d4efecc2cce27436"
-  integrity sha512-40sX7xrzDXsrUYr65brL0+bLm6rpZ+wCujDeeBmmZ/y5RVcPdVQsmz0bBe8NtTpELgmzmKwRRPVj1lvKjgFVHw==
-  dependencies:
-    split2 "^3.2.2"
-
-pino-abstract-transport@v0.4.0:
+pino-abstract-transport@^0.4.0, pino-abstract-transport@v0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/pino-abstract-transport/-/pino-abstract-transport-0.4.0.tgz#be5913fa55542f82fccb77f6a9e04735fa583cac"
   integrity sha512-Znl3f1ntZnDG+NpCyJyJDS+lkrlRSbgQBkV3eqNAvet/QHql6rhKLc4DuYRlwfc3fvV611O9NXPm5pbT9AJ50g==
@@ -5085,13 +5078,13 @@ pino-abstract-transport@v0.4.0:
     duplexify "^4.1.2"
     split2 "^3.2.2"
 
-pino-slack-transport@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/pino-slack-transport/-/pino-slack-transport-1.0.1.tgz#f7c14f1c733bac8b86352424f7167ac2242d51e5"
-  integrity sha512-9ClEp0cwwlivEAAplKii2qGGW/xKrc58aXKOGewJOrYSbxVZHMqTKs1iCYdEfQdhhN6cmCfzHrJLmBJjSa1bcA==
+pino-slack-transport@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/pino-slack-transport/-/pino-slack-transport-1.1.0.tgz#37fdf5d4af4cd527f2f66e7a5e0d9ec5a748804f"
+  integrity sha512-3OYpCx1vwfydE2AaJN6tbW9JkDizAW8ref2Lv0Vn595TKVRHtbCCZDXSZiRmEF67hiFqD5JTPuixM1AQfOiViQ==
   dependencies:
-    node-fetch "^2.6.1"
-    pino-abstract-transport "^0.2.0"
+    node-fetch "^2.6.5"
+    pino-abstract-transport "^0.4.0"
 
 pino-std-serializers@^4.0.0:
   version "4.0.0"

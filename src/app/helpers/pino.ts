@@ -9,10 +9,14 @@ const targets: pino.TransportTargetOptions[] = [
 
 if (slackWebhookUrl) {
   const level = isDevelopment ? 'debug' : 'info';
+  const options = {
+    excludedKeys: { hostname: 0, imageUrl: 0, pid: 0 },
+    imageUrlKey: 'imageUrl',
+    keepAlive: true,
+    webhookUrl: slackWebhookUrl,
+  };
 
-  targets.push(
-    { level, target: '../../../lib/logger.mjs', options: { keepAlive: true, webhookUrl: slackWebhookUrl } }
-  );
+  targets.push({ level, target: '../../../lib/logger.mjs', options });
 }
 
 export const logger = pino(
