@@ -121,14 +121,14 @@ const process = async (data: IngressQuery) => {
   }
 
   orders.forEach((order) => {
-    if (!map[order.id]) return; // deligate to enrich
+    if (!map[order.token]) return; // deligate to enrich
 
     const token = {
       ...ordersToken[order.id],
-      ...map[order.id],
+      ...map[order.token],
     };
 
-    logger.info({ order, token, imageUrl: getSimpleFetchableUrl(token.metadata.image) }, 'enrich order');
+    logger.info({ order, token, imageUrl: getSimpleFetchableUrl(token.metadata.image) }, 'ingress order');
 
     promises.push(
       pubSub.publish('order_updated', { ...order, token })
