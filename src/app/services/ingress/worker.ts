@@ -216,7 +216,7 @@ const processor: Processor<JobData> = async ({ data }) => {
   const hasChanged = keys.length !== Object.keys(data).length || keys.some((x) => nextData[x] !== data[x]);
 
   await Promise.all([
-    hasChanged ? StateModel.updateOne(stateQuery, { $set: nextData }, { upsert: true }) : null,
+    hasChanged ? StateModel.updateOne(stateQuery, { $set: { value: nextData } }, { upsert: true }) : null,
     queue!.add('*', nextData, jobOptions),
   ]);
 
