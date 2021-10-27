@@ -255,7 +255,7 @@ export const start = async (): Promise<void> => {
   worker.on('completed', function onCompleted(job) {
     ingressesTotal.inc({ status: 'success' });
 
-    if (job.attemptsMade > 1) {
+    if (job.attemptsMade) {
       logger.info({ drift: getDrift(job) }, 'recovered ingress');
     }
   });
