@@ -250,12 +250,14 @@ export const start = async (): Promise<void> => {
   worker.on('failed', function onFailed(job, err) {
     ingressesTotal.inc({ status: 'fail' });
 
-    if (job.attemptsMade === 1) logger.error(err, 'failed ingress');
+    logger.info({ drift: getDrift(job), err }, 'failed ingress');
   });
   worker.on('completed', function onCompleted(job) {
     ingressesTotal.inc({ status: 'success' });
 
-    if (job.attemptsMade > 1) logger.info({ drift: getDrift(job) }, 'completed ingress');
+    if (job.attemptsMade > 1) {
+      logger.info({ drift: getDrift(job) }, 'recovered ingress');
+    }
   });
   await worker.waitUntilReady();
 };
