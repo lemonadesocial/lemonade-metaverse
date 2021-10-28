@@ -1,29 +1,40 @@
 
+import { GraphQLResolveInfo } from 'graphql';
+
 import { pubSub } from '../../app/helpers/pub-sub';
 
-interface SubscribeOptions<TResult, TPayload, TArgs, TContext, TInfo> {
-  init?: (data: { root: any; args: TArgs; context: TContext; info: TInfo }) => AsyncIterator<TResult>;
-  filter?: (data: { payload: TPayload; args: TArgs; context: TContext; info: TInfo }) => boolean;
-  process?: (data: { payload: TPayload; args: TArgs; context: TContext; info: TInfo }) => TResult;
+interface SubscribeContext<TState, TSource, TArgs, TContext> {
+  state: TState;
+  source: TSource,
+  args: TArgs;
+  context: TContext;
+  info: GraphQLResolveInfo;
 }
 
-export const subscribe = <TResult, TPayload = TResult, TArgs = any, TContext = any, TInfo = any>(
+interface SubscribeOptions<TResult, TPayload, TState, TSource, TArgs, TContext> {
+  init?: (params: SubscribeContext<TState, TSource, TArgs, TContext>) => AsyncIterator<TResult>;
+  filter?: (payload: TPayload, params: SubscribeContext<TState, TSource, TArgs, TContext>) => boolean;
+  process?: (payload: TPayload, params: SubscribeContext<TState, TSource, TArgs, TContext>) => TResult;
+}
+
+export const subscribe = <TResult, TPayload, TState = any, TSource = any, TArgs = any, TContext = any>(
   topics: string | string[],
-  { init, filter, process }: SubscribeOptions<TResult, TPayload, TArgs, TContext, TInfo>,
-): (root: any, args: TArgs, context: TContext, info: TInfo) => AsyncIterator<TResult> => {
-  return async function* (root, args, context, info) {
+  { init, filter, process }: SubscribeOptions<TResult, TPayload, TState, TSource, TArgs, TContext>,
+): (source: any, args: TArgs, context: TContext, info: GraphQLResolveInfo) => AsyncIterator<TResult> => {
+  return async function* (source, args, context, info) {
+    const state = {} as TState;
+    const ctx = { state, source, args, context, info };
+
     if (init) {
-      for await (const result of { [Symbol.asyncIterator]: () => init({ root, args, context, info }) }) {
+      for await (const result of { [Symbol.asyncIterator]: () => init(ctx) }) {
         yield result;
       }
     }
 
     for await (const payload of { [Symbol.asyncIterator]: () => pubSub.asyncIterator<TPayload>(topics) }) {
-      const data = { payload, args, context, info };
+      if (filter && !filter(payload, ctx)) continue;
 
-      if (filter && !filter(data)) continue;
-
-      yield process?.(data) || payload as unknown as TResult;
+      yield process?.(payload, ctx) || payload as unknown as TResult;
     }
   };
 };

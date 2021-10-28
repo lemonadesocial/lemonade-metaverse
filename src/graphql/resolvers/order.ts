@@ -59,8 +59,8 @@ class _OrdersSubscriptionResolver {
       init: async function* ({ args, info }) {
         if (args.query) yield findOrders(args, info);
       },
-      filter: ({ payload, args }) => args.where ? validate(args.where, payload) : true,
-      process: ({ payload }) => ({ items: [payload], total: 1 }),
+      filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
+      process: (payload) => ({ items: [payload], total: 1 }),
     }),
   })
   orders(
