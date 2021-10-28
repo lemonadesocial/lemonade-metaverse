@@ -31,6 +31,10 @@ const ingressDurationSeconds = new Histogram({
   name: 'metaverse_ingress_duration_seconds',
   help: 'Duration of metaverse ingress in seconds',
 });
+const ingressTimeToRecoverySeconds = new Histogram({
+  name: 'metaverse_ingress_time_to_recovery_seconds',
+  help: 'Time to recovery of metaverse ingress in seconds',
+});
 
 const jobOptions: JobsOptions = {
   attempts: Number.MAX_VALUE,
@@ -222,12 +226,10 @@ const processor: Processor<JobData> = async ({ data }) => {
   ingressDurationTimer();
 };
 
-const getDrift = ({ timestamp }: Job<JobData>) => {
-  const delay = Date.now() - timestamp;
-
+const getJobTiming = ({ timestamp }: Job<JobData>) => {
   return {
-    delay: (delay / 1000).toFixed(1) + 's',
-    timestamp: new Date(timestamp).toUTCString(),
+    secondsElapsed: (Date.now() - timestamp) / 1000,
+    timestamp: new Date(timestamp),
   };
 };
 
@@ -249,14 +251,16 @@ export const start = async (): Promise<void> => {
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUrl) });
   worker.on('failed', function onFailed(job, err) {
     ingressesTotal.inc({ status: 'fail' });
-
-    logger.error({ drift: getDrift(job), err }, 'failed ingress');
+    logger.error({ ...getJobTiming(job), err }, 'failed ingress');
   });
   worker.on('completed', function onCompleted(job) {
     ingressesTotal.inc({ status: 'success' });
 
     if (job.attemptsMade) {
-      logger.info({ drift: getDrift(job) }, 'recovered ingress');
+      const timing = getJobTiming(job);
+
+      ingressTimeToRecoverySeconds.observe(timing.secondsElapsed);
+      logger.info(timing, 'recovered ingress');
     }
   });
   await worker.waitUntilReady();
