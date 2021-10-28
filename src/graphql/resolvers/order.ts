@@ -60,7 +60,7 @@ class _OrdersSubscriptionResolver {
         if (args.query) yield findOrders(args, info);
       },
       filter: ({ payload, args }) => args.where ? validate(args.where, payload) : true,
-      process: ({ payload }) => ({ items: [payload] }),
+      process: ({ payload }) => ({ items: [payload], total: 1 }),
     }),
   })
   orders(
