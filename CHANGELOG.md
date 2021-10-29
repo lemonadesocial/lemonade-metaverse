@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.8.0...v1.9.0) (2021-10-29)
+
+
+### Features
+
+* add get fetchable url util ([b1e573c](https://github.com/lemonadesocial/lemonade-metaverse/commit/b1e573c1a5e5705236de3229efa8c468c7d1905f))
+* add total 1 to subscription responses ([4f43aa2](https://github.com/lemonadesocial/lemonade-metaverse/commit/4f43aa2dc562d4573add588c34588653978ca25a))
+* **ingress:** add time to recovery metric ([06f5cfa](https://github.com/lemonadesocial/lemonade-metaverse/commit/06f5cfa41b0b1ae597d53676882dbce42104ec4a))
+* **ingress:** always log ingress error and recovery ([c574ccf](https://github.com/lemonadesocial/lemonade-metaverse/commit/c574ccfb8ee03c443e647cddb32eacee765defb2))
+* **ingress:** always show ingress errors ([942f89e](https://github.com/lemonadesocial/lemonade-metaverse/commit/942f89e15ce1372fb3c4c601f9bcd5f9874c9648))
+* **ingress:** ingress and enrich all lemonade tokens ([91845f5](https://github.com/lemonadesocial/lemonade-metaverse/commit/91845f5abc2ec179605eea2ed14908d08ad9f19a))
+* **ingress:** log when ingress is failing for more than 10s ([3e4b51b](https://github.com/lemonadesocial/lemonade-metaverse/commit/3e4b51b826677f6dfc53a504cbe6c39ac95238a2))
+* **logger:** add support for logging images ([d2fd4e7](https://github.com/lemonadesocial/lemonade-metaverse/commit/d2fd4e71cd3c35188f63b1d998dbdd79f54df78e))
+* **token:** add lookup by id(s) ([e5f0d1e](https://github.com/lemonadesocial/lemonade-metaverse/commit/e5f0d1e5de49a5e4b965c5799b30c208bac3c499))
+* **token:** add tokens query and subscription with local data ([563aa96](https://github.com/lemonadesocial/lemonade-metaverse/commit/563aa967ff651bd31e520e706429f094681650dc))
+* **token:** log token images ([df02dfc](https://github.com/lemonadesocial/lemonade-metaverse/commit/df02dfc3339659067889a0e11cd5e5ec898ea664))
+
+
+### Bug Fixes
+
+* **ingress:** fix errors being logged with info level ([511853b](https://github.com/lemonadesocial/lemonade-metaverse/commit/511853bbf4a3deba56419f6c83832c3280d63912))
+* **ingress:** fix instant recovery not being logged ([a749f1d](https://github.com/lemonadesocial/lemonade-metaverse/commit/a749f1d4826b2a1b2a0c6ac24f37c6bf22532b21))
+* **ingress:** fix order always being deligated to enrich ([a22ec60](https://github.com/lemonadesocial/lemonade-metaverse/commit/a22ec6003861f6ecd0a2c5b2cc8ebe9455b4b9d0))
+* **ingress:** fix state not being persisted ([87c24e8](https://github.com/lemonadesocial/lemonade-metaverse/commit/87c24e86fb001265477eea6f86563ff7d649fa5a))
+* **order:** move skip and limit post lookup ([a2fa406](https://github.com/lemonadesocial/lemonade-metaverse/commit/a2fa406748bee9b09fe8ee012790b7b7be7172f4))
+
 ## [1.8.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.7.0...v1.8.0) (2021-10-14)
 
 
