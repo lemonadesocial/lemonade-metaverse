@@ -2,7 +2,7 @@ import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graph
 import { GraphQLResolveInfo } from 'graphql';
 
 import { Order, OrderModel } from '../../app/models/order';
-import { OrdersResponse, OrderWhere } from '../types/order';
+import { OrderWhere } from '../types/order';
 import { PaginatedResponseArgs } from '../types/paginated-response';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
@@ -16,59 +16,57 @@ const findOrders = async (
   const fields = getFieldTree(info);
   const query = where ? getFilter({ ...where, token: undefined }) : {};
 
-  const [items, total] = await Promise.all([
-    fields.items && OrderModel.aggregate([
-      { $match: query },
-      ...fields.items.token ? [
-        {
-          $lookup: {
-            from: 'tokens',
-            let: { token: '$token' },
-            pipeline: [{ $match: { $expr: { $eq: ['$id', '$$token'] }, ...where?.token && getFilter(where.token) } }],
-            as: 'token',
-          },
+  return await OrderModel.aggregate([
+    { $match: query },
+    ...fields.token ? [
+      {
+        $lookup: {
+          from: 'tokens',
+          let: { token: '$token' },
+          pipeline: [{ $match: { $expr: { $eq: ['$id', '$$token'] }, ...where?.token && getFilter(where.token) } }],
+          as: 'token',
         },
-        { $unwind: '$token' },
-      ] : [],
-      { $skip: skip },
-      { $limit: limit },
-      { $project: getFieldProjection(fields.items) },
-    ]),
-    fields.total && OrderModel.countDocuments(query),
+      },
+      { $unwind: '$token' },
+    ] : [],
+    { $skip: skip },
+    { $limit: limit },
+    { $project: getFieldProjection(fields) },
   ]);
-
-  return { items, total };
 };
 
 @Resolver()
 class _OrdersQueryResolver {
-  @Query(() => OrdersResponse)
+  @Query(() => [Order])
   async orders(
     @Info() info: GraphQLResolveInfo,
     @Args() args: PaginatedResponseArgs,
     @Arg('where', () => OrderWhere, { nullable: true }) where?: OrderWhere | null,
-  ): Promise<OrdersResponse> {
+  ): Promise<Order[]> {
     return await findOrders({ ...args, where }, info);
   }
 }
 
 @Resolver()
 class _OrdersSubscriptionResolver {
-  @Subscription({
-    subscribe: subscribe<OrdersResponse, Order>('order_updated', {
-      init: async function* ({ args, info }) {
-        if (args.query) yield findOrders(args, info);
-      },
-      filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
-      process: (payload) => ({ items: [payload], total: 1 }),
-    }),
-  })
+  @Subscription(
+    () => [Order],
+    {
+      subscribe: subscribe<Order[], Order>('order_updated', {
+        init: async function* ({ args, info }) {
+          if (args.query) yield findOrders(args, info);
+        },
+        filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
+        process: (payload) => [payload],
+      }),
+    }
+  )
   orders(
-    @Root() root: OrdersResponse,
+    @Root() root: Order[],
     @Args() _: PaginatedResponseArgs,
     @Arg('query', () => Boolean, { nullable: true }) __?: boolean | null,
     @Arg('where', () => OrderWhere, { nullable: true }) ___?: OrderWhere | null,
-  ): OrdersResponse {
+  ): Order[] {
     return root;
   }
 }

@@ -3,7 +3,7 @@ import { GraphQLResolveInfo } from 'graphql';
 
 import { PaginatedResponseArgs } from '../types/paginated-response';
 import { Token, TokenModel } from '../../app/models/token';
-import { TokensResponse, TokenWhere } from '../types/token';
+import { TokenWhere } from '../types/token';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
@@ -17,17 +17,12 @@ const findTokens = async (
   const fields = getFieldTree(info);
   const query = where ? getFilter({ ...where, token: undefined }) : {};
 
-  const [items, total] = await Promise.all([
-    fields.items && TokenModel.aggregate([
-      { $match: query },
-      { $skip: skip },
-      { $limit: limit },
-      { $project: getFieldProjection(fields.items) },
-    ]),
-    fields.total && TokenModel.countDocuments(query),
+  return await TokenModel.aggregate([
+    { $match: query },
+    { $skip: skip },
+    { $limit: limit },
+    { $project: getFieldProjection(fields) },
   ]);
-
-  return { items, total };
 };
 
 @Resolver()
@@ -48,33 +43,36 @@ class _TokensQueryResolver {
     });
   }
 
-  @Query(() => TokensResponse)
+  @Query(() => [Token])
   async tokens(
     @Info() info: GraphQLResolveInfo,
     @Args() args: PaginatedResponseArgs,
     @Arg('where', () => TokenWhere, { nullable: true }) where?: TokenWhere | null,
-  ): Promise<TokensResponse> {
+  ): Promise<Token[]> {
     return await findTokens({ ...args, where }, info);
   }
 }
 
 @Resolver()
 class _TokensSubscriptionResolver {
-  @Subscription({
-    subscribe: subscribe<TokensResponse, Token>('token_updated', {
-      init: async function* ({ args, info }) {
-        if (args.query) yield findTokens(args, info);
-      },
-      filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
-      process: (payload) => ({ items: [payload], total: 1 }),
-    }),
-  })
+  @Subscription(
+    () => [Token],
+    {
+      subscribe: subscribe<Token[], Token>('token_updated', {
+        init: async function* ({ args, info }) {
+          if (args.query) yield findTokens(args, info);
+        },
+        filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
+        process: (payload) => [payload],
+      }),
+    }
+  )
   tokens(
-    @Root() root: TokensResponse,
+    @Root() root: Token[],
     @Args() _: PaginatedResponseArgs,
     @Arg('query', () => Boolean, { nullable: true }) __?: boolean | null,
     @Arg('where', () => TokenWhere, { nullable: true }) ___?: TokenWhere | null,
-  ): TokensResponse {
+  ): Token[] {
     return root;
   }
 }

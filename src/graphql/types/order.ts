@@ -1,7 +1,6 @@
-import { Field, ObjectType, InputType } from 'type-graphql';
+import { Field, InputType } from 'type-graphql';
 
 import { Currency, Order } from '../../app/models/order';
-import { PaginatedResponse } from '../types/paginated-response';
 import { TokenWhere } from '../types/token';
 import { WhereInput } from '../types/where-input';
 
@@ -16,6 +15,3 @@ export class OrderWhere extends WhereInput(Order) {
   @Field(() => TokenWhere, { nullable: true })
   token?: TokenWhere;
 }
-
-@ObjectType()
-export class OrdersResponse extends PaginatedResponse(Order) { }
