@@ -1,7 +1,7 @@
 import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 
-import { PaginatedResponseArgs } from '../types/paginated-response';
+import { PaginationArgs } from '../types/pagination';
 import { Token, TokenModel } from '../../app/models/token';
 import { TokenWhere } from '../types/token';
 
@@ -11,7 +11,7 @@ import { getTokens } from '../../app/services/token';
 import { subscribe } from '../utils/subscription';
 
 const findTokens = async (
-  { skip, limit, where }: PaginatedResponseArgs & { where?: TokenWhere | null },
+  { skip, limit, where }: PaginationArgs & { where?: TokenWhere | null },
   info: GraphQLResolveInfo,
 ) => {
   const fields = getFieldTree(info);
@@ -29,7 +29,7 @@ const findTokens = async (
 class _TokensQueryResolver {
   @Query(() => [Token])
   async getTokens(
-    @Args() { skip, limit }: PaginatedResponseArgs,
+    @Args() { skip, limit }: PaginationArgs,
     @Arg('id', () => String, { nullable: true }) id?: string,
     @Arg('id_in', () => [String], { nullable: true }) id_in?: string[],
     @Arg('contract', () => String, { nullable: true }) contract?: string,
@@ -46,7 +46,7 @@ class _TokensQueryResolver {
   @Query(() => [Token])
   async tokens(
     @Info() info: GraphQLResolveInfo,
-    @Args() args: PaginatedResponseArgs,
+    @Args() args: PaginationArgs,
     @Arg('where', () => TokenWhere, { nullable: true }) where?: TokenWhere | null,
   ): Promise<Token[]> {
     return await findTokens({ ...args, where }, info);
@@ -69,7 +69,7 @@ class _TokensSubscriptionResolver {
   )
   tokens(
     @Root() root: Token[],
-    @Args() _: PaginatedResponseArgs,
+    @Args() _: PaginationArgs,
     @Arg('query', () => Boolean, { nullable: true }) __?: boolean | null,
     @Arg('where', () => TokenWhere, { nullable: true }) ___?: TokenWhere | null,
   ): Token[] {

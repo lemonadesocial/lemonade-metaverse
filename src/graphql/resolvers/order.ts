@@ -3,14 +3,14 @@ import { GraphQLResolveInfo } from 'graphql';
 
 import { Order, OrderModel } from '../../app/models/order';
 import { OrderWhere } from '../types/order';
-import { PaginatedResponseArgs } from '../types/paginated-response';
+import { PaginationArgs } from '../types/pagination';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { subscribe } from '../utils/subscription';
 
 const findOrders = async (
-  { skip, limit, where }: PaginatedResponseArgs & { where?: OrderWhere | null },
+  { skip, limit, where }: PaginationArgs & { where?: OrderWhere | null },
   info: GraphQLResolveInfo,
 ) => {
   const fields = getFieldTree(info);
@@ -40,7 +40,7 @@ class _OrdersQueryResolver {
   @Query(() => [Order])
   async orders(
     @Info() info: GraphQLResolveInfo,
-    @Args() args: PaginatedResponseArgs,
+    @Args() args: PaginationArgs,
     @Arg('where', () => OrderWhere, { nullable: true }) where?: OrderWhere | null,
   ): Promise<Order[]> {
     return await findOrders({ ...args, where }, info);
@@ -63,7 +63,7 @@ class _OrdersSubscriptionResolver {
   )
   orders(
     @Root() root: Order[],
-    @Args() _: PaginatedResponseArgs,
+    @Args() _: PaginationArgs,
     @Arg('query', () => Boolean, { nullable: true }) __?: boolean | null,
     @Arg('where', () => OrderWhere, { nullable: true }) ___?: OrderWhere | null,
   ): Order[] {

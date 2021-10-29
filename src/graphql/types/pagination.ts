@@ -2,7 +2,7 @@ import { ArgsType, Field, Int } from 'type-graphql';
 import { Max, Min } from 'class-validator';
 
 @ArgsType()
-export class PaginatedResponseArgs {
+export class PaginationArgs {
   @Field(() => Int, { defaultValue: 0 })
   @Min(0)
   public skip!: number;
