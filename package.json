@@ -57,6 +57,7 @@
     "prom-client": "^14.0.0",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.20",
+    "subscriptions-transport-ws": "^0.9.19",
     "type-graphql": "^1.1.1"
   }
 }
