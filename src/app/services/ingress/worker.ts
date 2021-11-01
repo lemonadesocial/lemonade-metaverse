@@ -34,6 +34,7 @@ const ingressDurationSeconds = new Histogram({
 const ingressTimeToRecoverySeconds = new Histogram({
   name: 'metaverse_ingress_time_to_recovery_seconds',
   help: 'Time to recovery of metaverse ingress in seconds',
+  buckets: [1, 5, 30, 60, 300, 900, 1800, 3600, 7200, 10800, 14400],
 });
 
 const jobOptions: JobsOptions = {
