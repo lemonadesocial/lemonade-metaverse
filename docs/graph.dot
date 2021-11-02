@@ -1,0 +1,28 @@
+digraph G {
+  bgcolor=transparent;
+  node [fillcolor=white,shape=box,style="filled,rounded"];
+  nodesep=0.5;
+
+  Backend [fillcolor="#F8D31C",style="filled,rounded"];
+  Blockchain [fillcolor=white,style="filled,solid"];
+  Database [fillcolor="#a667f3",style="filled,rounded"];
+  Enrich [fillcolor="#F8D31C",style="filled,rounded"];
+  Ingress [fillcolor="#F8D31C",style="filled,rounded"];
+  User [fillcolor=white,style="filled,solid"];
+
+  Backend -> Database;
+  Backend -> Enrich [color=darkgray,fontcolor=darkgray,label=" token"];
+  Backend -> TheGraph [color=darkgray,fontcolor=darkgray,label="query\ntokens owned by"];
+  Blockchain -> TheGraph [label=" events"];
+  Enrich -> Backend [color=darkgray,fontcolor=darkgray,label=" metadata"];
+  Enrich -> Database [label="metadata"];
+  Enrich -> IPFS [label=" metadata"];
+  Ingress -> Database [label="token/order"];
+  Ingress -> Enrich [label="token"]
+  Ingress -> TheGraph [label=" query\n token & order"];
+  User -> Backend [dir=both,label=" subscription"];
+
+  { rank=same; Blockchain; Backend; }
+  { rank=same; Database; TheGraph; }
+  { rank=max; Enrich; Ingress; }
+}
