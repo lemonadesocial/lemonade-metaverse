@@ -7,6 +7,8 @@ export const tokenFields = gql`
   creator
   tokenId
   uri
+  royaltyMaker
+  royaltyFraction
 }
     `;
 export const Ingress = gql`

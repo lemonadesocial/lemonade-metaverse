@@ -30,6 +30,14 @@ export class Token {
   @prop({ required: true })
   public uri!: string;
 
+  @Field({ nullable: true, description: 'The royalty maker.' })
+  @prop()
+  public royaltyMaker?: string;
+
+  @Field({ nullable: true, description: 'The royalty fraction.' })
+  @prop()
+  public royaltyFraction?: string;
+
   @Field(() => GraphQLJSONObject, { nullable: true, description: 'The actual metadata.' })
   @prop()
   public metadata?: Record<string, unknown>;

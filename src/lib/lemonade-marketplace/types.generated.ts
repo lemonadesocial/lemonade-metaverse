@@ -573,6 +573,8 @@ export type Token = {
   id: Scalars['ID'];
   orders: Array<Order>;
   owner?: Maybe<Scalars['Bytes']>;
+  royaltyFraction?: Maybe<Scalars['BigInt']>;
+  royaltyMaker?: Maybe<Scalars['Bytes']>;
   tokenId: Scalars['BigInt'];
   transfers: Array<Transfer>;
   uri: Scalars['String'];
@@ -631,6 +633,20 @@ export type Token_filter = {
   owner_not?: Maybe<Scalars['Bytes']>;
   owner_not_contains?: Maybe<Scalars['Bytes']>;
   owner_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  royaltyFraction?: Maybe<Scalars['BigInt']>;
+  royaltyFraction_gt?: Maybe<Scalars['BigInt']>;
+  royaltyFraction_gte?: Maybe<Scalars['BigInt']>;
+  royaltyFraction_in?: Maybe<Array<Scalars['BigInt']>>;
+  royaltyFraction_lt?: Maybe<Scalars['BigInt']>;
+  royaltyFraction_lte?: Maybe<Scalars['BigInt']>;
+  royaltyFraction_not?: Maybe<Scalars['BigInt']>;
+  royaltyFraction_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  royaltyMaker?: Maybe<Scalars['Bytes']>;
+  royaltyMaker_contains?: Maybe<Scalars['Bytes']>;
+  royaltyMaker_in?: Maybe<Array<Scalars['Bytes']>>;
+  royaltyMaker_not?: Maybe<Scalars['Bytes']>;
+  royaltyMaker_not_contains?: Maybe<Scalars['Bytes']>;
+  royaltyMaker_not_in?: Maybe<Array<Scalars['Bytes']>>;
   tokenId?: Maybe<Scalars['BigInt']>;
   tokenId_gt?: Maybe<Scalars['BigInt']>;
   tokenId_gte?: Maybe<Scalars['BigInt']>;
@@ -662,6 +678,8 @@ export enum Token_orderBy {
   id = 'id',
   orders = 'orders',
   owner = 'owner',
+  royaltyFraction = 'royaltyFraction',
+  royaltyMaker = 'royaltyMaker',
   tokenId = 'tokenId',
   transfers = 'transfers',
   uri = 'uri'
@@ -761,7 +779,7 @@ export enum _SubgraphErrorPolicy_ {
   deny = 'deny'
 }
 
-export type tokenFieldsFragment = { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string };
+export type tokenFieldsFragment = { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined };
 
 export type IngressQueryVariables = Exact<{
   orders_include: Scalars['Boolean'];
@@ -775,7 +793,7 @@ export type IngressQueryVariables = Exact<{
 }>;
 
 
-export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', hash?: string | null | undefined, number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name: string, symbol: string }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string } }> | null | undefined, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string }> | null | undefined };
+export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', hash?: string | null | undefined, number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name: string, symbol: string }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined } }> | null | undefined, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined }> | null | undefined };
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;
@@ -784,4 +802,4 @@ export type GetTokensQueryVariables = Exact<{
 }>;
 
 
-export type GetTokensQuery = { __typename?: 'Query', tokens: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string }> };
+export type GetTokensQuery = { __typename?: 'Query', tokens: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined }> };
