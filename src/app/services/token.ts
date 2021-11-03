@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events';
+
 import { excludeNull } from '../utils/object';
 import { pubSub } from '../helpers/pub-sub';
 import * as enrich from './enrich/queue';
@@ -10,15 +12,21 @@ import { GetTokens } from '../../lib/lemonade-marketplace/documents.generated';
 
 const TIMEOUT = 10000;
 
+const emitter = new EventEmitter();
+
+pubSub.subscribe<Token>('token_updated', (token) => {
+  emitter.emit('token_updated', token);
+});
+
 const waitForEnrich = async (tokens: Token[]) => {
   const map = new Map(tokens.map((token) => [token.id, token]));
-  let subId: number | undefined;
+  let listener: ((...args: any[]) => void) | undefined;
   let timeout: NodeJS.Timeout | undefined;
 
   try {
     await Promise.race([
       new Promise<void>((approve) => (async () => {
-        subId = await pubSub.subscribe<Token>('token_updated', (token) => {
+        listener = (token: Token) => {
           const value = map.get(token.id);
 
           if (value) {
@@ -28,7 +36,9 @@ const waitForEnrich = async (tokens: Token[]) => {
               approve();
             }
           }
-        });
+        };
+
+        emitter.on('token_updated', listener);
 
         await enrich.enqueue(...tokens.map((token) => ({
           token,
@@ -41,8 +51,8 @@ const waitForEnrich = async (tokens: Token[]) => {
       clearTimeout(timeout);
     }
 
-    if (typeof subId !== 'undefined') {
-      pubSub.unsubscribe(subId);
+    if (listener) {
+      emitter.removeListener('token_updated', listener);
     }
   }
 }
