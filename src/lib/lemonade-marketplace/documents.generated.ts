@@ -61,7 +61,7 @@ export const Ingress = gql`
 }
     ${tokenFields}`;
 export const GetTokens = gql`
-    query GetTokens($where: Token_filter, $skip: Int!, $first: Int!) {
+    query GetTokens($where: Token_filter, $skip: Int, $first: Int) {
   tokens(where: $where, skip: $skip, first: $first) {
     ...tokenFields
   }

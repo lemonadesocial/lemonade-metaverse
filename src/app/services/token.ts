@@ -63,7 +63,7 @@ const fetch = async <T extends { id: string }>(
   items: T[],
 ): Promise<FetchToken<T>[]> => {
   const docs = await TokenModel.find(
-    { id: { $in: items.map(({ id }) => id) } },
+    { id: { $in: items.map(({ id }) => id) }, metadata: { $exists: true } },
     { id: 1, metadata: 1 },
   ).lean();
   const map = Object.fromEntries(docs.map((doc) => [doc.id as string, doc]));
@@ -95,4 +95,24 @@ export const getTokens = async (variables: GetTokensQueryVariables): Promise<Tok
   if (!tokens.length) return [];
 
   return await fetch(tokens);
+};
+
+export const getToken = async (id: string): Promise<Token | undefined> => {
+  let token = await TokenModel.findOne({ id }).lean<Token | null>();
+
+  if (token) {
+    if (token.metadata) return token;
+  } else {
+    const { data: { tokens } } = await indexer.client.query<GetTokensQuery, GetTokensQueryVariables>({
+      query: GetTokens,
+      variables: { first: 1, where: { id } },
+    });
+
+    if (!tokens.length) return;
+
+    token = excludeNull(tokens[0]);
+  }
+
+  await waitForEnrich([token]);
+  return token;
 };

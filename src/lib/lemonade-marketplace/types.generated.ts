@@ -797,8 +797,8 @@ export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;
-  skip: Scalars['Int'];
-  first: Scalars['Int'];
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
 }>;
 
 

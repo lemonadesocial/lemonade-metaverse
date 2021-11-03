@@ -7,7 +7,7 @@ import { TokenWhere } from '../types/token';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
-import { getTokens } from '../../app/services/token';
+import { getToken, getTokens } from '../../app/services/token';
 import { subscribe } from '../utils/subscription';
 
 const findTokens = async (
@@ -27,6 +27,13 @@ const findTokens = async (
 
 @Resolver()
 class _TokensQueryResolver {
+  @Query(() => Token, { nullable: true })
+  async getToken(
+    @Arg('id', () => String) id: string,
+  ): Promise<Token | undefined> {
+    return await getToken(id);
+  }
+
   @Query(() => [Token])
   async getTokens(
     @Args() { skip, limit }: PaginationArgs,
