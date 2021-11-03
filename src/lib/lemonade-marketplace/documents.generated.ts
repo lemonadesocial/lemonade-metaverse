@@ -54,7 +54,7 @@ export const Ingress = gql`
   tokens(
     orderBy: createdAt
     orderDirection: asc
-    where: {contract_in: ["0x7254e06afb533964b389be742524fa696a290c81"], createdAt_gt: $tokens_createdAt_gt}
+    where: {contract_in: ["0x7254e06afb533964b389be742524fa696a290c81", "0xbaBB811e9D822Be557042c0E8031C331ce13bBa5"], createdAt_gt: $tokens_createdAt_gt}
   ) @include(if: $tokens_include) {
     ...tokenFields
   }
