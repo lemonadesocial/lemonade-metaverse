@@ -784,16 +784,16 @@ export type tokenFieldsFragment = { __typename?: 'Token', id: string, contract: 
 export type IngressQueryVariables = Exact<{
   orders_include: Scalars['Boolean'];
   orders_lastBlock_gt?: Maybe<Scalars['BigInt']>;
-  orders_skip: Scalars['Int'];
-  orders_first: Scalars['Int'];
+  orders_skip?: Maybe<Scalars['Int']>;
+  orders_first?: Maybe<Scalars['Int']>;
   tokens_include: Scalars['Boolean'];
   tokens_createdAt_gt?: Maybe<Scalars['BigInt']>;
-  tokens_skip: Scalars['Int'];
-  tokens_first: Scalars['Int'];
+  tokens_skip?: Maybe<Scalars['Int']>;
+  tokens_first?: Maybe<Scalars['Int']>;
 }>;
 
 
-export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', hash?: string | null | undefined, number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name: string, symbol: string }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined } }> | null | undefined, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined }> | null | undefined };
+export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', hash?: string | null | undefined, number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name: string, symbol: string }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined }> };
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;
