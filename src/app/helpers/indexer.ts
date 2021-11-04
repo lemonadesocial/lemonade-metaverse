@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import { indexerUrl } from '../../config';
 
 export const client = new ApolloClient({
-  cache: new InMemoryCache({ addTypename: false }),
+  cache: new InMemoryCache(),
   defaultOptions: {
     query: { fetchPolicy: 'no-cache' },
   },
