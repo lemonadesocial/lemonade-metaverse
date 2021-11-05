@@ -4,25 +4,19 @@ import { logger } from './pino';
 
 import { redisUrl } from '../../config';
 
-const retryStrategy = () => 1000;
+function createRedis() {
+  const redis = new Redis(redisUrl, { retryStrategy: () => 1000 });
 
-export const redis = new Redis(redisUrl);
-redis.options.retryStrategy = retryStrategy;
-redis.on('error', function onError(err: Error) {
-  logger.error(err);
-});
+  redis.on('error', function onError(err: Error) {
+    logger.error(err);
+  });
 
-export const publisher = new Redis(redisUrl);
-publisher.options.retryStrategy = retryStrategy;
-publisher.on('error', function onError(err: Error) {
-  logger.error(err);
-});
+  return redis;
+}
 
-export const subscriber = new Redis(redisUrl);
-subscriber.options.retryStrategy = retryStrategy;
-subscriber.on('error', function onError(err: Error) {
-  logger.error(err);
-});
+export const redis = createRedis();
+export const publisher = createRedis();
+export const subscriber = createRedis();
 
 export const disconnect = (): void => {
   redis.disconnect();
