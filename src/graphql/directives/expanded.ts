@@ -12,12 +12,17 @@ import { getExpandedField, getFieldProjection, getFieldTree } from '../utils/fie
 const DIRECTIVE_NAME = 'expanded';
 
 interface DirectiveArgs {
-  readonly modelName: string;
   readonly foreignField: string;
+  readonly key?: string;
+  readonly modelName: string;
 }
 
 export const expandedDirectiveTypedefs = `
-  directive @${DIRECTIVE_NAME}(modelName: String!, foreignField: String!) on FIELD_DEFINITION
+  directive @${DIRECTIVE_NAME}(
+    foreignField: String!,
+    key: String,
+    modelName: String!,
+  ) on FIELD_DEFINITION
 `;
 
 export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSchema = (schema) => mapSchema(schema, {
@@ -31,11 +36,14 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
 
       assert.ok(expandedField);
 
-      const path = pathToArray(info.path).filter((key) => typeof key === 'string').join('.');
+      const {
+        foreignField,
+        key = pathToArray(info.path).filter((key) => typeof key === 'string').join('.'),
+        modelName,
+      } = directive as DirectiveArgs;
 
       context.dataLoaders = context.dataLoaders || {};
-      context.dataLoaders[path] = context.dataLoaders[path] || new DataLoader(async (keys) => {
-        const { modelName, foreignField } = directive as DirectiveArgs;
+      context.dataLoaders[key] = context.dataLoaders[key] || new DataLoader(async (keys) => {
         const model = getModelWithString(modelName);
 
         assert.ok(model);
@@ -57,8 +65,8 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
 
       const keys = source[expandedField];
 
-      if (keys instanceof Array) return context.dataLoaders[path]!.loadMany(keys);
-      if (keys) return context.dataLoaders[path]!.load(keys);
+      if (keys instanceof Array) return context.dataLoaders[key]!.loadMany(keys);
+      if (keys) return context.dataLoaders[key]!.load(keys);
     }
 
     return fieldConfig;
