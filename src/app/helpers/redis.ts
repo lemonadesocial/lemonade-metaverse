@@ -4,6 +4,9 @@ import { logger } from './pino';
 
 import { redisUrl } from '../../config';
 
+const CACHE_EXPIRE_TIME = 10000;
+const CACHE_KEY_PREFIX = 'cache:';
+
 function createRedis() {
   const redis = new Redis(redisUrl, { retryStrategy: () => 1000 });
 
@@ -18,8 +21,28 @@ export const redis = createRedis();
 export const publisher = createRedis();
 export const subscriber = createRedis();
 
-export const disconnect = (): void => {
+export async function getOrSet<T>(
+  key: string,
+  fn: () => Promise<T>,
+  time = CACHE_EXPIRE_TIME,
+): Promise<T> {
+  const value = await redis.get(CACHE_KEY_PREFIX + key);
+
+  if (value) {
+    return JSON.parse(value);
+  }
+
+  const result = await fn();
+
+  if (result) {
+    await redis.set(CACHE_KEY_PREFIX + key, JSON.stringify(result), 'PX', time);
+  }
+
+  return result;
+}
+
+export function disconnect(): void {
   redis.disconnect();
   publisher.disconnect(),
   subscriber.disconnect();
-};
+}
