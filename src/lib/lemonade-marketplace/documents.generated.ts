@@ -67,3 +67,17 @@ export const GetTokens = gql`
   }
 }
     ${tokenFields}`;
+export const GetToken = gql`
+    query GetToken($id: ID!) {
+  token(id: $id) {
+    ...tokenFields
+    owner
+    transfers {
+      id
+      createdAt
+      from
+      to
+    }
+  }
+}
+    ${tokenFields}`;

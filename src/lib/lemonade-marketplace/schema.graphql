@@ -72,3 +72,17 @@ query GetTokens($where: Token_filter, $skip: Int, $first: Int) {
     ...tokenFields
   }
 }
+
+query GetToken($id: ID!) {
+  token(id: $id) {
+    ...tokenFields
+
+    owner
+    transfers {
+      id
+      createdAt
+      from
+      to
+    }
+  }
+}

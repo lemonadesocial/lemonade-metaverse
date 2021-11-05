@@ -1,24 +1,25 @@
 import { EventEmitter } from 'events';
 
 import { excludeNull } from '../utils/object';
+import { getOrSet } from '../helpers/redis';
 import { pubSub } from '../helpers/pub-sub';
 import * as enrich from './enrich/queue';
 import * as indexer from '../helpers/indexer';
 
 import { Token, TokenModel } from '../models/token';
 
-import { GetTokensQuery, GetTokensQueryVariables } from '../../lib/lemonade-marketplace/types.generated';
-import { GetTokens } from '../../lib/lemonade-marketplace/documents.generated';
+import { GetTokenQuery, GetTokenQueryVariables, GetTokensQuery, GetTokensQueryVariables } from '../../lib/lemonade-marketplace/types.generated';
+import { GetToken, GetTokens } from '../../lib/lemonade-marketplace/documents.generated';
 
 const TIMEOUT = 10000;
 
 const emitter = new EventEmitter();
 
-pubSub.subscribe<Token>('token_updated', (token) => {
+pubSub.subscribe<Token>('token_updated', function onMessage(token) {
   emitter.emit('token_updated', token);
 });
 
-const waitForEnrich = async (tokens: Token[]) => {
+async function waitForEnrich(tokens: Token[]) {
   const map = new Map(tokens.map((token) => [token.id, token]));
   let listener: ((...args: any[]) => void) | undefined;
   let timeout: NodeJS.Timeout | undefined;
@@ -59,9 +60,9 @@ const waitForEnrich = async (tokens: Token[]) => {
 
 type FetchToken<T> = Pick<Token, keyof Token & keyof T | 'metadata'>;
 
-const fetch = async <T extends { id: string }>(
+async function fetch<T extends { id: string }>(
   items: T[],
-): Promise<FetchToken<T>[]> => {
+): Promise<FetchToken<T>[]> {
   const docs = await TokenModel.find(
     { id: { $in: items.map(({ id }) => id) }, metadata: { $exists: true } },
     { id: 1, metadata: 1 },
@@ -86,7 +87,7 @@ const fetch = async <T extends { id: string }>(
   return tokens;
 }
 
-export const getTokens = async (variables: GetTokensQueryVariables): Promise<Token[]> => {
+export async function getTokens(variables: GetTokensQueryVariables): Promise<Token[]> {
   const { data: { tokens } } = await indexer.client.query<GetTokensQuery, GetTokensQueryVariables>({
     query: GetTokens,
     variables,
@@ -95,24 +96,28 @@ export const getTokens = async (variables: GetTokensQueryVariables): Promise<Tok
   if (!tokens.length) return [];
 
   return await fetch(tokens);
-};
+}
 
-export const getToken = async (id: string): Promise<Token | undefined> => {
-  let token = await TokenModel.findOne({ id }).lean<Token | null>();
+export async function getToken(id: string): Promise<Token | undefined> {
+  const [external, internal] = await Promise.all([
+    getOrSet(id, async function fn() {
+      const { data: { token } } = await indexer.client.query<GetTokenQuery, GetTokenQueryVariables>({
+        query: GetToken,
+        variables: { id },
+      });
 
-  if (token) {
-    if (token.metadata) return token;
-  } else {
-    const { data: { tokens } } = await indexer.client.query<GetTokensQuery, GetTokensQueryVariables>({
-      query: GetTokens,
-      variables: { first: 1, where: { id } },
-    });
+      return token;
+    }),
+    TokenModel.findOne({ id }).lean(),
+  ]);
 
-    if (!tokens.length) return;
+  if (!external && !internal) return;
 
-    token = excludeNull(tokens[0]);
+  const token = { ...external, ...internal } as Token;
+
+  if (!internal?.metadata) {
+    await waitForEnrich([token]);
   }
 
-  await waitForEnrich([token]);
   return token;
-};
+}

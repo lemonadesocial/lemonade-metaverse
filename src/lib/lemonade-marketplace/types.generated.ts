@@ -803,3 +803,10 @@ export type GetTokensQueryVariables = Exact<{
 
 
 export type GetTokensQuery = { __typename?: 'Query', tokens: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined }> };
+
+export type GetTokenQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetTokenQuery = { __typename?: 'Query', token?: { __typename?: 'Token', owner?: string | null | undefined, id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, uri: string, royaltyMaker?: string | null | undefined, royaltyFraction?: string | null | undefined, transfers: Array<{ __typename?: 'Transfer', id: string, createdAt: string, from: string, to: string }> } | null | undefined };

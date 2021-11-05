@@ -1,6 +1,28 @@
-import { Field, ObjectType } from 'type-graphql';
+import { Directive, Field, ObjectType } from 'type-graphql';
 import { getModelForClass, index, prop, modelOptions, Severity } from '@typegoose/typegoose';
 import { GraphQLJSONObject } from 'graphql-type-json';
+
+import { User } from './user';
+
+@ObjectType()
+export class TokenTransfer {
+  @Field()
+  public createdAt!: string;
+
+  @Field()
+  public from!: string;
+
+  @Directive('@expanded(key: "TokenTransferUser", modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public fromExpanded?: never;
+
+  @Field()
+  public to!: string;
+
+  @Directive('@expanded(key: "TokenTransferUser", modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public toExpanded?: never;
+}
 
 @ObjectType()
 @index({ id: 1 }, { unique: true })
@@ -41,6 +63,18 @@ export class Token {
   @Field(() => GraphQLJSONObject, { nullable: true, description: 'The actual metadata.' })
   @prop()
   public metadata?: Record<string, unknown>;
+
+  /* GraphQL properties */
+
+  @Field({ nullable: true, description: 'The owner.' })
+  public owner?: string;
+
+  @Directive('@expanded(modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public ownerExpanded?: never;
+
+  @Field(() => [TokenTransfer], { nullable: true, description: 'This token\'s transfers.' })
+  public transfers?: TokenTransfer[];
 }
 
 export const TokenModel = getModelForClass(Token);
