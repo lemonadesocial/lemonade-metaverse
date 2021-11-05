@@ -14,16 +14,19 @@ const findOrders = async (
   info: GraphQLResolveInfo,
 ) => {
   const fields = getFieldTree(info);
-  const query = where ? getFilter({ ...where, token: undefined }) : {};
+  const filterToken = where && where.token && getFilter(where.token);
+  const filter = where && getFilter({ ...where, token: undefined });
+
+  if (filter && filterToken?.id) filter.token = filterToken.id;
 
   return await OrderModel.aggregate([
-    { $match: query },
+    { $match: filter },
     ...fields.token ? [
       {
         $lookup: {
           from: 'tokens',
           let: { token: '$token' },
-          pipeline: [{ $match: { $expr: { $eq: ['$id', '$$token'] }, ...where?.token && getFilter(where.token) } }],
+          pipeline: [{ $match: { $expr: { $eq: ['$id', '$$token'] }, ...filterToken } }],
           as: 'token',
         },
       },
