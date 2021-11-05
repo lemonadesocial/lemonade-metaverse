@@ -27,6 +27,8 @@ export class Currency {
 
 @ObjectType()
 @index({ id: 1 }, { unique: true })
+@index({ maker: 1 })
+@index({ token: 1 })
 export class Order {
   /* Persisted properties */
 
