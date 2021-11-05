@@ -13,12 +13,12 @@ import { Order } from '../../models/order';
 import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
+import { createConnection } from '../../helpers/bullmq';
 import { getFetchableUrl, getSimpleFetchableUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
 
-import { redisUrl } from '../../../config';
 
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
 const FETCH_TIMEOUT = 10000;
@@ -101,13 +101,10 @@ let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
 export const start = async (): Promise<void> => {
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUrl) });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: createConnection() });
   await queueScheduler.waitUntilReady();
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, {
-    connection: new Redis(redisUrl),
-    concurrency: WORKER_CONCURRENCY,
-  });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: createConnection(), concurrency: WORKER_CONCURRENCY });
   worker.on('failed', function onFailed(_, error) {
     logger.error(error, 'failed to enrich');
   });

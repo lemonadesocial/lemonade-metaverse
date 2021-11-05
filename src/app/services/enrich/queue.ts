@@ -1,17 +1,15 @@
 import { BulkJobOptions, Queue, QueueScheduler } from 'bullmq';
-import Redis from 'ioredis';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 
 import { Order } from '../../models/order';
 import { Token } from '../../models/token';
 
+import { createConnection } from '../../helpers/bullmq';
 import { redis } from '../../helpers/redis';
 
-import { redisUrl } from '../../../config';
-
-const queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUrl) });
-const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUrl) });
+const queue = new Queue<JobData>(QUEUE_NAME, { connection: createConnection() });
+const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: createConnection() });
 
 export const waitUntilReady = async (): Promise<void> => {
   await Promise.all([

@@ -1,8 +1,8 @@
 import { AnyBulkWriteOperation } from 'mongodb';
 import { Counter, Histogram } from 'prom-client';
 import { Job, JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
-import Redis from 'ioredis';
 
+import { createConnection } from '../../helpers/bullmq';
 import { excludeNull } from '../../utils/object';
 import { getSimpleFetchableUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
@@ -16,8 +16,6 @@ import { Token, TokenModel } from '../../models/token';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
-
-import { redisUrl } from '../../../config';
 
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
@@ -235,8 +233,8 @@ const getJobTiming = ({ timestamp }: Job<JobData>) => {
 };
 
 export const start = async (): Promise<void> => {
-  queue = new Queue<JobData>(QUEUE_NAME, { connection: new Redis(redisUrl) });
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: new Redis(redisUrl) });
+  queue = new Queue<JobData>(QUEUE_NAME, { connection: createConnection() });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: createConnection() });
   await Promise.all([
     enrich.waitUntilReady(),
     queue.waitUntilReady(),
@@ -249,7 +247,7 @@ export const start = async (): Promise<void> => {
     logger.info(job.asJSON(), 'created ingress job');
   }
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: new Redis(redisUrl) });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: createConnection() });
   worker.on('failed', function onFailed(job, err) {
     ingressesTotal.inc({ status: 'fail' });
     logger.error({ ...getJobTiming(job), err }, 'failed ingress');
