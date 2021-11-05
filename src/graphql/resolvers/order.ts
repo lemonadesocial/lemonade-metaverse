@@ -1,8 +1,8 @@
 import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 
-import { Order, OrderModel } from '../../app/models/order';
-import { OrderWhere } from '../types/order';
+import { Order, OrderWhere } from '../types/order';
+import { OrderModel } from '../../app/models/order';
 import { PaginationArgs } from '../types/pagination';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
