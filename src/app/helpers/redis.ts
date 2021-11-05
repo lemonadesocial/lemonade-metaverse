@@ -6,9 +6,10 @@ import { redisUrl } from '../../config';
 
 const CACHE_EXPIRE_TIME = 10000;
 const CACHE_KEY_PREFIX = 'cache:';
+const RETRY_INTERVAL = 1000;
 
 function createRedis() {
-  const redis = new Redis(redisUrl, { retryStrategy: () => 1000 });
+  const redis = new Redis(redisUrl, { retryStrategy: () => RETRY_INTERVAL });
 
   redis.on('error', function onError(err: Error) {
     logger.error(err);
