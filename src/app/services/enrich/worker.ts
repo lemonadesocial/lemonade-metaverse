@@ -5,7 +5,6 @@ import * as assert from 'assert';
 import * as http from 'http';
 import * as https from 'https';
 import fetch, { RequestInit } from 'node-fetch';
-import Redis from 'ioredis';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 
@@ -18,7 +17,6 @@ import { getFetchableUrl, getSimpleFetchableUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
-
 
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
 const FETCH_TIMEOUT = 10000;
