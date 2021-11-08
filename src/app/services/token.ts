@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { excludeNull } from '../utils/object';
+import { excludeNull, ExcludeNull } from '../utils/object';
 import { getOrSet } from '../helpers/redis';
 import { pubSub } from '../helpers/pub-sub';
 import * as enrich from './enrich/queue';
@@ -98,22 +98,39 @@ export async function getTokens(variables: GetTokensQueryVariables): Promise<Tok
   return await fetch(tokens);
 }
 
-export async function getToken(id: string): Promise<Token | undefined> {
-  const [external, internal] = await Promise.all([
+export async function getToken(
+  id: string,
+  shouldResolveExternally?: boolean,
+): Promise<ExcludeNull<GetTokenQuery['token']> & Token | undefined> {
+  let external: ExcludeNull<GetTokenQuery['token']> | null = null;
+  let internal: Token | null = null;
+
+  const externalResolver = () =>
     getOrSet(id, async function fn() {
       const { data: { token } } = await indexer.client.query<GetTokenQuery, GetTokenQueryVariables>({
         query: GetToken,
         variables: { id },
       });
 
-      return token;
-    }),
-    TokenModel.findOne({ id }).lean(),
-  ]);
+      if (token) return excludeNull(token);
+    });
+  const internalResolver = () =>
+    TokenModel.findOne({ id }).lean();
+
+  if (shouldResolveExternally) {
+    [external, internal] = await Promise.all([
+      externalResolver(),
+      internalResolver(),
+    ]);
+  } else {
+    internal = await internalResolver();
+
+    if (!internal) external = await externalResolver();
+  }
 
   if (!external && !internal) return;
 
-  const token = { ...external, ...internal } as Token;
+  const token = { ...external, ...internal } as ExcludeNull<GetTokenQuery['token']> & Token;
 
   if (!internal?.metadata) {
     await waitForEnrich([token]);

@@ -1,11 +1,13 @@
 import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 
+import { Fields } from '../decorators/fields';
+
 import { PaginationArgs } from '../types/pagination';
 import { Token, TokenModel } from '../../app/models/token';
 import { TokenDetail, TokenWhere } from '../types/token';
 
-import { getFieldTree, getFieldProjection } from '../utils/field';
+import { getFieldTree, getFieldProjection, FieldTree } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { getToken, getTokens } from '../../app/services/token';
 import { subscribe } from '../utils/subscription';
@@ -30,8 +32,9 @@ class _TokensQueryResolver {
   @Query(() => TokenDetail, { nullable: true })
   async getToken(
     @Arg('id', () => String) id: string,
+    @Fields() fields: FieldTree,
   ): Promise<TokenDetail | undefined> {
-    return await getToken(id);
+    return await getToken(id, !!fields.owner || !!fields.transfer);
   }
 
   @Query(() => [Token])
