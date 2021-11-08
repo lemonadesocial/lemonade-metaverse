@@ -19,12 +19,16 @@ export const getFilter = <T>(
     let prop;
     let condition;
 
-    if ((prop = beforeEnd(key, '_eq'))) {
-      condition = value;
-    } else if ((prop = beforeEnd(key, '_exists'))) {
-      condition = { $exists: value };
-    } else if (value instanceof Array && (prop = beforeEnd(key, '_in'))) {
-      condition = { $in: value };
+    if (typeof value === 'boolean') {           // boolean
+      if ((prop = beforeEnd(key, '_exists')))   condition = { $exists: value };
+    } else if (value instanceof Array) {        // array
+      if ((prop = beforeEnd(key, '_in')))       condition = { $in: value };
+    } else {                                    // unknown
+      if ((prop = beforeEnd(key, '_eq')))       condition = value;
+      else if ((prop = beforeEnd(key, '_gt')))  condition = { $gt: value };
+      else if ((prop = beforeEnd(key, '_gte'))) condition = { $gte: value };
+      else if ((prop = beforeEnd(key, '_lt')))  condition = { $lt: value };
+      else if ((prop = beforeEnd(key, '_lte'))) condition = { $lte: value };
     }
 
     if (prop && condition) {
@@ -44,16 +48,20 @@ export const validate = <T extends Record<string, any>>(
   return Object.entries(where).every(([key, value]) => {
     let prop;
 
-    if ((prop = beforeEnd(key, '_eq'))) {
-      return doc[prop] === value;
-    } else if ((prop = beforeEnd(key, '_exists'))) {
-      return !!doc[prop] === value;
-    } else if (value instanceof Array && (prop = beforeEnd(key, '_in'))) {
-      return value.includes(doc[prop]);
-    }
+    if (typeof value === 'boolean') {       // boolean
+      if (prop = beforeEnd(key, '_exists')) return !!doc[prop] === value;
+    } else if (value instanceof Array) {    // array
+      if (prop = beforeEnd(key, '_in'))     return value.includes(doc[prop]);
+    } else {                                // unknown
+      if (prop = beforeEnd(key, '_eq'))     return doc[prop] === value;
+      if (prop = beforeEnd(key, '_gt'))     return doc[prop] > <number>value;
+      if (prop = beforeEnd(key, '_gte'))    return doc[prop] >= <number>value;
+      if (prop = beforeEnd(key, '_lt'))     return doc[prop] < <number>value;
+      if (prop = beforeEnd(key, '_lte'))    return doc[prop] <= <number>value;
 
-    if (Object.prototype.toString.call(value) === '[object Object]') {
-      return validate(value as Where<unknown>, doc[key]);
+      if (Object.prototype.toString.call(value) === '[object Object]') {
+        return validate(value as Where<unknown>, doc[key]);
+      }
     }
   });
 };
