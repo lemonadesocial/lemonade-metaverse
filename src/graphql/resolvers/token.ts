@@ -3,7 +3,7 @@ import { GraphQLResolveInfo } from 'graphql';
 
 import { PaginationArgs } from '../types/pagination';
 import { Token, TokenModel } from '../../app/models/token';
-import { TokenWhere } from '../types/token';
+import { TokenDetail, TokenWhere } from '../types/token';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
@@ -27,10 +27,10 @@ const findTokens = async (
 
 @Resolver()
 class _TokensQueryResolver {
-  @Query(() => Token, { nullable: true })
+  @Query(() => TokenDetail, { nullable: true })
   async getToken(
     @Arg('id', () => String) id: string,
-  ): Promise<Token | undefined> {
+  ): Promise<TokenDetail | undefined> {
     return await getToken(id);
   }
 
