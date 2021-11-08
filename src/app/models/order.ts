@@ -47,7 +47,7 @@ export class Order {
 
   @Field({ description: 'When this order was created.' })
   @prop({ required: true })
-  public createdAt!: string;
+  public createdAt!: Date;
 
   @Field({ description: 'Is `AUCTION` for auctions and `DIRECT` for direct sales.' })
   @prop({ required: true, enum: OrderKind })
@@ -59,11 +59,11 @@ export class Order {
 
   @Field({ nullable: true, description: 'The opening (Epoch) time in UTC.' })
   @prop()
-  public openFrom?: string;
+  public openFrom?: Date;
 
   @Field({ nullable: true, description: 'The closing (Epoch) time in UTC.' })
   @prop()
-  public openTo?: string;
+  public openTo?: Date;
 
   @Field({ description: 'The maker (seller).' })
   @prop({ required: true })

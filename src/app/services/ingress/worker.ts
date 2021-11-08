@@ -53,9 +53,13 @@ const process = async (data: IngressQuery) => {
   data.orders?.forEach((item) => {
     const order = {
       ...excludeNull(item),
+      createdAt: new Date(+item.createdAt * 1000),
       kind: item.kind as string as OrderKind,
+      openFrom: item.openFrom ? new Date(+item.openFrom * 1000) : undefined,
+      openTo: item.openTo ? new Date(+item.openTo * 1000) : undefined,
       token: item.token.id,
     };
+
     const token = excludeNull(item.token);
 
     orders.push(order);
