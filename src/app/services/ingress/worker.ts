@@ -3,6 +3,7 @@ import { Counter, Histogram } from 'prom-client';
 import { Job, JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
 
 import { createConnection } from '../../helpers/bullmq';
+import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
 import { getSimpleFetchableUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
@@ -60,7 +61,7 @@ const process = async (data: IngressQuery) => {
       token: item.token.id,
     };
 
-    const token = excludeNull(item.token);
+    const token = createToken(item.token);
 
     orders.push(order);
     ordersToken[order.id] = token;
@@ -76,7 +77,7 @@ const process = async (data: IngressQuery) => {
     // when processing data of multiple blocks, the token can be in both tokens and orders
     if (tokensOrders[item.id]) return;
 
-    const token = excludeNull(item);
+    const token = createToken(item);
 
     tokens.push(token);
   });

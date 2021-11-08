@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { excludeNull, ExcludeNull } from '../utils/object';
+import { excludeNull } from '../utils/object';
 import { getOrSet } from '../helpers/redis';
 import { pubSub } from '../helpers/pub-sub';
 import * as enrich from './enrich/queue';
@@ -8,16 +8,23 @@ import * as indexer from '../helpers/indexer';
 
 import { Token, TokenModel } from '../models/token';
 
-import { GetTokenQuery, GetTokenQueryVariables, GetTokensQuery, GetTokensQueryVariables } from '../../lib/lemonade-marketplace/types.generated';
 import { GetToken, GetTokens } from '../../lib/lemonade-marketplace/documents.generated';
+import { GetTokenQuery, GetTokenQueryVariables, GetTokensQuery, GetTokensQueryVariables, Token as GeneratedToken } from '../../lib/lemonade-marketplace/types.generated';
 
-const TIMEOUT = 10000;
+type RequiredKeys<T> = { [K in keyof T]-?: Record<string, unknown> extends Pick<T, K> ? never : K }[keyof T];
+type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>>;
+
+const ENRICH_TIMEOUT = 10000;
 
 const emitter = new EventEmitter();
 
 pubSub.subscribe<Token>('token_updated', function onMessage(token) {
   emitter.emit('token_updated', token);
 });
+
+export function createToken<T extends GraphQLToken>(token: T) {
+  return excludeNull(token);
+}
 
 async function waitForEnrich(tokens: Token[]) {
   const map = new Map(tokens.map((token) => [token.id, token]));
@@ -45,7 +52,9 @@ async function waitForEnrich(tokens: Token[]) {
           token,
         })));
       })()),
-      new Promise<void>((approve) => timeout = setTimeout(approve, TIMEOUT)),
+      new Promise<void>((approve) =>
+        timeout = setTimeout(approve, ENRICH_TIMEOUT)
+      ),
     ]);
   } finally {
     if (timeout) {
@@ -58,23 +67,19 @@ async function waitForEnrich(tokens: Token[]) {
   }
 }
 
-type FetchToken<T> = Pick<Token, keyof Token & keyof T | 'metadata'>;
-
-async function fetch<T extends { id: string }>(
-  items: T[],
-): Promise<FetchToken<T>[]> {
+async function fetch<T extends GraphQLToken>(items: T[]) {
   const docs = await TokenModel.find(
     { id: { $in: items.map(({ id }) => id) }, metadata: { $exists: true } },
     { id: 1, metadata: 1 },
-  ).lean();
-  const map = Object.fromEntries(docs.map((doc) => [doc.id as string, doc]));
+  ).lean<{ id: string; metadata: Record<string, unknown> }[]>();
+  const map = Object.fromEntries(docs.map((doc) => [doc.id, doc]));
 
-  const tokens: FetchToken<T>[] = [];
-  const missing: Token[] = [];
+  const tokens = [];
+  const missing = [];
 
   for (const item of items) {
     const doc = map[item.id];
-    const token = { ...excludeNull(item), ...doc };
+    const token = createToken({ ...item, ...doc });
 
     tokens.push(token);
     if (!doc) missing.push(token);
@@ -87,7 +92,7 @@ async function fetch<T extends { id: string }>(
   return tokens;
 }
 
-export async function getTokens(variables: GetTokensQueryVariables): Promise<Token[]> {
+export async function getTokens(variables: GetTokensQueryVariables) {
   const { data: { tokens } } = await indexer.client.query<GetTokensQuery, GetTokensQueryVariables>({
     query: GetTokens,
     variables,
@@ -98,13 +103,7 @@ export async function getTokens(variables: GetTokensQueryVariables): Promise<Tok
   return await fetch(tokens);
 }
 
-export async function getToken(
-  id: string,
-  shouldResolveExternally?: boolean,
-): Promise<ExcludeNull<GetTokenQuery['token']> & Token | undefined> {
-  let external: ExcludeNull<GetTokenQuery['token']> | null = null;
-  let internal: Token | null = null;
-
+export async function getToken(id: string, shouldResolveExternally?: boolean) {
   const externalResolver = () =>
     getOrSet(id, async function fn() {
       const { data: { token } } = await indexer.client.query<GetTokenQuery, GetTokenQueryVariables>({
@@ -112,10 +111,13 @@ export async function getToken(
         variables: { id },
       });
 
-      if (token) return excludeNull(token);
+      if (token) return createToken(token);
     });
   const internalResolver = () =>
-    TokenModel.findOne({ id }).lean();
+    TokenModel.findOne({ id }).lean<Token>();
+
+  let external;
+  let internal;
 
   if (shouldResolveExternally) {
     [external, internal] = await Promise.all([
@@ -130,7 +132,7 @@ export async function getToken(
 
   if (!external && !internal) return;
 
-  const token = { ...external, ...internal } as ExcludeNull<GetTokenQuery['token']> & Token;
+  const token = { ...external, ...internal };
 
   if (!internal?.metadata) {
     await waitForEnrich([token]);
