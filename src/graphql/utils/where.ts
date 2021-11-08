@@ -21,6 +21,8 @@ export const getFilter = <T>(
 
     if ((prop = beforeEnd(key, '_eq'))) {
       condition = value;
+    } else if ((prop = beforeEnd(key, '_exists'))) {
+      condition = { $exists: value };
     } else if (value instanceof Array && (prop = beforeEnd(key, '_in'))) {
       condition = { $in: value };
     }
@@ -44,6 +46,8 @@ export const validate = <T extends Record<string, any>>(
 
     if ((prop = beforeEnd(key, '_eq'))) {
       return doc[prop] === value;
+    } else if ((prop = beforeEnd(key, '_exists'))) {
+      return !!doc[prop] === value;
     } else if (value instanceof Array && (prop = beforeEnd(key, '_in'))) {
       return value.includes(doc[prop]);
     }

@@ -6,6 +6,7 @@ const metadata = getMetadataStorage();
 
 type WhereType<T> =
     { [K in keyof T as `${K & string}_eq`]?: T[K]; }
+  & { [K in keyof T as `${K & string}_exists`]?: boolean; }
   & { [K in keyof T as `${K & string}_in`]?: T[K][]; };
 type WhereKeys<T> = { [K in keyof T]: Exclude<T[K], string> extends Record<string, any> ? never : K }[keyof T];
 export type Where<T> = WhereType<Pick<T, WhereKeys<T>>>;
@@ -25,6 +26,13 @@ export const WhereInput = <TClassType extends ClassType>(
         ...f,
         name: `${f.name}_eq`,
         schemaName: `${f.name}_eq`,
+        typeOptions: { nullable: true },
+      },
+      {
+        ...f,
+        getType: () => Boolean,
+        name: `${f.name}_exists`,
+        schemaName: `${f.name}_exists`,
         typeOptions: { nullable: true },
       },
       {
