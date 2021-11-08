@@ -1,6 +1,8 @@
 import { MiddlewareFn } from 'type-graphql';
 import * as prom from 'prom-client';
 
+import { isChildOfRoot } from '../utils/schema';
+
 const labelNames = ['operation', 'field_name'];
 const graphqlRequestsTotal = new prom.Counter({
   labelNames,
@@ -14,6 +16,8 @@ const graphqlRequestDurationSeconds = new prom.Histogram({
 });
 
 export const PrometheusMiddleware: MiddlewareFn = async ({ info }, next) => {
+  if (!isChildOfRoot(info)) return await next();
+
   const graphqlRequestDurationTimer = graphqlRequestDurationSeconds.startTimer();
 
   try {
