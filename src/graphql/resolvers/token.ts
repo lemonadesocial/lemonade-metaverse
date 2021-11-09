@@ -34,7 +34,7 @@ class _TokensQueryResolver {
     @Arg('id', () => String) id: string,
     @Fields() fields: FieldTree,
   ): Promise<TokenDetail | undefined> {
-    return await getToken(id, !!fields.owner || !!fields.transfer);
+    return await getToken(id, !!fields.owner || !!fields.transfers);
   }
 
   @Query(() => [Token])
