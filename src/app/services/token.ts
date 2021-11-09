@@ -11,9 +11,6 @@ import { Token, TokenModel } from '../models/token';
 import { GetToken, GetTokens } from '../../lib/lemonade-marketplace/documents.generated';
 import { GetTokenQuery, GetTokenQueryVariables, GetTokensQuery, GetTokensQueryVariables, Token as GeneratedToken } from '../../lib/lemonade-marketplace/types.generated';
 
-type RequiredKeys<T> = { [K in keyof T]-?: Record<string, unknown> extends Pick<T, K> ? never : K }[keyof T];
-type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>>;
-
 const ENRICH_TIMEOUT = 10000;
 
 const emitter = new EventEmitter();
@@ -22,8 +19,14 @@ pubSub.subscribe<Token>('token_updated', function onMessage(token) {
   emitter.emit('token_updated', token);
 });
 
-export function createToken<T extends GraphQLToken>(token: T) {
-  return excludeNull(token);
+type RequiredKeys<T> = { [K in keyof T]-?: Record<string, unknown> extends Pick<T, K> ? never : K }[keyof T];
+type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>> & Partial<Pick<GeneratedToken, 'createdAt'>>;
+
+export function createToken<T extends GraphQLToken>({ createdAt, ...token }: T) {
+  return {
+    ...excludeNull(token),
+    createdAt: createdAt ? new Date(+createdAt * 1000) : undefined,
+  };
 }
 
 async function waitForEnrich(tokens: Token[]) {

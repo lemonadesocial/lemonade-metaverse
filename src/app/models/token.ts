@@ -16,7 +16,7 @@ export class Token {
 
   @Field({ nullable: true, description: 'When this token was created.' })
   @prop()
-  public createdAt?: string;
+  public createdAt?: Date;
 
   @Field({ nullable: true, description: 'The creator.' })
   @prop()
