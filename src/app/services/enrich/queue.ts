@@ -11,12 +11,12 @@ import { redis } from '../../helpers/redis';
 const queue = new Queue<JobData>(QUEUE_NAME, { connection: createConnection() });
 const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: createConnection() });
 
-export const waitUntilReady = async (): Promise<void> => {
+export async function waitUntilReady(): Promise<void> {
   await Promise.all([
     queue.waitUntilReady(),
     queueScheduler.waitUntilReady(),
   ]);
-};
+}
 
 /**
  * Adds the given items to the queue.
@@ -31,9 +31,9 @@ export const waitUntilReady = async (): Promise<void> => {
  *  3) job 1 uses the oudated data and job 2 uses the updated data, when ingress updates the data after the job 1 reaches the query statement, and creates job 2 after job 1 completes
  *  4) job 1 uses the outdated data, when ingress updates the data after job 1 reaches the query statement, and attempts to create the job before job 1 completes (i.e. while it is still running) (@todo: apply locking)
  */
-export const enqueue = async (
-  ...items: { token: Token; orders?: Order[] }[]
-): Promise<void> => {
+export async function enqueue(
+   ...items: { token: Token; orders?: Order[] }[]
+): Promise<void> {
   if (!items.length) return;
 
   const commands: string[][] = [];
@@ -61,9 +61,9 @@ export const enqueue = async (
 
   if (commands.length) await redis.multi(commands).exec();
   await queue.addBulk(jobs);
-};
+}
 
-export const close = async (): Promise<void> => {
+export async function close(): Promise<void> {
   await queue.close();
   await queueScheduler.close();
-};
+}
