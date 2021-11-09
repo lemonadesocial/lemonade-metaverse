@@ -7,7 +7,7 @@ interface FetchableUrl {
   href: string;
 }
 
-export const getFetchableUrl = (url: string): FetchableUrl => {
+export function getFetchableUrl(url: string): FetchableUrl {
   const { protocol, href } = new URL(url);
 
   switch (protocol) {
@@ -19,12 +19,12 @@ export const getFetchableUrl = (url: string): FetchableUrl => {
     default:
       throw new Error(`unsupported protocol ${protocol}`);
   }
-};
+}
 
-export const getSimpleFetchableUrl = (url: unknown): string | undefined => {
+export function getFetchableUrlSafe(url: unknown): string | undefined {
   if (typeof url !== 'string') return;
 
   try {
     return getFetchableUrl(url).href;
   } catch { /* no-op */ }
-};
+}

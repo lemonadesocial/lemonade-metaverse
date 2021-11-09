@@ -13,7 +13,7 @@ import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
 import { createConnection } from '../../helpers/bullmq';
-import { getFetchableUrl, getSimpleFetchableUrl } from '../../utils/url';
+import { getFetchableUrl, getFetchableUrlSafe } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
@@ -80,7 +80,7 @@ const processor: Processor<JobData> = async (job) => {
     getOrders(job),
     pubSub.publish('token_updated', token),
   ]);
-  const imageUrl = getSimpleFetchableUrl(token.metadata.image);
+  const imageUrl = getFetchableUrlSafe(token.metadata.image);
 
   if (orders.length) {
     for (const order of orders) {

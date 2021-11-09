@@ -5,7 +5,7 @@ import { Job, JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bull
 import { createConnection } from '../../helpers/bullmq';
 import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
-import { getSimpleFetchableUrl } from '../../utils/url';
+import { getFetchableUrlSafe } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
 import * as enrich from '../enrich/queue';
@@ -136,7 +136,7 @@ const process = async (data: IngressQuery) => {
       ...map[order.token],
     };
 
-    logger.info({ order, token, imageUrl: getSimpleFetchableUrl(token.metadata.image) }, 'ingress order');
+    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata.image) }, 'ingress order');
 
     promises.push(
       pubSub.publish('order_updated', { ...order, token })
