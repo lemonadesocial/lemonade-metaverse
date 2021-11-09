@@ -5,6 +5,7 @@ import { Job, JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bull
 import { createConnection } from '../../helpers/bullmq';
 import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
+import { getDate } from '../../utils/date';
 import { getFetchableUrlSafe } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub } from '../../helpers/pub-sub';
@@ -54,10 +55,10 @@ const process = async (data: IngressQuery) => {
   data.orders?.forEach((item) => {
     const order = {
       ...excludeNull(item),
-      createdAt: new Date(+item.createdAt * 1000),
+      createdAt: getDate(item.createdAt),
       kind: item.kind as string as OrderKind,
-      openFrom: item.openFrom ? new Date(+item.openFrom * 1000) : undefined,
-      openTo: item.openTo ? new Date(+item.openTo * 1000) : undefined,
+      openFrom: item.openFrom ? getDate(item.openFrom) : undefined,
+      openTo: item.openTo ? getDate(item.openTo) : undefined,
       token: item.token.id,
     };
 

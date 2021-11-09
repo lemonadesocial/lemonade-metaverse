@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { excludeNull } from '../utils/object';
+import { getDate } from '../utils/date';
 import { getOrSet } from '../helpers/redis';
 import { pubSub } from '../helpers/pub-sub';
 import * as enrich from './enrich/queue';
@@ -25,7 +26,7 @@ type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>> & Partial<Pick<Gen
 export function createToken<T extends GraphQLToken>({ createdAt, ...token }: T) {
   return {
     ...excludeNull(token),
-    createdAt: createdAt ? new Date(+createdAt * 1000) : undefined,
+    createdAt: createdAt ? getDate(createdAt) : undefined,
   };
 }
 
