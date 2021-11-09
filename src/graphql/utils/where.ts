@@ -48,16 +48,16 @@ export const validate = <T extends Record<string, any>>(
   return Object.entries(where).every(([key, value]) => {
     let prop;
 
-    if (typeof value === 'boolean') {       // boolean
-      if (prop = beforeEnd(key, '_exists')) return !!doc[prop] === value;
-    } else if (value instanceof Array) {    // array
-      if (prop = beforeEnd(key, '_in'))     return value.includes(doc[prop]);
-    } else {                                // unknown
-      if (prop = beforeEnd(key, '_eq'))     return doc[prop] === value;
-      if (prop = beforeEnd(key, '_gt'))     return doc[prop] > <number>value;
-      if (prop = beforeEnd(key, '_gte'))    return doc[prop] >= <number>value;
-      if (prop = beforeEnd(key, '_lt'))     return doc[prop] < <number>value;
-      if (prop = beforeEnd(key, '_lte'))    return doc[prop] <= <number>value;
+    if (typeof value === 'boolean') {         // boolean
+      if ((prop = beforeEnd(key, '_exists'))) return !!doc[prop] === value;
+    } else if (value instanceof Array) {      // array
+      if ((prop = beforeEnd(key, '_in')))     return value.includes(doc[prop]);
+    } else {                                  // unknown
+      if ((prop = beforeEnd(key, '_eq')))     return doc[prop] === value;
+      if ((prop = beforeEnd(key, '_gt')))     return doc[prop] > <number>value;
+      if ((prop = beforeEnd(key, '_gte')))    return doc[prop] >= <number>value;
+      if ((prop = beforeEnd(key, '_lt')))     return doc[prop] < <number>value;
+      if ((prop = beforeEnd(key, '_lte')))    return doc[prop] <= <number>value;
 
       if (Object.prototype.toString.call(value) === '[object Object]') {
         return validate(value as Where<unknown>, doc[key]);
