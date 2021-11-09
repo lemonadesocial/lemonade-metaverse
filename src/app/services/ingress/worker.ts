@@ -22,6 +22,15 @@ import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marke
 const POLL_FIRST = 1000;
 const QUEUE_NAME = 'bullmq:ingress';
 
+const jobOptions: JobsOptions = {
+  attempts: Number.MAX_VALUE,
+  backoff: 1000,
+  delay: 1000,
+  removeOnComplete: true,
+  removeOnFail: true,
+};
+const stateQuery = { key: 'ingress' };
+
 const ingressesTotal = new Counter({
   labelNames: ['status'],
   name: 'metaverse_ingresses_total',
@@ -37,16 +46,7 @@ const ingressTimeToRecoverySeconds = new Histogram({
   buckets: [1, 5, 30, 60, 300, 900, 1800, 3600, 7200, 10800, 14400],
 });
 
-const jobOptions: JobsOptions = {
-  attempts: Number.MAX_VALUE,
-  backoff: 1000,
-  delay: 1000,
-  removeOnComplete: true,
-  removeOnFail: true,
-};
-const stateQuery = { key: 'ingress' };
-
-const process = async (data: IngressQuery) => {
+async function process(data: IngressQuery) {
   const orders: Order[] = [];
   const ordersToken: Record<string, Token> = {};
   const tokens: Token[] = [];
@@ -67,16 +67,16 @@ const process = async (data: IngressQuery) => {
     orders.push(order);
     ordersToken[order.id] = token;
 
-    // multiple orders can have the same token, which are all closed except potentially the last
-    if (tokensOrders[token.id]) return tokensOrders[token.id].push(order);
-
-    tokens.push(token);
-    tokensOrders[token.id] = [order];
+    if (tokensOrders[token.id]) { // multiple orders can have the same token, which are all closed except potentially the last
+      tokensOrders[token.id].push(order);
+    } else {
+      tokens.push(token);
+      tokensOrders[token.id] = [order];
+    }
   });
 
   data.tokens?.forEach((item) => {
-    // when processing data of multiple blocks, the token can be in both tokens and orders
-    if (tokensOrders[item.id]) return;
+    if (tokensOrders[item.id]) return; // when processing data of multiple blocks, the token can be in both tokens and orders
 
     const token = createToken(item);
 
@@ -132,10 +132,7 @@ const process = async (data: IngressQuery) => {
   orders.forEach((order) => {
     if (!map[order.token]) return; // deligate to enrich
 
-    const token = {
-      ...ordersToken[order.id],
-      ...map[order.token],
-    };
+    const token = { ...ordersToken[order.id], ...map[order.token] };
 
     logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata.image) }, 'ingress order');
 
@@ -145,9 +142,9 @@ const process = async (data: IngressQuery) => {
   });
 
   await Promise.all(promises);
-};
+}
 
-const poll = async (data: JobData): Promise<JobData> => {
+async function poll(data: JobData): Promise<JobData> {
   const { orders_lastBlock_gt, tokens_createdAt_gt } = data;
   const nextData = { ...data };
 
@@ -204,7 +201,7 @@ const poll = async (data: JobData): Promise<JobData> => {
   } while (orders_first || tokens_first);
 
   return nextData;
-};
+}
 
 interface JobData {
   orders_lastBlock_gt?: string;
@@ -231,14 +228,14 @@ const processor: Processor<JobData> = async ({ data }) => {
   ingressDurationTimer();
 };
 
-const getJobTiming = ({ timestamp }: Job<JobData>) => {
+function getJobTiming({ timestamp }: Job<JobData>) {
   return {
     secondsElapsed: (Date.now() - timestamp) / 1000,
     timestamp: new Date(timestamp),
   };
-};
+}
 
-export const start = async (): Promise<void> => {
+export async function start(): Promise<void> {
   queue = new Queue<JobData>(QUEUE_NAME, { connection: createConnection() });
   queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: createConnection() });
   await Promise.all([
@@ -269,13 +266,13 @@ export const start = async (): Promise<void> => {
     }
   });
   await worker.waitUntilReady();
-};
+}
 
-export const stop = async (): Promise<void> => {
+export async function stop(): Promise<void> {
   if (worker) await worker.close();
   indexer.stop();
 
   await enrich.close();
   if (queue) await queue.close();
   if (queueScheduler) await queueScheduler.close();
-};
+}
