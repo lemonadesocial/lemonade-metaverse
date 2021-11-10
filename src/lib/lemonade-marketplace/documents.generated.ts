@@ -62,7 +62,13 @@ export const Ingress = gql`
     ${tokenFields}`;
 export const GetTokens = gql`
     query GetTokens($where: Token_filter, $skip: Int, $first: Int) {
-  tokens(where: $where, skip: $skip, first: $first) {
+  tokens(
+    where: $where
+    orderBy: createdAt
+    orderDirection: desc
+    skip: $skip
+    first: $first
+  ) {
     ...tokenFields
   }
 }
