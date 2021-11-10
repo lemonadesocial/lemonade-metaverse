@@ -5,7 +5,7 @@ import { Fields } from '../decorators/fields';
 
 import { PaginationArgs } from '../types/pagination';
 import { Token, TokenModel } from '../../app/models/token';
-import { TokenDetail, TokenWhere } from '../types/token';
+import { TokenDetail, TokenSort, TokenWhere } from '../types/token';
 import { Trigger } from '../../app/helpers/pub-sub';
 
 import { getFieldTree, getFieldProjection, FieldTree } from '../utils/field';
@@ -14,7 +14,7 @@ import { getToken, getTokens } from '../../app/services/token';
 import { subscribe } from '../utils/subscription';
 
 const findTokens = async (
-  { skip, limit, where }: PaginationArgs & { where?: TokenWhere | null },
+  { skip, limit, sort, where }: PaginationArgs & { sort?: TokenSort | null; where?: TokenWhere | null },
   info: GraphQLResolveInfo,
 ) => {
   const fields = getFieldTree(info);
@@ -22,6 +22,7 @@ const findTokens = async (
 
   return await TokenModel.aggregate([
     { $match: query },
+    ...sort ? [{ $sort: sort.toDocument() }] : [],
     { $skip: skip },
     { $limit: limit },
     { $project: getFieldProjection(fields) },
@@ -59,9 +60,10 @@ class _TokensQueryResolver {
   async tokens(
     @Info() info: GraphQLResolveInfo,
     @Args() args: PaginationArgs,
+    @Arg('sort', () => TokenSort, { nullable: true }) sort?: TokenSort | null,
     @Arg('where', () => TokenWhere, { nullable: true }) where?: TokenWhere | null,
   ): Promise<Token[]> {
-    return await findTokens({ ...args, where }, info);
+    return await findTokens({ ...args, sort, where }, info);
   }
 }
 
@@ -83,7 +85,8 @@ class _TokensSubscriptionResolver {
     @Root() root: Token[],
     @Args() _: PaginationArgs,
     @Arg('query', () => Boolean, { nullable: true }) __?: boolean | null,
-    @Arg('where', () => TokenWhere, { nullable: true }) ___?: TokenWhere | null,
+    @Arg('sort', () => TokenSort, { nullable: true }) ___?: TokenSort | null,
+    @Arg('where', () => TokenWhere, { nullable: true }) ____?: TokenWhere | null,
   ): Token[] {
     return root;
   }

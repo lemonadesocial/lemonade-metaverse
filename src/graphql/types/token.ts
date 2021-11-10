@@ -1,8 +1,12 @@
 import { Directive, Field, InputType, ObjectType } from 'type-graphql';
 
+import { SortInput } from './sort-input';
 import { Token } from '../../app/models/token';
 import { User } from '../../app/models/user';
-import { WhereInput } from '../types/where-input';
+import { WhereInput } from './where-input';
+
+@InputType()
+export class TokenSort extends SortInput(Token) { }
 
 @InputType()
 export class TokenWhere extends WhereInput(Token) { }
