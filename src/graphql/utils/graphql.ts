@@ -1,18 +1,35 @@
-import { ClassType, getMetadataStorage, InputType, ObjectType } from 'type-graphql';
+/* eslint-disable no-prototype-builtins */
+import { ClassType, getMetadataStorage, InputType, registerEnumType, ObjectType } from 'type-graphql';
 import { FieldMetadata } from 'type-graphql/dist/metadata/definitions';
 
 const metadata = getMetadataStorage();
 
-export const buildType = (
+export function buildEnum<T extends ClassType>(
+  Class: T,
+  name: string,
+): Record<keyof InstanceType<T>, keyof InstanceType<T>> {
+  const enumObj = {} as Record<keyof InstanceType<T>, keyof InstanceType<T>>;
+
+  metadata.fields.forEach((f) => {
+    if (f.target !== Class && !f.target.isPrototypeOf(Class)) return;
+
+    enumObj[f.name as keyof InstanceType<T>] = f.name;
+  });
+
+  registerEnumType(enumObj, { name });
+
+  return enumObj;
+}
+
+export function buildType(
   BaseClass: ClassType,
   buildFn: (f: FieldMetadata) => FieldMetadata[] | undefined,
-): any => {
+): any {
   @InputType({ isAbstract: true })
   @ObjectType({ isAbstract: true })
   class ChildClass { }
 
   metadata.fields.forEach((f) => {
-    // eslint-disable-next-line no-prototype-builtins
     if (f.target !== BaseClass && !f.target.isPrototypeOf(BaseClass)) return;
 
     const fields = buildFn(f);
@@ -24,5 +41,5 @@ export const buildType = (
     );
   });
 
-  return ChildClass as any;
-};
+  return ChildClass;
+}
