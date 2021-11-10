@@ -4,8 +4,8 @@ import { registerEnumType, Field, ObjectType } from 'type-graphql';
 import { Token } from './token';
 
 export enum OrderKind {
-  Auction = 'AUCTION',
-  Direct = 'DIRECT',
+  AUCTION = 'AUCTION',
+  DIRECT = 'DIRECT',
 }
 registerEnumType(OrderKind, { name: 'OrderKind' });
 
@@ -49,7 +49,7 @@ export class Order {
   @prop({ required: true })
   public createdAt!: Date;
 
-  @Field({ description: 'Is `AUCTION` for auctions and `DIRECT` for direct sales.' })
+  @Field(() => OrderKind, { description: 'Is `AUCTION` for auctions and `DIRECT` for direct sales.' })
   @prop({ required: true, enum: OrderKind })
   public kind!: OrderKind;
 
