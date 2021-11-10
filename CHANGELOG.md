@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v2.0.0...v2.1.0) (2021-11-10)
+
+
+### Features
+
+* **graphql:** add arithmetic where filters ([5bf7307](https://github.com/lemonadesocial/lemonade-metaverse/commit/5bf73070eb572903c590a5fc4f1ff169b0ba8bf6))
+* **graphql:** add exists where filter ([4bb2061](https://github.com/lemonadesocial/lemonade-metaverse/commit/4bb20616e3969e91f94aa01558c594ba3fce522f))
+* **graphql:** only execute middleware for first-level resolvers ([2b9f10f](https://github.com/lemonadesocial/lemonade-metaverse/commit/2b9f10fd0e047ca6045efe9d4c0558f337d7e1f5))
+* **order:** store created at, open from, and open to as dates ([dd52aad](https://github.com/lemonadesocial/lemonade-metaverse/commit/dd52aade95e22d1b86311500571cc38e68136ced))
+* **token:** add get tokens by creator ([b9d8c93](https://github.com/lemonadesocial/lemonade-metaverse/commit/b9d8c93bdddf8204726ab5f794a4ec0a0a107d95))
+* **token:** standardize token creation ([f713116](https://github.com/lemonadesocial/lemonade-metaverse/commit/f71311625f4e755291dd89f7b5986a1a3a803dee))
+* **token:** store token created at as date ([ca04a18](https://github.com/lemonadesocial/lemonade-metaverse/commit/ca04a18607435351dd2cf6c9a08450d70131b1f6))
+* **utils:** add get date util to convert epoch to date ([13f22e0](https://github.com/lemonadesocial/lemonade-metaverse/commit/13f22e0393a4f9eda26a47820c3754ef0e1a8d83))
+
+
+### Bug Fixes
+
+* **order:** fix error when listing orders without filter ([966b81a](https://github.com/lemonadesocial/lemonade-metaverse/commit/966b81a1f5afb5d17e96d57eba465aa656e3d1a9))
+* **token:** fix get token detail detection ([b6074e0](https://github.com/lemonadesocial/lemonade-metaverse/commit/b6074e05651da7911e3aa6875d079e1211f49a42))
+
 ## [2.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v1.8.0...v2.0.0) (2021-11-05)
 
 
