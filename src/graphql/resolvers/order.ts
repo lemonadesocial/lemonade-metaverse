@@ -4,6 +4,7 @@ import { GraphQLResolveInfo } from 'graphql';
 import { Order, OrderWhere } from '../types/order';
 import { OrderModel } from '../../app/models/order';
 import { PaginationArgs } from '../types/pagination';
+import { Trigger } from '../../app/helpers/pub-sub';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
@@ -55,7 +56,7 @@ class _OrdersSubscriptionResolver {
   @Subscription(
     () => [Order],
     {
-      subscribe: subscribe<Order[], Order>('order_updated', {
+      subscribe: subscribe<Order[], Order>(Trigger.OrderUpdated, {
         init: async function* ({ args, info }) {
           if (args.query) yield findOrders(args, info);
         },

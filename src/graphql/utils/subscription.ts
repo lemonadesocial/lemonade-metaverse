@@ -1,7 +1,7 @@
 
 import { GraphQLResolveInfo } from 'graphql';
 
-import { pubSub } from '../../app/helpers/pub-sub';
+import { pubSub, Trigger } from '../../app/helpers/pub-sub';
 
 interface SubscribeContext<TState, TSource, TArgs, TContext> {
   state: TState;
@@ -18,7 +18,7 @@ interface SubscribeOptions<TResult, TPayload, TState, TSource, TArgs, TContext> 
 }
 
 export const subscribe = <TResult, TPayload, TState = any, TSource = any, TArgs = any, TContext = any>(
-  topics: string | string[],
+  topics: Trigger | Trigger[],
   { init, filter, process }: SubscribeOptions<TResult, TPayload, TState, TSource, TArgs, TContext>,
 ): (source: any, args: TArgs, context: TContext, info: GraphQLResolveInfo) => AsyncIterator<TResult> => {
   return async function* (source, args, context, info) {

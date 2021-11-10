@@ -6,6 +6,7 @@ import { Fields } from '../decorators/fields';
 import { PaginationArgs } from '../types/pagination';
 import { Token, TokenModel } from '../../app/models/token';
 import { TokenDetail, TokenWhere } from '../types/token';
+import { Trigger } from '../../app/helpers/pub-sub';
 
 import { getFieldTree, getFieldProjection, FieldTree } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
@@ -68,7 +69,7 @@ class _TokensSubscriptionResolver {
   @Subscription(
     () => [Token],
     {
-      subscribe: subscribe<Token[], Token>('token_updated', {
+      subscribe: subscribe<Token[], Token>(Trigger.TokenUpdated, {
         init: async function* ({ args, info }) {
           if (args.query) yield findTokens(args, info);
         },

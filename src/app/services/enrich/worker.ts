@@ -15,7 +15,7 @@ import { BufferQueue } from '../../utils/buffer-queue';
 import { createConnection } from '../../helpers/bullmq';
 import { getFetchableUrl, getFetchableUrlSafe } from '../../utils/url';
 import { logger } from '../../helpers/pino';
-import { pubSub } from '../../helpers/pub-sub';
+import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
 
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
@@ -81,7 +81,7 @@ const processor: Processor<JobData> = async (job) => {
 
   const [orders] = await Promise.all([
     getOrders(job),
-    pubSub.publish('token_updated', token),
+    pubSub.publish(Trigger.TokenUpdated, token),
   ]);
 
   const imageUrl = getFetchableUrlSafe(token.metadata.image);
@@ -90,7 +90,7 @@ const processor: Processor<JobData> = async (job) => {
     for (const order of orders) {
       logger.info({ order, token, imageUrl }, 'enrich order');
 
-      await pubSub.publish('order_updated', { ...order, token });
+      await pubSub.publish(Trigger.OrderUpdated, { ...order, token });
     }
   } else {
     logger.info({ token, imageUrl }, 'enrich token');

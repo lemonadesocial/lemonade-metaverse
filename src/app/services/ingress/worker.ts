@@ -8,7 +8,7 @@ import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
 import { getFetchableUrlSafe } from '../../utils/url';
 import { logger } from '../../helpers/pino';
-import { pubSub } from '../../helpers/pub-sub';
+import { pubSub, Trigger } from '../../helpers/pub-sub';
 import * as enrich from '../enrich/queue';
 import * as indexer from '../../helpers/indexer';
 
@@ -137,7 +137,7 @@ async function process(data: IngressQuery) {
     logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata.image) }, 'ingress order');
 
     promises.push(
-      pubSub.publish('order_updated', { ...order, token })
+      pubSub.publish(Trigger.OrderUpdated, { ...order, token })
     );
   });
 
