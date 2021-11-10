@@ -44,11 +44,12 @@ class _TokensQueryResolver {
     @Arg('id', () => String, { nullable: true }) id?: string,
     @Arg('id_in', () => [String], { nullable: true }) id_in?: string[],
     @Arg('contract', () => String, { nullable: true }) contract?: string,
+    @Arg('creator', () => String, { nullable: true }) creator?: string,
     @Arg('tokenId', () => String, { nullable: true }) tokenId?: string,
     @Arg('owner', () => String, { nullable: true }) owner?: string,
   ): Promise<Token[]> {
     return await getTokens({
-      where: { id, id_in, contract, tokenId, owner },
+      where: { id, id_in, contract, creator, tokenId, owner },
       skip,
       first: limit,
     });
