@@ -24,7 +24,7 @@ export const getFilter = <T>(
     } else if (value instanceof Array) {        // array
       if ((prop = beforeEnd(key, '_in')))       condition = { $in: value };
     } else {                                    // unknown
-      if ((prop = beforeEnd(key, '_eq')))       condition = value;
+      if ((prop = beforeEnd(key, '_eq')))       condition = { $eq: value };
       else if ((prop = beforeEnd(key, '_gt')))  condition = { $gt: value };
       else if ((prop = beforeEnd(key, '_gte'))) condition = { $gte: value };
       else if ((prop = beforeEnd(key, '_lt')))  condition = { $lt: value };
