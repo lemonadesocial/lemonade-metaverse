@@ -8,6 +8,7 @@ import { Trigger } from '../../app/helpers/pub-sub';
 
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
+import { getSort } from '../utils/sort';
 import { subscribe } from '../utils/subscription';
 
 const findOrders = async (
@@ -33,7 +34,7 @@ const findOrders = async (
       },
       { $unwind: '$token' },
     ] : [],
-    ...sort ? [{ $sort: sort.toDocument() }] : [],
+    ...sort ? [{ $sort: getSort(sort) }] : [],
     { $skip: skip },
     { $limit: limit },
     { $project: getFieldProjection(fields) },

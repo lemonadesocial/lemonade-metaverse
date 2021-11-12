@@ -8,12 +8,10 @@ export enum SortDirection {
 }
 registerEnumType(SortDirection, { name: 'SortDirection' });
 
-type Sort<T> = {
+export interface Sort<T> {
   by: keyof T;
   direction: SortDirection;
-
-  toDocument(): Record<string, number>;
-};
+}
 
 export function SortInput<T extends ClassType>(
   Class: T,
@@ -27,10 +25,6 @@ export function SortInput<T extends ClassType>(
 
     @Field(() => SortDirection, { defaultValue: SortDirection.ASC })
     public direction!: SortDirection;
-
-    public toDocument() {
-      return { [this.by]: this.direction === SortDirection.ASC ? 1 : -1 };
-    }
   }
 
   return SortClass;

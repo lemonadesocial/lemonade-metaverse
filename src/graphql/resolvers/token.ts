@@ -10,6 +10,7 @@ import { Trigger } from '../../app/helpers/pub-sub';
 
 import { getFieldTree, getFieldProjection, FieldTree } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
+import { getSort } from '../utils/sort';
 import { getToken, getTokens } from '../../app/services/token';
 import { subscribe } from '../utils/subscription';
 
@@ -22,7 +23,7 @@ const findTokens = async (
 
   return await TokenModel.aggregate([
     { $match: query },
-    ...sort ? [{ $sort: sort.toDocument() }] : [],
+    ...sort ? [{ $sort: getSort(sort) }] : [],
     { $skip: skip },
     { $limit: limit },
     { $project: getFieldProjection(fields) },
