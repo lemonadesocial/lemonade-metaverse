@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v2.1.0...v2.2.0) (2021-11-12)
+
+
+### Features
+
+* **graphql:** add sort input type ([d04245f](https://github.com/lemonadesocial/lemonade-metaverse/commit/d04245f986cff15e1c20c4d869754cf8532473a0))
+* **graphql:** add util to build enum of all fields in type ([2e30316](https://github.com/lemonadesocial/lemonade-metaverse/commit/2e30316b956252aff781e159e9203fcad8046ec7))
+* **order:** add ability to sort ([d2dff3f](https://github.com/lemonadesocial/lemonade-metaverse/commit/d2dff3fc3e81118b32fdc68cfa1709e74f79e982))
+* **token:** add ability to sort ([2c3480a](https://github.com/lemonadesocial/lemonade-metaverse/commit/2c3480a4ec6b76b0c541f0daaf3a9fcd5e72922c))
+* **token:** always sort external get tokens by created at ([146fa2f](https://github.com/lemonadesocial/lemonade-metaverse/commit/146fa2f135b34dece17587c9db4d2a36ba7c6a2a))
+
+
+### Bug Fixes
+
+* **graphql:** fix equals where filter ([66aa7db](https://github.com/lemonadesocial/lemonade-metaverse/commit/66aa7db377336a244cb8c8091b21018138f8f520))
+* **graphql:** fix equals where filter with boolean value ([f1bd566](https://github.com/lemonadesocial/lemonade-metaverse/commit/f1bd566f2e597dc399907f7ddf5b9100c4d8e400))
+* **graphql:** fix sort by moving logic outside data class ([3947923](https://github.com/lemonadesocial/lemonade-metaverse/commit/3947923f4d02c32b364b4397a53bda33a43dafd6))
+
 ## [2.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v2.0.0...v2.1.0) (2021-11-10)
 
 
