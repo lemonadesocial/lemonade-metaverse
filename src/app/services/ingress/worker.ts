@@ -19,17 +19,15 @@ import { Token, TokenModel } from '../../models/token';
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 
-const POLL_FIRST = 1000;
-const QUEUE_NAME = 'bullmq:ingress';
+import { isProduction } from '../../../config';
 
-const jobOptions: JobsOptions = {
-  attempts: Number.MAX_VALUE,
-  backoff: 1000,
-  delay: 1000,
-  removeOnComplete: true,
-  removeOnFail: true,
-};
-const stateQuery = { key: 'ingress' };
+const JOB_DELAY = 1000;
+const POLL_FIRST = 1000;
+const POLL_TOKENS_CONTRACTS_IN = isProduction
+  ? ['0x94f73287bc1667f5472485a7bf2bfadc639436c8', '0x7254e06afb533964b389be742524fa696a290c81']
+  : ['0x71deb1a1cfae375ef779b8d4f39f145ab07aa66c', '0x7254e06afb533964b389be742524fa696a290c81'];
+const QUEUE_NAME = 'bullmq:ingress';
+const STATE_KEY = 'ingress';
 
 const ingressesTotal = new Counter({
   labelNames: ['status'],
@@ -45,6 +43,13 @@ const ingressTimeToRecoverySeconds = new Histogram({
   help: 'Time to recovery of metaverse ingress in seconds',
   buckets: [1, 5, 30, 60, 300, 900, 1800, 3600, 7200, 10800, 14400],
 });
+const jobOptions: JobsOptions = {
+  attempts: Number.MAX_VALUE,
+  backoff: JOB_DELAY,
+  delay: JOB_DELAY,
+  removeOnComplete: true,
+  removeOnFail: true,
+};
 
 async function process(data: IngressQuery) {
   const orders: Order[] = [];
@@ -161,6 +166,7 @@ async function poll(data: JobData): Promise<JobData> {
         orders_skip,
         orders_first,
         tokens_include: tokens_first > 0,
+        tokens_contract_in: POLL_TOKENS_CONTRACTS_IN,
         tokens_createdAt_gt,
         tokens_skip,
         tokens_first,
@@ -221,7 +227,7 @@ const processor: Processor<JobData> = async ({ data }) => {
   const hasChanged = keys.length !== Object.keys(data).length || keys.some((x) => nextData[x] !== data[x]);
 
   await Promise.all([
-    hasChanged ? StateModel.updateOne(stateQuery, { $set: { value: nextData } }, { upsert: true }) : null,
+    hasChanged ? StateModel.updateOne({ key: STATE_KEY }, { $set: { value: nextData } }, { upsert: true }) : null,
     queue!.add('*', nextData, jobOptions),
   ]);
 
@@ -245,7 +251,7 @@ export async function start(): Promise<void> {
   ]);
 
   if (!await queue.getJobCountByTypes('active', 'waiting', 'paused', 'delayed')) {
-    const state = await StateModel.findOne(stateQuery, { value: 1 }, { lean: true });
+    const state = await StateModel.findOne({ key: STATE_KEY }, { value: 1 }, { lean: true });
     const job = await queue.add('*', state?.value || {}, jobOptions);
     logger.info(job.asJSON(), 'created ingress job');
   }

@@ -929,6 +929,7 @@ export type IngressQueryVariables = Exact<{
   orders_skip?: Maybe<Scalars['Int']>;
   orders_first?: Maybe<Scalars['Int']>;
   tokens_include: Scalars['Boolean'];
+  tokens_contract_in?: Maybe<Array<Scalars['Bytes']> | Scalars['Bytes']>;
   tokens_createdAt_gt?: Maybe<Scalars['BigInt']>;
   tokens_skip?: Maybe<Scalars['Int']>;
   tokens_first?: Maybe<Scalars['Int']>;

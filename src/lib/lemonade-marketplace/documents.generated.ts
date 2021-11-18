@@ -12,7 +12,7 @@ export const tokenFields = gql`
 }
     `;
 export const Ingress = gql`
-    query Ingress($orders_include: Boolean!, $orders_lastBlock_gt: BigInt = -1, $orders_skip: Int, $orders_first: Int, $tokens_include: Boolean!, $tokens_createdAt_gt: BigInt = -1, $tokens_skip: Int, $tokens_first: Int) {
+    query Ingress($orders_include: Boolean!, $orders_lastBlock_gt: BigInt = -1, $orders_skip: Int, $orders_first: Int, $tokens_include: Boolean!, $tokens_contract_in: [Bytes!], $tokens_createdAt_gt: BigInt = -1, $tokens_skip: Int, $tokens_first: Int) {
   _meta {
     block {
       hash
@@ -54,7 +54,7 @@ export const Ingress = gql`
   tokens(
     orderBy: createdAt
     orderDirection: asc
-    where: {contract_in: ["0x7254e06afb533964b389be742524fa696a290c81"], createdAt_gt: $tokens_createdAt_gt}
+    where: {contract_in: $tokens_contract_in, createdAt_gt: $tokens_createdAt_gt}
   ) @include(if: $tokens_include) {
     ...tokenFields
   }
