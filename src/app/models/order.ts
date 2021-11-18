@@ -15,13 +15,13 @@ export class Currency {
   @prop({ required: true })
   public id!: string;
 
-  @Field()
-  @prop({ required: true })
-  public name!: string;
+  @Field({ nullable: true })
+  @prop()
+  public name?: string;
 
-  @Field()
-  @prop({ required: true })
-  public symbol!: string;
+  @Field({ nullable: true })
+  @prop()
+  public symbol?: string;
 }
 
 @ObjectType({ isAbstract: true })
