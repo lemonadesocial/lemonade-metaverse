@@ -10,7 +10,7 @@ export enum OrderKind {
 registerEnumType(OrderKind, { name: 'OrderKind' });
 
 @ObjectType()
-export class Currency {
+export class OrderCurrency {
   @Field()
   @prop({ required: true })
   public id!: string;
@@ -69,9 +69,9 @@ export class Order {
   @prop({ required: true })
   public maker!: string;
 
-  @Field(() => Currency, { description: 'The ERC20 token the maker wants to be paid in.' })
+  @Field(() => OrderCurrency, { description: 'The ERC20 token the maker wants to be paid in.' })
   @prop({ required: true, _id: false })
-  public currency!: Currency;
+  public currency!: OrderCurrency;
 
   @Field({ description: 'The (minimum) price or amount of ERC20 tokens the maker wants to be paid.' })
   @prop({ required: true })

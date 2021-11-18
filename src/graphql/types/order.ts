@@ -1,6 +1,6 @@
 import { Directive, Field, InputType, ObjectType } from 'type-graphql';
 
-import { Currency, Order as OrderClass } from '../../app/models/order';
+import { Order as OrderClass, OrderCurrency } from '../../app/models/order';
 import { SortInput } from './sort-input';
 import { TokenWhere } from './token';
 import { User } from '../../app/models/user';
@@ -10,7 +10,7 @@ import { WhereInput } from './where-input';
 export class OrderSort extends SortInput(OrderClass) { }
 
 @InputType()
-class OrderCurrencyWhere extends WhereInput(Currency) { }
+class OrderCurrencyWhere extends WhereInput(OrderCurrency) { }
 
 @InputType()
 export class OrderWhere extends WhereInput(OrderClass) {
