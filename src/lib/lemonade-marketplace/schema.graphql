@@ -81,8 +81,22 @@ query GetToken($id: ID!) {
     ...tokenFields
 
     owner
+    orders {
+      createdAt
+      maker
+      currency {
+        id
+        name
+        symbol
+      }
+      price
+      bids {
+        createdAt
+        bidder
+        bidAmount
+      }
+    }
     transfers {
-      id
       createdAt
       from
       to

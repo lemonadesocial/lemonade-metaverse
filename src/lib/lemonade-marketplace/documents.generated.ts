@@ -78,8 +78,22 @@ export const GetToken = gql`
   token(id: $id) {
     ...tokenFields
     owner
+    orders {
+      createdAt
+      maker
+      currency {
+        id
+        name
+        symbol
+      }
+      price
+      bids {
+        createdAt
+        bidder
+        bidAmount
+      }
+    }
     transfers {
-      id
       createdAt
       from
       to

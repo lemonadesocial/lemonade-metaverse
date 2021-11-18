@@ -1,5 +1,6 @@
 import { Directive, Field, InputType, ObjectType } from 'type-graphql';
 
+import { OrderCurrency } from '../../app/models/order';
 import { SortInput } from './sort-input';
 import { Token } from '../../app/models/token';
 import { User } from '../../app/models/user';
@@ -12,6 +13,44 @@ export class TokenSort extends SortInput(Token) { }
 export class TokenWhere extends WhereInput(Token) { }
 
 @ObjectType()
+export class TokenOrderBid {
+  @Field()
+  public createdAt!: string;
+
+  @Field()
+  public bidder!: string;
+
+  @Directive('@expanded(key: "TokenDetailUser", modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public bidderExpanded?: never;
+
+  @Field()
+  public bidAmount!: string;
+}
+
+@ObjectType()
+export class TokenOrder {
+  @Field()
+  public createdAt!: string;
+
+  @Field()
+  public maker!: string;
+
+  @Directive('@expanded(key: "TokenDetailUser", modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public makerExpanded?: never;
+
+  @Field()
+  public currency!: OrderCurrency;
+
+  @Field()
+  public price!: string;
+
+  @Field(() => [TokenOrderBid])
+  public bids!: TokenOrderBid[];
+}
+
+@ObjectType()
 export class TokenTransfer {
   @Field()
   public createdAt!: string;
@@ -19,14 +58,14 @@ export class TokenTransfer {
   @Field()
   public from!: string;
 
-  @Directive('@expanded(key: "TokenTransferUser", modelName: "User", foreignField: "wallets")')
+  @Directive('@expanded(key: "TokenDetailUser", modelName: "User", foreignField: "wallets")')
   @Field(() => User, { nullable: true })
   public fromExpanded?: never;
 
   @Field()
   public to!: string;
 
-  @Directive('@expanded(key: "TokenTransferUser", modelName: "User", foreignField: "wallets")')
+  @Directive('@expanded(key: "TokenDetailUser", modelName: "User", foreignField: "wallets")')
   @Field(() => User, { nullable: true })
   public toExpanded?: never;
 }
@@ -39,6 +78,9 @@ export class TokenDetail extends Token {
   @Directive('@expanded(modelName: "User", foreignField: "wallets")')
   @Field(() => User, { nullable: true })
   public ownerExpanded?: never;
+
+  @Field(() => [TokenOrder], { nullable: true, description: 'This token\'s orders.' })
+  public orders?: TokenOrder[];
 
   @Field(() => [TokenTransfer], { nullable: true, description: 'This token\'s transfers.' })
   public transfers?: TokenTransfer[];
