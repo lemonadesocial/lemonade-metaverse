@@ -21,12 +21,12 @@ pubSub.subscribe<Token>('token_updated', function onMessage(token) {
 });
 
 type RequiredKeys<T> = { [K in keyof T]-?: Record<string, unknown> extends Pick<T, K> ? never : K }[keyof T];
-type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>> & Partial<Pick<GeneratedToken, 'createdAt'>>;
+type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>> & Partial<Pick<GeneratedToken, 'createdAt' | 'uri'>>;
 
-export function createToken<T extends GraphQLToken>({ createdAt, ...token }: T) {
+export function createToken<T extends GraphQLToken>(token: T) {
   return {
     ...excludeNull(token),
-    createdAt: createdAt ? getDate(createdAt) : undefined,
+    createdAt: token.createdAt ? getDate(token.createdAt) : undefined,
   };
 }
 
@@ -86,7 +86,7 @@ async function fetch<T extends GraphQLToken>(items: T[]) {
     const token = createToken({ ...item, ...doc });
 
     tokens.push(token);
-    if (!doc) missing.push(token);
+    if (item.uri && !doc) missing.push(token);
   }
 
   if (missing.length) {

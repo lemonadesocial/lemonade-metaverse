@@ -64,6 +64,9 @@ const processor: Processor<JobData> = async (job) => {
   const durationTimer = durationSeconds.startTimer();
 
   const { token } = job.data;
+
+  assert.ok(token.uri);
+
   const url = getFetchableUrl(token.uri);
   const response = await fetch(url, { agent: fetchAgent[url.protocol], ...fetchInit });
 

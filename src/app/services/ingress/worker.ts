@@ -119,7 +119,7 @@ async function process(data: IngressQuery) {
   const promises: Promise<unknown>[] = [];
   const map = docs ? Object.fromEntries(docs.map((doc) => [doc.id, doc])) : {};
 
-  const missing = tokens.filter(({ id }) => !map[id]);
+  const missing = tokens.filter((token) => token.uri && !map[token.id]);
   if (missing.length) {
     promises.push(
       enrich.enqueue(...missing.map((token) => ({

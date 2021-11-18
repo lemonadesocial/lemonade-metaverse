@@ -26,9 +26,9 @@ export class Token {
   @prop({ required: true })
   public tokenId!: string;
 
-  @Field({ description: 'The metadata URI.' })
-  @prop({ required: true })
-  public uri!: string;
+  @Field({ nullable: true, description: 'The metadata URI.' })
+  @prop()
+  public uri?: string;
 
   @Field({ nullable: true, description: 'The royalty maker.' })
   @prop()
