@@ -81,7 +81,7 @@ query GetToken($id: ID!) {
     ...tokenFields
 
     owner
-    orders {
+    orders(orderBy: createdAt, orderDirection: desc) {
       createdAt
       maker
       currency {
@@ -90,13 +90,13 @@ query GetToken($id: ID!) {
         symbol
       }
       price
-      bids {
+      bids(orderBy: createdAt, orderDirection: desc) {
         createdAt
         bidder
         bidAmount
       }
     }
-    transfers {
+    transfers(orderBy: createdAt, orderDirection: desc) {
       createdAt
       from
       to

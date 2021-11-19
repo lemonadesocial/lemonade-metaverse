@@ -78,7 +78,7 @@ export const GetToken = gql`
   token(id: $id) {
     ...tokenFields
     owner
-    orders {
+    orders(orderBy: createdAt, orderDirection: desc) {
       createdAt
       maker
       currency {
@@ -87,13 +87,13 @@ export const GetToken = gql`
         symbol
       }
       price
-      bids {
+      bids(orderBy: createdAt, orderDirection: desc) {
         createdAt
         bidder
         bidAmount
       }
     }
-    transfers {
+    transfers(orderBy: createdAt, orderDirection: desc) {
       createdAt
       from
       to
