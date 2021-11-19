@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v2.2.0...v3.0.0) (2021-11-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **token:** make uri optional
+* **order:** make currency name and symbol optional
+
+### Features
+
+* **ingress:** make token contracts configurable ([6175151](https://github.com/lemonadesocial/lemonade-metaverse/commit/617515121909a0218350a6012363eca52dbb617e))
+* **order:** make currency name and symbol optional ([f21fede](https://github.com/lemonadesocial/lemonade-metaverse/commit/f21fede8571eb0725ad434bb8483c7e5de325cc3))
+* **token:** add order, bid, and transfer history ([4ecd350](https://github.com/lemonadesocial/lemonade-metaverse/commit/4ecd350a894da6eccec505a15a1f54f5e8e96cb4))
+* **token:** add sorting to history query to show most recent first ([f6c8c17](https://github.com/lemonadesocial/lemonade-metaverse/commit/f6c8c177c5c4dbd678e3b111521aded12631f53a))
+* **token:** make uri optional ([65135fc](https://github.com/lemonadesocial/lemonade-metaverse/commit/65135fc1dd57ff25df697f989cdcdcd2d3fcdc19))
+* **utils:** add array support to exclude null utility ([f461684](https://github.com/lemonadesocial/lemonade-metaverse/commit/f461684a7f34ac2bf737a73c78fe855616052143))
+
 ## [2.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v2.1.0...v2.2.0) (2021-11-12)
 
 
