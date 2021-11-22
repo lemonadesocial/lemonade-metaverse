@@ -13,6 +13,7 @@ import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
 import { createConnection } from '../../helpers/bullmq';
+import { erc721MetadataContract, erc721RoyaltyContract } from '../../helpers/web3';
 import { getFetchableUrl, getFetchableUrlSafe } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
@@ -65,14 +66,29 @@ const processor: Processor<JobData> = async (job) => {
 
   const { token } = job.data;
 
-  assert.ok(token.uri);
+  await Promise.all([
+    (async () => {
+      const tokenURI = await erc721MetadataContract.attach(token.contract).tokenURI(token.tokenId).catch(() => null);
 
-  const url = getFetchableUrl(token.uri);
-  const response = await fetch(url, { agent: fetchAgent[url.protocol], ...fetchInit });
+      if (!tokenURI) return;
 
-  assert.ok(response.ok, response.statusText);
+      const url = getFetchableUrl(tokenURI);
+      const response = await fetch(url, { agent: fetchAgent[url.protocol], ...fetchInit });
 
-  token.metadata = await response.json() as Record<string, unknown>; // @todo: validate metadata
+      assert.ok(response.ok, response.statusText);
+
+      token.uri = tokenURI;
+      token.metadata = await response.json() as Record<string, unknown>; // @todo: validate metadata
+    })(),
+    (async () => {
+      const royalty = await erc721RoyaltyContract.attach(token.contract).royalty(token.tokenId).catch(() => null);
+
+      if (!royalty) return;
+
+      token.royaltyMaker = royalty[0];
+      token.royaltyFraction = royalty[1];
+    })(),
+  ]);
 
   writer.enqueue({
     updateOne: {
@@ -87,7 +103,7 @@ const processor: Processor<JobData> = async (job) => {
     pubSub.publish(Trigger.TokenUpdated, token),
   ]);
 
-  const imageUrl = getFetchableUrlSafe(token.metadata.image);
+  const imageUrl = getFetchableUrlSafe(token.metadata?.image);
 
   if (orders.length) {
     for (const order of orders) {

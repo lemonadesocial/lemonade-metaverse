@@ -21,7 +21,7 @@ pubSub.subscribe<Token>('token_updated', function onMessage(token) {
 });
 
 type RequiredKeys<T> = { [K in keyof T]-?: Record<string, unknown> extends Pick<T, K> ? never : K }[keyof T];
-type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>> & Partial<Pick<GeneratedToken, 'createdAt' | 'uri'>>;
+type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>> & Partial<Pick<GeneratedToken, 'createdAt'>>;
 
 export function createToken<T extends GraphQLToken>(token: T) {
   return {
@@ -73,9 +73,9 @@ async function waitForEnrich(tokens: Token[]) {
 
 async function fetch<T extends GraphQLToken>(items: T[]) {
   const docs = await TokenModel.find(
-    { id: { $in: items.map(({ id }) => id) }, metadata: { $exists: true } },
-    { id: 1, metadata: 1 },
-  ).lean<{ id: string; metadata: Record<string, unknown> }[]>();
+    { id: { $in: items.map(({ id }) => id) } },
+    { id: 1, uri: 1, royaltyMaker: 1, royaltyFraction: 1, metadata: 1 },
+  ).lean<Pick<Token, 'id' | 'uri' | 'royaltyMaker' | 'royaltyFraction' | 'metadata'>[]>();
   const map = Object.fromEntries(docs.map((doc) => [doc.id, doc]));
 
   const tokens = [];
@@ -86,7 +86,7 @@ async function fetch<T extends GraphQLToken>(items: T[]) {
     const token = createToken({ ...item, ...doc });
 
     tokens.push(token);
-    if (item.uri && !doc) missing.push(token);
+    if (!doc) missing.push(token);
   }
 
   if (missing.length) {

@@ -4,9 +4,6 @@ fragment tokenFields on Token {
   createdAt
   creator
   tokenId
-  uri
-  royaltyMaker
-  royaltyFraction
 }
 
 query Ingress(

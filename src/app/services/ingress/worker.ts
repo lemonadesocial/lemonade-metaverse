@@ -91,9 +91,9 @@ async function process(data: IngressQuery) {
   const [docs] = await Promise.all([
     tokens.length
       ? TokenModel.find(
-        { id: { $in: tokens.map(({ id }) => id) }, metadata: { $exists: true } },
-        { id: 1, metadata: 1 },
-      ).lean<{ id: string; metadata: Record<string, unknown> }[]>()
+        { id: { $in: tokens.map(({ id }) => id) } },
+        { id: 1, uri: 1, royaltyMaker: 1, royaltyFraction: 1, metadata: 1 },
+      ).lean<Pick<Token, 'id' | 'uri' | 'royaltyMaker' | 'royaltyFraction' | 'metadata'>[]>()
       : undefined,
     tokens.length
       ? TokenModel.bulkWrite(
@@ -124,7 +124,7 @@ async function process(data: IngressQuery) {
   const promises: Promise<unknown>[] = [];
   const map = docs ? Object.fromEntries(docs.map((doc) => [doc.id, doc])) : {};
 
-  const missing = tokens.filter((token) => token.uri && !map[token.id]);
+  const missing = tokens.filter((token) => !map[token.id]);
   if (missing.length) {
     promises.push(
       enrich.enqueue(...missing.map((token) => ({
@@ -139,7 +139,7 @@ async function process(data: IngressQuery) {
 
     const token = { ...ordersToken[order.id], ...map[order.token] };
 
-    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata.image) }, 'ingress order');
+    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata?.image) }, 'ingress order');
 
     promises.push(
       pubSub.publish(Trigger.OrderUpdated, { ...order, token })
