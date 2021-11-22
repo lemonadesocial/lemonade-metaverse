@@ -74,8 +74,8 @@ async function waitForEnrich(tokens: Token[]) {
 async function fetch<T extends GraphQLToken>(items: T[]) {
   const docs = await TokenModel.find(
     { id: { $in: items.map(({ id }) => id) } },
-    { id: 1, uri: 1, royaltyMaker: 1, royaltyFraction: 1, metadata: 1 },
-  ).lean<Pick<Token, 'id' | 'uri' | 'royaltyMaker' | 'royaltyFraction' | 'metadata'>[]>();
+    { id: 1, enrichedAt: 1, uri: 1, royaltyMaker: 1, royaltyFraction: 1, metadata: 1 },
+  ).lean<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royaltyMaker' | 'royaltyFraction' | 'metadata'>[]>();
   const map = Object.fromEntries(docs.map((doc) => [doc.id, doc]));
 
   const tokens = [];

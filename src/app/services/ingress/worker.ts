@@ -91,9 +91,9 @@ async function process(data: IngressQuery) {
   const [docs] = await Promise.all([
     tokens.length
       ? TokenModel.find(
-        { id: { $in: tokens.map(({ id }) => id) } },
-        { id: 1, uri: 1, royaltyMaker: 1, royaltyFraction: 1, metadata: 1 },
-      ).lean<Pick<Token, 'id' | 'uri' | 'royaltyMaker' | 'royaltyFraction' | 'metadata'>[]>()
+        { id: { $in: tokens.map(({ id }) => id) }, enrichedAt: { $exists: true } },
+        { id: 1, enrichedAt: 1, uri: 1, royaltyMaker: 1, royaltyFraction: 1, metadata: 1 },
+      ).lean<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royaltyMaker' | 'royaltyFraction' | 'metadata'>[]>()
       : undefined,
     tokens.length
       ? TokenModel.bulkWrite(

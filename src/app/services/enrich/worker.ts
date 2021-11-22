@@ -90,6 +90,8 @@ const processor: Processor<JobData> = async (job) => {
     })(),
   ]);
 
+  token.enrichedAt = new Date();
+
   writer.enqueue({
     updateOne: {
       filter: { id: token.id },

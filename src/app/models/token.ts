@@ -26,6 +26,10 @@ export class Token {
   @prop({ required: true })
   public tokenId!: string;
 
+  @Field({ nullable: true, description: 'When this token was last enriched.' })
+  @prop()
+  public enrichedAt?: Date;
+
   @Field({ nullable: true, description: 'The metadata URI.' })
   @prop()
   public uri?: string;
