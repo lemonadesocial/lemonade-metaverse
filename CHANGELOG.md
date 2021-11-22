@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v3.0.0...v4.0.0) (2021-11-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* **web3:** use enrich to query token uri, metadata, and royalty
+
+### Features
+
+* **indexer:** use keep alive connection ([e75cb45](https://github.com/lemonadesocial/lemonade-metaverse/commit/e75cb45060c7171bcba44c1ce39c5f23dc05be27))
+* **token:** add enriched at date ([5de4463](https://github.com/lemonadesocial/lemonade-metaverse/commit/5de4463fa9f0b7bcfa5457fcf8d26e4423e34e41))
+* **web3:** add web3 helper and contracts ([e45e0b5](https://github.com/lemonadesocial/lemonade-metaverse/commit/e45e0b57e7094fa7e78ad38df44307dc02850c92))
+* **web3:** use enrich to query token uri, metadata, and royalty ([2efa3aa](https://github.com/lemonadesocial/lemonade-metaverse/commit/2efa3aa8404f583feb8475ba62ea36d8089e8e5c))
+
 ## [3.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v2.2.0...v3.0.0) (2021-11-19)
 
 
