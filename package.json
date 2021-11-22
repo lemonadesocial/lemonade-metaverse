@@ -40,6 +40,7 @@
     "class-validator": "^0.13.1",
     "dataloader": "^2.0.0",
     "env-var": "^7.1.1",
+    "ethers": "^5.5.1",
     "graphql": "^15.7.2",
     "graphql-parse-resolve-info": "^4.12.0",
     "graphql-redis-subscriptions": "^2.4.0",

@@ -21,8 +21,9 @@
     /* Enables experimental support for emitting type metadata for decorators which works with the module reflect-metadata. */
     "emitDecoratorMetadata": true,
     /* Enables experimental support for decorators, which is in stage 2 of the TC39 standardization process. */
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    /* Enable importing .json files */
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
 }
