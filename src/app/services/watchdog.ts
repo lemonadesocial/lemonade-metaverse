@@ -26,11 +26,10 @@ const watchdogIndexerError = new prom.Gauge({
 
 const query = client.watchQuery<GetMetaQuery, GetMetaQueryVariables>({
   query: GetMeta,
-  pollInterval: POLL_INTERVAL,
 });
 
 let subscription: ReturnType<ObservableQuery['subscribe']> | undefined;
-let hasFired = false;
+let hasFired: boolean | undefined;
 
 async function onNext({ data: { _meta } }: ApolloQueryResult<GetMetaQuery>) {
   assert.ok(_meta);
@@ -57,10 +56,17 @@ async function onNext({ data: { _meta } }: ApolloQueryResult<GetMetaQuery>) {
 
 function onError(err: Error) {
   logger.error(err, 'watchdog query failed');
+
+  setTimeout(() => start(), POLL_INTERVAL); // to restart, recreate query or resubscribe and call startPolling explicitly
 }
 
 export function start() {
+  if (subscription && !subscription.closed) return;
+
+  hasFired = false;
   subscription = query.subscribe(onNext, onError);
+
+  query.startPolling(POLL_INTERVAL);
 }
 
 export function stop() {
