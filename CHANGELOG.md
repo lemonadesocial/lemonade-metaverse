@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.1.0...v4.2.0) (2021-11-23)
+
+
+### Features
+
+* **watchdog:** restart watchdog on error ([4cea2fc](https://github.com/lemonadesocial/lemonade-metaverse/commit/4cea2fcb7e731dfbc6d53e7be58f6f248f27211b))
+
 ## [4.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.0.0...v4.1.0) (2021-11-23)
 
 
