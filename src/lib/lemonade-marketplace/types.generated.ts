@@ -495,10 +495,6 @@ export type Registry = {
   __typename?: 'Registry';
   id: Scalars['ID'];
   isERC721: Scalars['Boolean'];
-  name?: Maybe<Scalars['String']>;
-  supportsMetadata?: Maybe<Scalars['Boolean']>;
-  supportsRoyalty?: Maybe<Scalars['Boolean']>;
-  symbol?: Maybe<Scalars['String']>;
   tokens: Array<Token>;
 };
 
@@ -524,51 +520,11 @@ export type Registry_filter = {
   isERC721_in?: Maybe<Array<Scalars['Boolean']>>;
   isERC721_not?: Maybe<Scalars['Boolean']>;
   isERC721_not_in?: Maybe<Array<Scalars['Boolean']>>;
-  name?: Maybe<Scalars['String']>;
-  name_contains?: Maybe<Scalars['String']>;
-  name_ends_with?: Maybe<Scalars['String']>;
-  name_gt?: Maybe<Scalars['String']>;
-  name_gte?: Maybe<Scalars['String']>;
-  name_in?: Maybe<Array<Scalars['String']>>;
-  name_lt?: Maybe<Scalars['String']>;
-  name_lte?: Maybe<Scalars['String']>;
-  name_not?: Maybe<Scalars['String']>;
-  name_not_contains?: Maybe<Scalars['String']>;
-  name_not_ends_with?: Maybe<Scalars['String']>;
-  name_not_in?: Maybe<Array<Scalars['String']>>;
-  name_not_starts_with?: Maybe<Scalars['String']>;
-  name_starts_with?: Maybe<Scalars['String']>;
-  supportsMetadata?: Maybe<Scalars['Boolean']>;
-  supportsMetadata_in?: Maybe<Array<Scalars['Boolean']>>;
-  supportsMetadata_not?: Maybe<Scalars['Boolean']>;
-  supportsMetadata_not_in?: Maybe<Array<Scalars['Boolean']>>;
-  supportsRoyalty?: Maybe<Scalars['Boolean']>;
-  supportsRoyalty_in?: Maybe<Array<Scalars['Boolean']>>;
-  supportsRoyalty_not?: Maybe<Scalars['Boolean']>;
-  supportsRoyalty_not_in?: Maybe<Array<Scalars['Boolean']>>;
-  symbol?: Maybe<Scalars['String']>;
-  symbol_contains?: Maybe<Scalars['String']>;
-  symbol_ends_with?: Maybe<Scalars['String']>;
-  symbol_gt?: Maybe<Scalars['String']>;
-  symbol_gte?: Maybe<Scalars['String']>;
-  symbol_in?: Maybe<Array<Scalars['String']>>;
-  symbol_lt?: Maybe<Scalars['String']>;
-  symbol_lte?: Maybe<Scalars['String']>;
-  symbol_not?: Maybe<Scalars['String']>;
-  symbol_not_contains?: Maybe<Scalars['String']>;
-  symbol_not_ends_with?: Maybe<Scalars['String']>;
-  symbol_not_in?: Maybe<Array<Scalars['String']>>;
-  symbol_not_starts_with?: Maybe<Scalars['String']>;
-  symbol_starts_with?: Maybe<Scalars['String']>;
 };
 
 export enum Registry_orderBy {
   id = 'id',
   isERC721 = 'isERC721',
-  name = 'name',
-  supportsMetadata = 'supportsMetadata',
-  supportsRoyalty = 'supportsRoyalty',
-  symbol = 'symbol',
   tokens = 'tokens'
 }
 
@@ -712,11 +668,8 @@ export type Token = {
   orders: Array<Order>;
   owner?: Maybe<Scalars['Bytes']>;
   registry: Registry;
-  royaltyFraction?: Maybe<Scalars['BigInt']>;
-  royaltyMaker?: Maybe<Scalars['Bytes']>;
   tokenId: Scalars['BigInt'];
   transfers: Array<Transfer>;
-  uri?: Maybe<Scalars['String']>;
 };
 
 
@@ -786,20 +739,6 @@ export type Token_filter = {
   registry_not_in?: Maybe<Array<Scalars['String']>>;
   registry_not_starts_with?: Maybe<Scalars['String']>;
   registry_starts_with?: Maybe<Scalars['String']>;
-  royaltyFraction?: Maybe<Scalars['BigInt']>;
-  royaltyFraction_gt?: Maybe<Scalars['BigInt']>;
-  royaltyFraction_gte?: Maybe<Scalars['BigInt']>;
-  royaltyFraction_in?: Maybe<Array<Scalars['BigInt']>>;
-  royaltyFraction_lt?: Maybe<Scalars['BigInt']>;
-  royaltyFraction_lte?: Maybe<Scalars['BigInt']>;
-  royaltyFraction_not?: Maybe<Scalars['BigInt']>;
-  royaltyFraction_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  royaltyMaker?: Maybe<Scalars['Bytes']>;
-  royaltyMaker_contains?: Maybe<Scalars['Bytes']>;
-  royaltyMaker_in?: Maybe<Array<Scalars['Bytes']>>;
-  royaltyMaker_not?: Maybe<Scalars['Bytes']>;
-  royaltyMaker_not_contains?: Maybe<Scalars['Bytes']>;
-  royaltyMaker_not_in?: Maybe<Array<Scalars['Bytes']>>;
   tokenId?: Maybe<Scalars['BigInt']>;
   tokenId_gt?: Maybe<Scalars['BigInt']>;
   tokenId_gte?: Maybe<Scalars['BigInt']>;
@@ -808,20 +747,6 @@ export type Token_filter = {
   tokenId_lte?: Maybe<Scalars['BigInt']>;
   tokenId_not?: Maybe<Scalars['BigInt']>;
   tokenId_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  uri?: Maybe<Scalars['String']>;
-  uri_contains?: Maybe<Scalars['String']>;
-  uri_ends_with?: Maybe<Scalars['String']>;
-  uri_gt?: Maybe<Scalars['String']>;
-  uri_gte?: Maybe<Scalars['String']>;
-  uri_in?: Maybe<Array<Scalars['String']>>;
-  uri_lt?: Maybe<Scalars['String']>;
-  uri_lte?: Maybe<Scalars['String']>;
-  uri_not?: Maybe<Scalars['String']>;
-  uri_not_contains?: Maybe<Scalars['String']>;
-  uri_not_ends_with?: Maybe<Scalars['String']>;
-  uri_not_in?: Maybe<Array<Scalars['String']>>;
-  uri_not_starts_with?: Maybe<Scalars['String']>;
-  uri_starts_with?: Maybe<Scalars['String']>;
 };
 
 export enum Token_orderBy {
@@ -832,11 +757,8 @@ export enum Token_orderBy {
   orders = 'orders',
   owner = 'owner',
   registry = 'registry',
-  royaltyFraction = 'royaltyFraction',
-  royaltyMaker = 'royaltyMaker',
   tokenId = 'tokenId',
-  transfers = 'transfers',
-  uri = 'uri'
+  transfers = 'transfers'
 }
 
 export type Transfer = {
@@ -943,6 +865,11 @@ export enum _SubgraphErrorPolicy_ {
   deny = 'deny'
 }
 
+export type GetMetaQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMetaQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number } } | null | undefined };
+
 export type tokenFieldsFragment = { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string };
 
 export type IngressQueryVariables = Exact<{
@@ -958,7 +885,7 @@ export type IngressQueryVariables = Exact<{
 }>;
 
 
-export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', hash?: string | null | undefined, number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
+export type IngressQuery = { __typename?: 'Query', orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;

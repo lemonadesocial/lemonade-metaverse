@@ -173,18 +173,6 @@ async function poll(data: JobData): Promise<JobData> {
       },
     });
 
-    if (data._meta) {
-      const { block, hasIndexingErrors } = data._meta;
-
-      if (orders_lastBlock_gt && block.number < parseInt(orders_lastBlock_gt)) {
-        logger.warn({ block, hasIndexingErrors, orders_lastBlock_gt }, 'subgraph is reindexing');
-      }
-
-      if (hasIndexingErrors) {
-        logger.warn({ block, hasIndexingErrors }, 'subgraph encountered indexing errors at some past block');
-      }
-    }
-
     const orders_length = data.orders?.length || 0;
     const tokens_length = data.tokens?.length || 0;
 

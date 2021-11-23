@@ -11,6 +11,7 @@ import { logger } from '../app/helpers/pino';
 import * as db from '../app/helpers/db';
 import * as metrics from '../app/services/metrics';
 import * as redis from '../app/helpers/redis';
+import * as watchdog from '../app/services/watchdog';
 
 import { appPort, sourceVersion } from '../config';
 
@@ -34,6 +35,7 @@ const shutdown = async () => {
     await Promise.all([
       db.disconnect(),
       metrics.stop(),
+      watchdog.stop(),
     ]);
 
     process.exit(0);
@@ -61,6 +63,7 @@ const main = async () => {
   await Promise.all([
     apolloServer.start(),
     db.connect(),
+    watchdog.start(),
   ]);
 
   apolloServer.applyMiddleware({ app, cors: {} });
