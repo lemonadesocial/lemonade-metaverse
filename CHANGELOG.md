@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.0.0...v4.1.0) (2021-11-23)
+
+
+### Features
+
+* **indexer:** retry failed requests at backup indexer ([92d7f4e](https://github.com/lemonadesocial/lemonade-metaverse/commit/92d7f4e3ac567ecd493ff4dd031d4b7ec9fd7dab))
+* **watchdog:** add watchdog service to measure delays ([75561c2](https://github.com/lemonadesocial/lemonade-metaverse/commit/75561c2e0bd18df2c9682f9ec5799bf785a40de4))
+
 ## [4.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v3.0.0...v4.0.0) (2021-11-22)
 
 
