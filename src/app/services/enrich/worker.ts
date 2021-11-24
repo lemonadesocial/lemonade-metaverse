@@ -38,7 +38,7 @@ const writer = new BufferQueue<AnyBulkWriteOperation<Token>>(
   WRITER_TIMEOUT
 );
 
-const durationSeconds = new Histogram({
+const enrichDurationSeconds = new Histogram({
   name: 'metaverse_enrich_duration_seconds',
   help: 'Duration of metaverse enrich in seconds',
 });
@@ -62,7 +62,7 @@ async function getOrders(job: Job<JobData>) {
 }
 
 const processor: Processor<JobData> = async (job) => {
-  const durationTimer = durationSeconds.startTimer();
+  const enrichDurationTimer = enrichDurationSeconds.startTimer();
 
   const { token } = job.data;
 
@@ -117,7 +117,7 @@ const processor: Processor<JobData> = async (job) => {
     logger.info({ token, imageUrl }, 'enrich token');
   }
 
-  durationTimer();
+  enrichDurationTimer();
 };
 
 let queueScheduler: QueueScheduler | undefined;
