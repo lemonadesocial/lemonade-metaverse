@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.2.0...v4.3.0) (2021-11-25)
+
+
+### Features
+
+* **enrich:** add enriches total metric ([0fc4bcd](https://github.com/lemonadesocial/lemonade-metaverse/commit/0fc4bcd85df214c1368cfb244f50870ba9eee24b))
+
 ## [4.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.1.0...v4.2.0) (2021-11-25)
 
 
