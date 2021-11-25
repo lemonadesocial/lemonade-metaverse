@@ -26,6 +26,11 @@ const watchdogIndexerError = new prom.Gauge({
   name: 'metaverse_watchdog_indexer_error',
   help: 'Whether there is a metaverse indexer error',
 });
+const watchdogsTotal = new prom.Counter({
+  labelNames: ['status'],
+  name: 'metaverse_watchdogs_total',
+  help: 'Total number of metaverse watchdogs',
+});
 
 const query = client.watchQuery<GetMetaQuery, GetMetaQueryVariables>({
   query: GetMeta,
@@ -64,8 +69,10 @@ async function tick() {
     await poll();
 
     watchdogDurationTimer();
+    watchdogsTotal.inc({ status: 'success' });
   } catch (err) {
     logger.error(err, 'watchdog failed');
+    watchdogsTotal.inc({ status: 'fail' });
   }
 }
 
