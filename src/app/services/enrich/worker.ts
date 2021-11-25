@@ -1,5 +1,5 @@
 import { AnyBulkWriteOperation } from 'mongodb';
-import { Histogram } from 'prom-client';
+import { Counter, Histogram } from 'prom-client';
 import { Job, Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
 import * as http from 'http';
@@ -38,6 +38,11 @@ const writer = new BufferQueue<AnyBulkWriteOperation<Token>>(
   WRITER_TIMEOUT
 );
 
+const enrichesTotal = new Counter({
+  labelNames: ['status'],
+  name: 'metaverse_enriches_total',
+  help: 'Total number of metaverse enriches',
+});
 const enrichDurationSeconds = new Histogram({
   name: 'metaverse_enrich_duration_seconds',
   help: 'Duration of metaverse enrich in seconds',
@@ -129,7 +134,11 @@ export async function start(): Promise<void> {
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: createConnection(), concurrency: WORKER_CONCURRENCY });
   worker.on('failed', function onFailed(_, error) {
+    enrichesTotal.inc({ status: 'fail' });
     logger.error(error, 'failed to enrich');
+  });
+  worker.on('completed', function onCompleted() {
+    enrichesTotal.inc({ status: 'success' });
   });
   await worker.waitUntilReady();
 }
