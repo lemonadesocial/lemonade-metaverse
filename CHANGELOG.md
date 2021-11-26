@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.4.0...v5.0.0) (2021-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **web3:** use websocket provider
+
+### Features
+
+* **indexer:** add indexer requests total metric ([d0d2f69](https://github.com/lemonadesocial/lemonade-metaverse/commit/d0d2f6919085fcdcefdc656ba2b1dccb23c452ae))
+* **web3:** use websocket provider ([c5ed3bc](https://github.com/lemonadesocial/lemonade-metaverse/commit/c5ed3bc6b0ef7a13ce341b6983046f5d0ad47448))
+
 ## [4.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.3.0...v4.4.0) (2021-11-26)
 
 
