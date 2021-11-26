@@ -37,7 +37,7 @@ const query = client.watchQuery<GetMetaQuery, GetMetaQueryVariables>({
 });
 
 let lastIndexerBlock: number | null = null;
-let timer: NodeJS.Timer | null = null;
+let timeout: NodeJS.Timeout | null = null;
 
 async function poll() {
   const start = Date.now();
@@ -74,18 +74,20 @@ async function tick() {
     logger.error(err, 'watchdog failed');
     watchdogsTotal.inc({ status: 'fail' });
   }
+
+  if (timeout) timeout = setTimeout(tick, POLL_INTERVAL);
 }
 
 export function start() {
-  if (timer) return;
+  if (timeout) return;
 
-  timer = setInterval(tick, POLL_INTERVAL);
+  timeout = setTimeout(tick, 0);
 }
 
 export function stop() {
-  if (!timer) return;
+  if (!timeout) return;
 
-  clearInterval(timer);
+  clearTimeout(timeout);
   lastIndexerBlock = null;
-  timer = null;
+  timeout = null;
 }
