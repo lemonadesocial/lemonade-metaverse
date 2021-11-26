@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.3.0...v4.4.0) (2021-11-26)
+
+
+### Features
+
+* **watchdog:** use timeout instead of interval to avoid concurrent polls ([b784438](https://github.com/lemonadesocial/lemonade-metaverse/commit/b78443851ead8a7106fa770ae6b5c3541b78f124))
+
 ## [4.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.2.0...v4.3.0) (2021-11-25)
 
 
