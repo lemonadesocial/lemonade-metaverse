@@ -5,7 +5,7 @@ import * as IERC721Royalty from '../../assets/contracts/IERC721Royalty.json';
 
 import { rpcUrl } from '../../config';
 
-export const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+export const provider = new ethers.providers.WebSocketProvider(rpcUrl);
 
 export const erc721MetadataContract = new ethers.Contract(
   ethers.constants.AddressZero,
