@@ -24,8 +24,8 @@ import { isProduction } from '../../../config';
 const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
 const POLL_TOKENS_CONTRACTS_IN = isProduction
-  ? ['0x94f73287bc1667f5472485a7bf2bfadc639436c8', '0x7254e06afb533964b389be742524fa696a290c81']
-  : ['0x71deb1a1cfae375ef779b8d4f39f145ab07aa66c', '0x7254e06afb533964b389be742524fa696a290c81'];
+  ? ['0x7254e06afb533964b389be742524fa696a290c81', '0x94f73287bc1667f5472485a7bf2bfadc639436c8']
+  : ['0x7254e06afb533964b389be742524fa696a290c81', '0x71deb1a1cfae375ef779b8d4f39f145ab07aa66c', '0x3973F56ba966BFEb7B0FC88365DD61CFa25A3810'];
 const QUEUE_NAME = 'bullmq:ingress';
 const STATE_KEY = 'ingress';
 
@@ -92,8 +92,8 @@ async function process(data: IngressQuery) {
     tokens.length
       ? TokenModel.find(
         { id: { $in: tokens.map(({ id }) => id) }, enrichedAt: { $exists: true } },
-        { id: 1, enrichedAt: 1, uri: 1, royaltyMaker: 1, royaltyFraction: 1, metadata: 1 },
-      ).lean<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royaltyMaker' | 'royaltyFraction' | 'metadata'>[]>()
+        { id: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1 },
+      ).lean<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royalties' | 'metadata'>[]>()
       : undefined,
     tokens.length
       ? TokenModel.bulkWrite(

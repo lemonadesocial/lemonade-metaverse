@@ -3,6 +3,17 @@ import { getModelForClass, index, prop, modelOptions, Severity } from '@typegoos
 import { GraphQLJSONObject } from 'graphql-type-json';
 
 @ObjectType()
+export class TokenRoyalty {
+  @Field()
+  @prop({ required: true })
+  public account!: string;
+
+  @Field()
+  @prop({ required: true })
+  public value!: string;
+}
+
+@ObjectType()
 @index({ id: 1 }, { unique: true })
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Token {
@@ -34,13 +45,17 @@ export class Token {
   @prop()
   public uri?: string;
 
-  @Field({ nullable: true, description: 'The royalty maker.' })
+  @Field({ nullable: true, description: 'The royalty maker.', deprecationReason: 'Use royalties.' })
   @prop()
   public royaltyMaker?: string;
 
-  @Field({ nullable: true, description: 'The royalty fraction.' })
+  @Field({ nullable: true, description: 'The royalty fraction.', deprecationReason: 'Use royalties.' })
   @prop()
   public royaltyFraction?: string;
+
+  @Field(() => [TokenRoyalty], { nullable: true, description: 'The token royalties.' })
+  @prop({ _id: false })
+  public royalties?: TokenRoyalty[];
 
   @Field(() => GraphQLJSONObject, { nullable: true, description: 'The actual metadata.' })
   @prop()

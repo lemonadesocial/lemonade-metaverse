@@ -2,6 +2,7 @@ import { AnyBulkWriteOperation } from 'mongodb';
 import { Counter, Histogram } from 'prom-client';
 import { Job, Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
+import * as ethers from 'ethers';
 import * as http from 'http';
 import * as https from 'https';
 import fetch, { RequestInit } from 'node-fetch';
@@ -13,7 +14,8 @@ import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
 import { createConnection } from '../../helpers/bullmq';
-import { erc721MetadataContract, erc721RoyaltyContract } from '../../helpers/web3';
+import { erc721MetadataContract, erc2981Contract, raribleRoyaltiesV2 } from '../../helpers/web3';
+import { fetchRegistry } from '../registry';
 import { getFetchableUrl, getFetchableUrlSafe } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
@@ -71,27 +73,41 @@ const processor: Processor<JobData> = async (job) => {
 
   const { token } = job.data;
 
+  const registry = await fetchRegistry(token.contract);
+
+  assert.ok(registry.isERC721);
+
   await Promise.all([
     (async () => {
+      if (!registry.supportsERC721Metadata) return;
+
       const tokenURI = await erc721MetadataContract.attach(token.contract).tokenURI(token.tokenId).catch(() => null);
 
-      if (!tokenURI) return;
+      if (tokenURI) {
+        const url = getFetchableUrl(tokenURI);
+        const response = await fetch(url, { agent: fetchAgent[url.protocol], ...fetchInit });
 
-      const url = getFetchableUrl(tokenURI);
-      const response = await fetch(url, { agent: fetchAgent[url.protocol], ...fetchInit });
+        assert.ok(response.ok, response.statusText);
 
-      assert.ok(response.ok, response.statusText);
-
-      token.uri = tokenURI;
-      token.metadata = await response.json() as Record<string, unknown>; // @todo: validate metadata
+        token.uri = tokenURI;
+        token.metadata = await response.json() as Record<string, unknown>; // @todo: validate metadata
+      }
     })(),
     (async () => {
-      const royalty = await erc721RoyaltyContract.attach(token.contract).royalty(token.tokenId).catch(() => null);
+      if (registry.supportsRaribleRoyaltiesV2) {
+        const royalties = await raribleRoyaltiesV2.attach(token.contract).getRaribleV2Royalties(token.tokenId).catch(() => null) as [string, ethers.BigNumber][] | null;
 
-      if (!royalty) return;
+        if (royalties?.length) {
+          token.royalties = royalties.map(([account, value]) => ({ account, value: value.toString() }));
+        }
+      } else if (registry.supportsERC2981) {
+        const price = ethers.utils.parseEther('1');
+        const royaltyInfo = await erc2981Contract.attach(token.contract).royaltyInfo(token.tokenId, price).catch(() => null) as [string, ethers.BigNumber] | null;
 
-      token.royaltyMaker = royalty[0];
-      token.royaltyFraction = royalty[1];
+        if (royaltyInfo?.[1].gt(0)) {
+          token.royalties = [{ account: royaltyInfo[0], value: royaltyInfo[1].div(price).mul(10000).toString() }];
+        }
+      }
     })(),
   ]);
 
