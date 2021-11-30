@@ -837,8 +837,6 @@ export type _Block_ = {
   hash?: Maybe<Scalars['Bytes']>;
   /** The block number */
   number: Scalars['Int'];
-  /** The minimum block number */
-  number_gte: Scalars['Int'];
 };
 
 /** The type for the top-level _meta field */
@@ -901,4 +899,4 @@ export type GetTokenQueryVariables = Exact<{
 }>;
 
 
-export type GetTokenQuery = { __typename?: 'Query', token?: { __typename?: 'Token', owner?: string | null | undefined, id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, orders: Array<{ __typename?: 'Order', createdAt: string, maker: string, price: string, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, bids: Array<{ __typename?: 'Bid', createdAt: string, bidder: string, bidAmount: string }> }>, transfers: Array<{ __typename?: 'Transfer', createdAt: string, from: string, to: string }> } | null | undefined };
+export type GetTokenQuery = { __typename?: 'Query', token?: { __typename?: 'Token', owner?: string | null | undefined, id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, orders: Array<{ __typename?: 'Order', createdAt: string, transaction: string, maker: string, price: string, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, bids: Array<{ __typename?: 'Bid', createdAt: string, transaction: string, bidder: string, bidAmount: string }> }>, transfers: Array<{ __typename?: 'Transfer', createdAt: string, transaction: string, from: string, to: string }> } | null | undefined };

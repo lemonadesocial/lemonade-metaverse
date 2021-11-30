@@ -79,6 +79,7 @@ query GetToken($id: ID!) {
     owner
     orders(orderBy: createdAt, orderDirection: desc) {
       createdAt
+      transaction
       maker
       currency {
         id
@@ -88,12 +89,14 @@ query GetToken($id: ID!) {
       price
       bids(orderBy: createdAt, orderDirection: desc) {
         createdAt
+        transaction
         bidder
         bidAmount
       }
     }
     transfers(orderBy: createdAt, orderDirection: desc) {
       createdAt
+      transaction
       from
       to
     }

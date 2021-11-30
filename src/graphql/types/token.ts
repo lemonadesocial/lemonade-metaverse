@@ -18,6 +18,9 @@ export class TokenOrderBid {
   public createdAt!: string;
 
   @Field()
+  public transaction!: string;
+
+  @Field()
   public bidder!: string;
 
   @Directive('@expanded(key: "TokenDetailUser", modelName: "User", foreignField: "wallets")')
@@ -32,6 +35,9 @@ export class TokenOrderBid {
 export class TokenOrder {
   @Field()
   public createdAt!: string;
+
+  @Field()
+  public transaction!: string;
 
   @Field()
   public maker!: string;
@@ -54,6 +60,9 @@ export class TokenOrder {
 export class TokenTransfer {
   @Field()
   public createdAt!: string;
+
+  @Field()
+  public transaction!: string;
 
   @Field()
   public from!: string;

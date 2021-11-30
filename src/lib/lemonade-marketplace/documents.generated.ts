@@ -80,6 +80,7 @@ export const GetToken = gql`
     owner
     orders(orderBy: createdAt, orderDirection: desc) {
       createdAt
+      transaction
       maker
       currency {
         id
@@ -89,12 +90,14 @@ export const GetToken = gql`
       price
       bids(orderBy: createdAt, orderDirection: desc) {
         createdAt
+        transaction
         bidder
         bidAmount
       }
     }
     transfers(orderBy: createdAt, orderDirection: desc) {
       createdAt
+      transaction
       from
       to
     }
