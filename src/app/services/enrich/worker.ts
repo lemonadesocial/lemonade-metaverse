@@ -98,14 +98,14 @@ const processor: Processor<JobData> = async (job) => {
         const royalties = await raribleRoyaltiesV2.attach(token.contract).getRaribleV2Royalties(token.tokenId).catch(() => null) as [string, ethers.BigNumber][] | null;
 
         if (royalties?.length) {
-          token.royalties = royalties.map(([account, value]) => ({ account, value: value.toString() }));
+          token.royalties = royalties.map(([account, value]) => ({ account: account.toLowerCase(), value: value.toString() }));
         }
       } else if (registry.supportsERC2981) {
         const price = ethers.utils.parseEther('1');
         const royaltyInfo = await erc2981Contract.attach(token.contract).royaltyInfo(token.tokenId, price).catch(() => null) as [string, ethers.BigNumber] | null;
 
         if (royaltyInfo?.[1].gt(0)) {
-          token.royalties = [{ account: royaltyInfo[0], value: royaltyInfo[1].div(price).mul(10000).toString() }];
+          token.royalties = [{ account: royaltyInfo[0].toLowerCase(), value: royaltyInfo[1].div(price).mul(10000).toString() }];
         }
       }
     })(),
