@@ -73,15 +73,15 @@ async function tick() {
   } catch (err) {
     logger.error(err, 'watchdog failed');
     watchdogsTotal.inc({ status: 'fail' });
+  } finally {
+    if (timeout) timeout = setTimeout(tick, POLL_INTERVAL);
   }
-
-  if (timeout) timeout = setTimeout(tick, POLL_INTERVAL);
 }
 
 export function start() {
   if (timeout) return;
 
-  timeout = setTimeout(tick, 0);
+  timeout = setTimeout(tick);
 }
 
 export function stop() {
