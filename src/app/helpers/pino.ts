@@ -20,5 +20,6 @@ if (slackWebhookUrl) {
 }
 
 export const logger = pino(
+  { level: 'trace' },
   pino.transport({ targets })
 );
