@@ -75,6 +75,7 @@ async function tick() {
     watchdogsTotal.inc({ status: 'fail' });
   } finally {
     if (timeout) timeout = setTimeout(tick, POLL_INTERVAL);
+    else logger.debug('watchdog last ticked');
   }
 }
 
@@ -82,6 +83,7 @@ export function start() {
   if (timeout) return;
 
   timeout = setTimeout(tick);
+  logger.debug('watchdog started');
 }
 
 export function stop() {
@@ -90,4 +92,5 @@ export function stop() {
   clearTimeout(timeout);
   lastIndexerBlock = null;
   timeout = null;
+  logger.debug('watchdog stopped');
 }
