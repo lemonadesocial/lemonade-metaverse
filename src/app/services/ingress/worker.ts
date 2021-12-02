@@ -24,7 +24,7 @@ import { isProduction } from '../../../config';
 const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
 const POLL_TOKENS_CONTRACTS_IN = isProduction
-  ? ['0x7254e06afb533964b389be742524fa696a290c81', '0x94f73287bc1667f5472485a7bf2bfadc639436c8']
+  ? ['0x7254e06afb533964b389be742524fa696a290c81', '0x94f73287bc1667f5472485a7bf2bfadc639436c8', '0x069751D80a3b3B3948d4c511F7498C8BceD8a92e']
   : ['0x7254e06afb533964b389be742524fa696a290c81', '0x71deb1a1cfae375ef779b8d4f39f145ab07aa66c', '0x3973F56ba966BFEb7B0FC88365DD61CFa25A3810'];
 const QUEUE_NAME = 'bullmq:ingress';
 const STATE_KEY = 'ingress';
