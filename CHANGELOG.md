@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.0.0...v6.1.0) (2021-12-02)
+
+
+### Features
+
+* **ingress:** add latest production contract ([f9259af](https://github.com/lemonadesocial/lemonade-metaverse/commit/f9259af59b135ee3a738abb8e0eeae0578f9e8c6))
+
 ## [6.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v5.0.0...v6.0.0) (2021-12-02)
 
 

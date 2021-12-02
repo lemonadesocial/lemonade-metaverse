@@ -1,7 +1,7 @@
 {
   "name": "lemonade-metaverse",
   "private": true,
-  "version": "6.0.0",
+  "version": "6.1.0",
   "engines": {
     "node": ">=14"
   },
