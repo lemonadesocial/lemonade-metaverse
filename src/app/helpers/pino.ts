@@ -3,8 +3,8 @@ import { pino } from 'pino';
 import { isDevelopment, slackWebhookUrl } from '../../config';
 
 const targets: pino.TransportTargetOptions[] = [
-  { level: 'fatal', target: 'pino/file', options: { destination: '/dev/stderr' } },
-  { level: 'trace', target: 'pino/file', options: { destination: '/dev/stdout' } },
+  { level: 'trace', target: 'pino/file', options: { destination: 1 } },
+  { level: 'fatal', target: 'pino/file', options: { destination: 2 } },
 ];
 
 if (slackWebhookUrl) {
