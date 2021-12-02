@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v5.0.0...v6.0.0) (2021-12-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* add registry and erc2981 and rarible royalties v2 support
+
+### Features
+
+* add registry and erc2981 and rarible royalties v2 support ([844af24](https://github.com/lemonadesocial/lemonade-metaverse/commit/844af24dba5648bbcd511e9773e3b226a648f413))
+* **enrich:** store royalty accounts in lowercase ([33f84d1](https://github.com/lemonadesocial/lemonade-metaverse/commit/33f84d1bc57997023594f53ec89cbb15b97d40a2))
+* **metrics:** make metrics port and server optional ([e457ac9](https://github.com/lemonadesocial/lemonade-metaverse/commit/e457ac9ccb1a8428904deb9866f4a6baf5d55454))
+* **token:** add transaction to history ([48f44dc](https://github.com/lemonadesocial/lemonade-metaverse/commit/48f44dcd7c59f0c9f7d9707a283098d1c7652553))
+* **watchdog:** add debug statements ([b15eebc](https://github.com/lemonadesocial/lemonade-metaverse/commit/b15eebcdea1584b7a0005e6351368d76721b40e4))
+
+
+### Bug Fixes
+
+* **watchdog:** fix watchdog stopping when logger fails ([248b81b](https://github.com/lemonadesocial/lemonade-metaverse/commit/248b81b95456d6df4fcd031aeee7e4f5aa16744c))
+
 ## [5.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v4.4.0...v5.0.0) (2021-11-26)
 
 
