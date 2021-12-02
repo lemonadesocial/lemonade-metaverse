@@ -1,6 +1,6 @@
 import { pino } from 'pino';
 
-import { isDevelopment, slackWebhookUrl } from '../../config';
+import { slackWebhookUrl } from '../../config';
 
 const targets: pino.TransportTargetOptions[] = [
   { level: 'trace', target: 'pino/file', options: { destination: 1 } },
@@ -8,7 +8,6 @@ const targets: pino.TransportTargetOptions[] = [
 ];
 
 if (slackWebhookUrl) {
-  const level = isDevelopment ? 'debug' : 'info';
   const options = {
     excludedKeys: { imageUrl: 0 },
     imageUrlKey: 'imageUrl',
@@ -16,7 +15,7 @@ if (slackWebhookUrl) {
     webhookUrl: slackWebhookUrl,
   };
 
-  targets.push({ level, target: '../../../lib/logger.mjs', options });
+  targets.push({ level: 'info', target: '../../../lib/logger.mjs', options });
 }
 
 export const logger = pino(
