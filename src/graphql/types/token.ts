@@ -2,15 +2,15 @@ import { Directive, Field, InputType, ObjectType } from 'type-graphql';
 
 import { OrderCurrency } from '../../app/models/order';
 import { SortInput } from './sort-input';
-import { Token } from '../../app/models/token';
+import { Token as TokenClass } from '../../app/models/token';
 import { User } from '../../app/models/user';
 import { WhereInput } from './where-input';
 
 @InputType()
-export class TokenSort extends SortInput(Token) { }
+export class TokenSort extends SortInput(TokenClass) { }
 
 @InputType()
-export class TokenWhere extends WhereInput(Token) { }
+export class TokenWhere extends WhereInput(TokenClass) { }
 
 @ObjectType()
 export class TokenOrderBid {
@@ -77,6 +77,13 @@ export class TokenTransfer {
   @Directive('@expanded(key: "TokenDetailUser", modelName: "User", foreignField: "wallets")')
   @Field(() => User, { nullable: true })
   public toExpanded?: never;
+}
+
+@ObjectType()
+export class Token extends TokenClass {
+  @Directive('@expanded(localPath: ["metadata", "creators"], modelName: "User", foreignField: "wallets")')
+  @Field(() => [User], { nullable: true })
+  public metadataCreatorsExpanded?: never;
 }
 
 @ObjectType()

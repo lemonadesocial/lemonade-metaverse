@@ -2,8 +2,7 @@ import { Directive, Field, InputType, ObjectType } from 'type-graphql';
 
 import { Order as OrderClass, OrderCurrency } from '../../app/models/order';
 import { SortInput } from './sort-input';
-import { Token } from '../../app/models/token';
-import { TokenWhere } from './token';
+import { Token, TokenWhere } from './token';
 import { User } from '../../app/models/user';
 import { WhereInput } from './where-input';
 

@@ -13,7 +13,7 @@ export class TokenRoyalty {
   public value!: string;
 }
 
-@ObjectType()
+@ObjectType({ isAbstract: true })
 @index({ id: 1 }, { unique: true })
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Token {

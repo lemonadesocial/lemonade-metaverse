@@ -4,8 +4,8 @@ import { GraphQLResolveInfo } from 'graphql';
 import { Fields } from '../decorators/fields';
 
 import { PaginationArgs } from '../types/pagination';
-import { Token, TokenModel } from '../../app/models/token';
-import { TokenDetail, TokenSort, TokenWhere } from '../types/token';
+import { Token, TokenDetail, TokenSort, TokenWhere } from '../types/token';
+import { TokenModel } from '../../app/models/token';
 import { Trigger } from '../../app/helpers/pub-sub';
 
 import { getFieldTree, getFieldProjection, FieldTree } from '../utils/field';
