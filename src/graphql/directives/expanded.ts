@@ -14,6 +14,7 @@ const DIRECTIVE_NAME = 'expanded';
 interface DirectiveArgs {
   readonly foreignField: string;
   readonly key?: string;
+  readonly localPath?: string[];
   readonly modelName: string;
 }
 
@@ -21,6 +22,7 @@ export const expandedDirectiveTypedefs = `
   directive @${DIRECTIVE_NAME}(
     foreignField: String!,
     key: String,
+    localPath: [String!],
     modelName: String!,
   ) on FIELD_DEFINITION
 `;
@@ -32,13 +34,10 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
     if (!directive) return;
 
     fieldConfig.resolve = async function (source, _args, context, info) {
-      const expandedField = getExpandedField(info.fieldName);
-
-      assert.ok(expandedField);
-
       const {
         foreignField,
         key = pathToArray(info.path).filter((key) => typeof key === 'string').join('.'),
+        localPath = getExpandedField(info.fieldName),
         modelName,
       } = directive as DirectiveArgs;
 
@@ -63,7 +62,9 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
         return keys.map((key) => map[key] || null);
       });
 
-      const keys = source[expandedField];
+      const keys = localPath instanceof Array
+        ? localPath.reduce((acc, cur) => acc?.[cur], source)
+        : localPath && source[localPath];
 
       if (keys instanceof Array) return context.dataLoaders[key]!.loadMany(keys);
       if (keys) return context.dataLoaders[key]!.load(keys);
