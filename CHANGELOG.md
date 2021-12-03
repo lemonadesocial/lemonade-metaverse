@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.1.0...v6.2.0) (2021-12-03)
+
+
+### Features
+
+* **enrich:** use static job backoff ([c400291](https://github.com/lemonadesocial/lemonade-metaverse/commit/c40029159715c4a1ea1170343a824197b6e7e4c1))
+* **graphql:** add local path parameter to expanded directive ([d112dba](https://github.com/lemonadesocial/lemonade-metaverse/commit/d112dba65ac29091cec1954103fe21e807488520))
+* **ingress:** add log when delegating token ([ea04dc2](https://github.com/lemonadesocial/lemonade-metaverse/commit/ea04dc2c82512ba94038cb279c1b9be4f9f9b761))
+* **logger:** always set info log level for slack ([2f647a3](https://github.com/lemonadesocial/lemonade-metaverse/commit/2f647a399582721ec5b7fda6a73fc22290ae5de7))
+* **token:** add metadata creators expanded ([a15bda6](https://github.com/lemonadesocial/lemonade-metaverse/commit/a15bda626269479a62ed8e5f5dde87c35d4b6d22))
+
+
+### Bug Fixes
+
+* **logger:** fix debug and trace logs ([e572596](https://github.com/lemonadesocial/lemonade-metaverse/commit/e57259670191225e6358cf4fdad48d45e7933862))
+
 ## [6.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.0.0...v6.1.0) (2021-12-02)
 
 
