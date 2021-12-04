@@ -57,6 +57,7 @@
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.20",
     "subscriptions-transport-ws": "^0.11.0",
-    "type-graphql": "^1.1.1"
+    "type-graphql": "^1.1.1",
+    "web3-providers-ws": "^1.6.1"
   }
 }
