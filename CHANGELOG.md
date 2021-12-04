@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.2.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.2.0...v6.2.1) (2021-12-04)
+
+
+### Bug Fixes
+
+* **web3:** fix rpc requests not resolving due to ws failures ([ccf8176](https://github.com/lemonadesocial/lemonade-metaverse/commit/ccf8176d3d39d1a722857db46f2f359b6be353f6))
+
+
+### Reverts
+
+* Revert "feat(ingress): add log when delegating token" ([849ba82](https://github.com/lemonadesocial/lemonade-metaverse/commit/849ba825d91a733d307413dbcf652859b08ff449))
+* Revert "feat(watchdog): add debug statements" ([8cdb77d](https://github.com/lemonadesocial/lemonade-metaverse/commit/8cdb77d103c0dc44dca90b316afe5df24b313f86))
+
 ## [6.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.1.0...v6.2.0) (2021-12-03)
 
 
