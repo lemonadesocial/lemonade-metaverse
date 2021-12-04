@@ -127,20 +127,15 @@ async function process(data: IngressQuery) {
   const missing = tokens.filter((token) => !map[token.id]);
   if (missing.length) {
     promises.push(
-      enrich.enqueue(...missing.map((token) => {
-        const item = {
-          orders: tokensOrders[token.id],
-          token,
-        };
-
-        logger.info(item, 'ingress delegate token');
-        return item;
-      })),
+      enrich.enqueue(...missing.map((token) => ({
+        orders: tokensOrders[token.id],
+        token,
+      }))),
     );
   }
 
   orders.forEach((order) => {
-    if (!map[order.token]) return; // delegate to enrich
+    if (!map[order.token]) return; // deligate to enrich
 
     const token = { ...ordersToken[order.id], ...map[order.token] };
 
