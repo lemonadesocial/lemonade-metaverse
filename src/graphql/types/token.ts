@@ -81,6 +81,10 @@ export class TokenTransfer {
 
 @ObjectType()
 export class Token extends TokenClass {
+  @Directive('@expanded(modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public creatorExpanded?: string;
+
   @Directive('@expanded(localPath: ["metadata", "creators"], modelName: "User", foreignField: "wallets")')
   @Field(() => [User], { nullable: true })
   public metadataCreatorsExpanded?: never;
