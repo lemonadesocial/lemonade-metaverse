@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.3.0...v6.4.0) (2021-12-06)
+
+
+### Features
+
+* **enrich:** add web url to logs ([755e2fb](https://github.com/lemonadesocial/lemonade-metaverse/commit/755e2fb9230e3de1f2c03c6170e36d36934eec27))
+* **ingress:** add web url to logs ([be6d597](https://github.com/lemonadesocial/lemonade-metaverse/commit/be6d597c0bf2b8d56bc16962929b114c621e1456))
+
+
+### Bug Fixes
+
+* **utils:** fix non-objects being recursed on when excluding null ([f6532a9](https://github.com/lemonadesocial/lemonade-metaverse/commit/f6532a922f95a91ab9c2224d3a3b394388fc7e3f))
+
 ## [6.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.2.1...v6.3.0) (2021-12-06)
 
 
