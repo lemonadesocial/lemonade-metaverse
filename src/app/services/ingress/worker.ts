@@ -19,7 +19,7 @@ import { Token, TokenModel } from '../../models/token';
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 
-import { isProduction } from '../../../config';
+import { isProduction, webUrl } from '../../../config';
 
 const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
@@ -139,7 +139,7 @@ async function process(data: IngressQuery) {
 
     const token = { ...ordersToken[order.id], ...map[order.token] };
 
-    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata?.image) }, 'ingress order');
+    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata?.image), webUrl: `${webUrl}meta/order/${order.contract}/${order.orderId}` }, 'ingress order');
 
     promises.push(
       pubSub.publish(Trigger.OrderUpdated, { ...order, token })
