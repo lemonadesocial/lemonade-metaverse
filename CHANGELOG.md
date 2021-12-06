@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.2.1...v6.3.0) (2021-12-06)
+
+
+### Features
+
+* **token:** add creator expanded ([e0dcf92](https://github.com/lemonadesocial/lemonade-metaverse/commit/e0dcf92d0b63b85d597d6191214aca9a816d26d5))
+
+
+### Bug Fixes
+
+* **token:** allow null items in metadata creators expanded ([aeffa0e](https://github.com/lemonadesocial/lemonade-metaverse/commit/aeffa0ea56189ab62c3c2205e9eff89e2b5111dd))
+
 ### [6.2.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.2.0...v6.2.1) (2021-12-04)
 
 
