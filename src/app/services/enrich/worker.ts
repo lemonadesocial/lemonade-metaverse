@@ -21,6 +21,8 @@ import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
 
+import { webUrl } from '../../../config';
+
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
 const FETCH_TIMEOUT = 10000;
 const WORKER_CONCURRENCY = 10;
@@ -130,12 +132,12 @@ const processor: Processor<JobData> = async (job) => {
 
   if (orders.length) {
     for (const order of orders) {
-      logger.info({ order, token, imageUrl }, 'enrich order');
+      logger.info({ order, token, imageUrl, webUrl: `${webUrl}meta/order/${order.contract}/${order.orderId}` }, 'enrich order');
 
       await pubSub.publish(Trigger.OrderUpdated, { ...order, token });
     }
   } else {
-    logger.info({ token, imageUrl }, 'enrich token');
+    logger.info({ token, imageUrl, webUrl: `${webUrl}meta/token/${token.contract}/${token.tokenId}` }, 'enrich token');
   }
 
   enrichDurationTimer();

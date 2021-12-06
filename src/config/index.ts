@@ -18,3 +18,4 @@ export const sourceVersion = env.get('SOURCE_VERSION').asString();
 
 export const isDevelopment = environment === 'development';
 export const isProduction = environment === 'production';
+export const webUrl = isProduction ? 'https://lemonade.social/' : 'https://staging.lemonade.social/';
