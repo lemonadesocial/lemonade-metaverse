@@ -1,5 +1,6 @@
 digraph G {
   bgcolor=transparent;
+  edge [fontcolor=darkgray,fontsize=12];
   node [fillcolor=white,shape=box,style="filled,rounded"];
   nodesep=0.5;
 
@@ -11,18 +12,17 @@ digraph G {
   User [fillcolor=white,style="filled,solid"];
 
   Backend -> Database;
-  Backend -> Enrich [color=darkgray,fontcolor=darkgray,label=" token"];
-  Backend -> TheGraph [color=darkgray,fontcolor=darkgray,label="query\ntokens owned by"];
-  Blockchain -> TheGraph [label=" events"];
-  Enrich -> Backend [color=darkgray,fontcolor=darkgray,label=" metadata"];
-  Enrich -> Database [label="metadata"];
+  Backend -> Enrich [color=darkgray,fontcolor=darkgray,label="token"];
+  Blockchain -> Indexer [label="events"];
+  Enrich -> Backend [color=darkgray,fontcolor=darkgray,label="uri\nmetadata\nroyalties"];
+  Enrich -> Database [label="uri\nmetadata\nroyalties"];
   Enrich -> IPFS [label=" metadata"];
-  Ingress -> Database [label="token/order"];
+  Enrich -> Blockchain [label=" uri\n royalties"];
+  Ingress -> Database [label="token / order"];
   Ingress -> Enrich [label="token"]
-  Ingress -> TheGraph [label=" query\n token & order"];
-  User -> Backend [dir=both,label=" subscription"];
+  Ingress -> Indexer [label="query\ntokens & orders"];
+  User -> Backend [dir=both,label=" real-time"];
 
-  { rank=same; Blockchain; Backend; }
-  { rank=same; Database; TheGraph; }
-  { rank=max; Enrich; Ingress; }
+  { rank=min; Blockchain; IPFS; User; }
+  { rank=same; Backend; Enrich; Ingress; }
 }
