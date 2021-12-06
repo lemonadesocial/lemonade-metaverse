@@ -130,12 +130,12 @@ const processor: Processor<JobData> = async (job) => {
 
   if (orders.length) {
     for (const order of orders) {
-      logger.info({ order, token, imageUrl }, 'enrich order');
+      logger.info({ order, token, imageUrl, webUrl: `https://lemonade.social/meta/order/${order.contract}/${order.orderId}` }, 'enrich order');
 
       await pubSub.publish(Trigger.OrderUpdated, { ...order, token });
     }
   } else {
-    logger.info({ token, imageUrl }, 'enrich token');
+    logger.info({ token, imageUrl, webUrl: `https://lemonade.social/meta/token/${token.contract}/${token.id}` }, 'enrich token');
   }
 
   enrichDurationTimer();
