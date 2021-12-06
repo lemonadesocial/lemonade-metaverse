@@ -139,7 +139,7 @@ async function process(data: IngressQuery) {
 
     const token = { ...ordersToken[order.id], ...map[order.token] };
 
-    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata?.image) }, 'ingress order');
+    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata?.image), webUrl: `https://lemonade.social/meta/order/${order.contract}/${order.orderId}` }, 'ingress order');
 
     promises.push(
       pubSub.publish(Trigger.OrderUpdated, { ...order, token })
