@@ -54,7 +54,7 @@ export class Token {
   public royaltyFraction?: string;
 
   @Field(() => [TokenRoyalty], { nullable: true, description: 'The token royalties.' })
-  @prop({ _id: false })
+  @prop({ default: undefined, _id: false })
   public royalties?: TokenRoyalty[];
 
   @Field(() => GraphQLJSONObject, { nullable: true, description: 'The actual metadata.' })
