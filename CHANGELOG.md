@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.4.2...v6.5.0) (2021-12-20)
+
+
+### Features
+
+* **web3:** decrease reconnect delay ([56d9551](https://github.com/lemonadesocial/lemonade-metaverse/commit/56d9551da7783903051fc0d97285cfdde8446f19))
+
 ### [6.4.2](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.4.1...v6.4.2) (2021-12-15)
 
 
