@@ -22,7 +22,7 @@ export const provider = new ethers.providers.Web3Provider(
     },
     reconnect: {
       auto: true,
-      delay: 1000,
+      delay: 100,
     },
     timeout: 15000,
   }),
