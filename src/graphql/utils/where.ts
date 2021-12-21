@@ -45,7 +45,7 @@ export const validate = <T extends Record<string, any>>(
     let prop;
 
     if ((prop = beforeEnd(key, '_eq')))     return doc[prop] === value;
-    if ((prop = beforeEnd(key, '_in')))     return value instanceof Array && value.includes(doc[prop]);                                // other
+    if ((prop = beforeEnd(key, '_in')))     return value instanceof Array && value.includes(doc[prop]);
     if ((prop = beforeEnd(key, '_exists'))) return !!doc[prop] === value;
     if ((prop = beforeEnd(key, '_gt')))     return doc[prop] > <number>value;
     if ((prop = beforeEnd(key, '_gte')))    return doc[prop] >= <number>value;
