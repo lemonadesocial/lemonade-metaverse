@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.5.0...v6.6.0) (2021-12-21)
+
+
+### Features
+
+* **web3:** add number of websocket listeners metric to monitor potential leak ([c29bb53](https://github.com/lemonadesocial/lemonade-metaverse/commit/c29bb538948ea3d2184a6685e70aa5a3cd0bae1c))
+
 ## [6.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.4.2...v6.5.0) (2021-12-20)
 
 
