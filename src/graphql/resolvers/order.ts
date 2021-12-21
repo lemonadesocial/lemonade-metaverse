@@ -6,10 +6,10 @@ import { OrderModel } from '../../app/models/order';
 import { PaginationArgs } from '../types/pagination';
 import { Trigger } from '../../app/helpers/pub-sub';
 
+import { createSubscribe } from '../utils/subscription';
 import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { getSort } from '../utils/sort';
-import { subscribe } from '../utils/subscription';
 
 const findOrders = async (
   { skip, limit, sort, where }: PaginationArgs & { sort?: OrderSort | null; where?: OrderWhere | null },
@@ -59,12 +59,12 @@ class _OrdersSubscriptionResolver {
   @Subscription(
     () => [Order],
     {
-      subscribe: subscribe<Order[], Order>(Trigger.OrderUpdated, {
+      subscribe: createSubscribe<Order>({
         init: async function* ({ args, info }) {
           if (args.query) yield findOrders(args, info);
         },
+        trigger: Trigger.OrderUpdated,
         filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
-        map: (payload) => [payload],
       }),
     }
   )

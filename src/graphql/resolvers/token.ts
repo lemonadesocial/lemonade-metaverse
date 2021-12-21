@@ -8,11 +8,11 @@ import { Token, TokenDetail, TokenSort, TokenWhere } from '../types/token';
 import { TokenModel } from '../../app/models/token';
 import { Trigger } from '../../app/helpers/pub-sub';
 
+import { createSubscribe } from '../utils/subscription';
 import { getFieldTree, getFieldProjection, FieldTree } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { getSort } from '../utils/sort';
 import { getToken, getTokens } from '../../app/services/token';
-import { subscribe } from '../utils/subscription';
 
 const findTokens = async (
   { skip, limit, sort, where }: PaginationArgs & { sort?: TokenSort | null; where?: TokenWhere | null },
@@ -73,12 +73,12 @@ class _TokensSubscriptionResolver {
   @Subscription(
     () => [Token],
     {
-      subscribe: subscribe<Token[], Token>(Trigger.TokenUpdated, {
+      subscribe: createSubscribe<Token>({
         init: async function* ({ args, info }) {
           if (args.query) yield findTokens(args, info);
         },
+        trigger: Trigger.TokenUpdated,
         filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
-        map: (payload) => [payload],
       }),
     }
   )
