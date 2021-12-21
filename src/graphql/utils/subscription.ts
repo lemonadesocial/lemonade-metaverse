@@ -14,12 +14,12 @@ interface SubscribeContext<TState, TSource, TArgs, TContext> {
 interface SubscribeOptions<TResult, TPayload, TState, TSource, TArgs, TContext> {
   init?: (params: SubscribeContext<TState, TSource, TArgs, TContext>) => AsyncIterator<TResult>;
   filter?: (payload: TPayload, params: SubscribeContext<TState, TSource, TArgs, TContext>) => boolean;
-  process?: (payload: TPayload, params: SubscribeContext<TState, TSource, TArgs, TContext>) => TResult;
+  map?: (payload: TPayload, params: SubscribeContext<TState, TSource, TArgs, TContext>) => TResult;
 }
 
 export const subscribe = <TResult, TPayload, TState = any, TSource = any, TArgs = any, TContext = any>(
   topics: Trigger | Trigger[],
-  { init, filter, process }: SubscribeOptions<TResult, TPayload, TState, TSource, TArgs, TContext>,
+  { init, filter, map }: SubscribeOptions<TResult, TPayload, TState, TSource, TArgs, TContext>,
 ): (source: any, args: TArgs, context: TContext, info: GraphQLResolveInfo) => AsyncIterator<TResult> => {
   return async function* (source, args, context, info) {
     const state = {} as TState;
@@ -34,7 +34,7 @@ export const subscribe = <TResult, TPayload, TState = any, TSource = any, TArgs 
     for await (const payload of { [Symbol.asyncIterator]: () => pubSub.asyncIterator<TPayload>(topics) }) {
       if (filter && !filter(payload, ctx)) continue;
 
-      yield process?.(payload, ctx) || payload as unknown as TResult;
+      yield map?.(payload, ctx) || payload as unknown as TResult;
     }
   };
 };

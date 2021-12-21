@@ -78,7 +78,7 @@ class _TokensSubscriptionResolver {
           if (args.query) yield findTokens(args, info);
         },
         filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
-        process: (payload) => [payload],
+        map: (payload) => [payload],
       }),
     }
   )
