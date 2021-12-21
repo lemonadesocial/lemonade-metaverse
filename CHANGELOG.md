@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.5.0...v6.6.0) (2021-12-21)
+
+
+### Features
+
+* **heapdump:** add heapdump endpoint ([3e9e638](https://github.com/lemonadesocial/lemonade-metaverse/commit/3e9e6385fbbc4748948c234982b222080228af73))
+
 ## [6.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.4.2...v6.5.0) (2021-12-20)
 
 
