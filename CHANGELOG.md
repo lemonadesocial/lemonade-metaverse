@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.7.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.6.0...v6.7.0) (2021-12-24)
+
+
+### Features
+
+* **graphql:** add ability to only receive triggers that relate to the first trigger ([c91dad8](https://github.com/lemonadesocial/lemonade-metaverse/commit/c91dad854e2ebb16d15c056cfe170fedff7b8ca5))
+
+
+### Bug Fixes
+
+* **graphql:** fix pub/sub async iterator memory leak ([455e740](https://github.com/lemonadesocial/lemonade-metaverse/commit/455e74037b04947df3be7c4ec03200135f178402))
+
 ## [6.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.5.0...v6.6.0) (2021-12-21)
 
 
