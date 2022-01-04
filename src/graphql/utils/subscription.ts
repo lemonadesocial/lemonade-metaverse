@@ -1,9 +1,13 @@
-
 import { GraphQLResolveInfo } from 'graphql';
 
 import { pubSub, Trigger } from '../../app/helpers/pub-sub';
 
-const STOP_SYMBOL = Symbol('stop');
+const RETURN_SYMBOL = Symbol('return');
+
+interface State {
+  return?: (reason?: any) => void;
+  returned?: Promise<never>;
+}
 
 interface Context<TSource, TArgs, TContext> {
   source: TSource,
@@ -27,7 +31,7 @@ export function createSubscribe<TPayload, TSource = any, TArgs = any, TContext =
 }: Options<TPayload, TSource, TArgs, TContext>): (source: any, args: TArgs, context: TContext, info: GraphQLResolveInfo) => AsyncIterator<TPayload[]> {
   async function* generate(
     ctx: Context<TSource, TArgs, TContext>,
-    stopped: Promise<never>,
+    state: State,
   ) {
     const restrictKey = restrict?.(ctx);
     const restrictions = new Set();
@@ -43,7 +47,9 @@ export function createSubscribe<TPayload, TSource = any, TArgs = any, TContext =
     const iterator = pubSub.asyncIterator<TPayload>(trigger);
 
     try {
-      for await (const payload of { [Symbol.asyncIterator]: () => ({ ...iterator, next: () => Promise.race([stopped, iterator.next()]) }) }) {
+      state.returned = new Promise<never>((_, reject) => state.return = reject);
+
+      for await (const payload of { [Symbol.asyncIterator]: () => ({ ...iterator, next: () => Promise.race([state.returned, iterator.next()]) }) }) {
         const hasRestrictions = restrictKey && restrictions.size > 0;
 
         if ((hasRestrictions && !restrictions.has(payload[restrictKey]))
@@ -58,21 +64,20 @@ export function createSubscribe<TPayload, TSource = any, TArgs = any, TContext =
         yield [payload];
       }
     } catch (reason) {
-      if (reason !== STOP_SYMBOL) throw reason;
+      if (reason !== RETURN_SYMBOL) throw reason;
     } finally {
       if (iterator.return) await iterator.return();
     }
   }
 
   return (source: any, args: TArgs, context: TContext, info: GraphQLResolveInfo) => {
-    let stop: ((reason?: any) => void) | undefined;
-    const stopped = new Promise<never>((_, reject) => stop = reject);
+    const state: State = {};
 
-    const iterator = generate({ source, args, context, info }, stopped);
+    const iterator = generate({ source, args, context, info }, state);
     const iteratorReturn = iterator.return.bind(iterator);
 
     iterator.return = () => {
-      if (stop) stop(STOP_SYMBOL);
+      state.return?.(RETURN_SYMBOL);
 
       return iteratorReturn();
     };
