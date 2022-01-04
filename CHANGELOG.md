@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.7.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.7.0...v6.7.1) (2022-01-04)
+
+
+### Bug Fixes
+
+* **graphql:** fix unhandled promise rejection in create subscribe ([b03ffc4](https://github.com/lemonadesocial/lemonade-metaverse/commit/b03ffc4aa2354ef5801c9568e9ba72dc2f5db1f9))
+
 ## [6.7.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.6.0...v6.7.0) (2021-12-24)
 
 
