@@ -1,10 +1,10 @@
 import * as ethers from 'ethers';
 import Web3ProviderWS from 'web3-providers-ws'
 
-import * as IERC165 from '../../assets/contracts/IERC165.json';
-import * as IERC2981 from '../../assets/contracts/IERC2981.json';
-import * as IERC721Metadata from '../../assets/contracts/IERC721Metadata.json';
-import * as RaribleRoyaltiesV2 from '../../assets/contracts/RaribleRoyaltiesV2.json';
+import IERC165 from '../../assets/abis/IERC165.json';
+import IERC2981 from '../../assets/abis/IERC2981.json';
+import IERC721Metadata from '../../assets/abis/IERC721Metadata.json';
+import RaribleRoyaltiesV2 from '../../assets/abis/RaribleRoyaltiesV2.json';
 
 import { rpcUrl } from '../../config';
 
@@ -30,24 +30,24 @@ export const provider = new ethers.providers.Web3Provider(
 
 export const erc165Contract = new ethers.Contract(
   ethers.constants.AddressZero,
-  new ethers.utils.Interface(IERC165.abi),
+  new ethers.utils.Interface(IERC165),
   provider
 );
 
 export const erc721MetadataContract = new ethers.Contract(
   ethers.constants.AddressZero,
-  new ethers.utils.Interface(IERC721Metadata.abi),
+  new ethers.utils.Interface(IERC721Metadata),
   provider
 );
 
 export const erc2981Contract = new ethers.Contract(
   ethers.constants.AddressZero,
-  new ethers.utils.Interface(IERC2981.abi),
+  new ethers.utils.Interface(IERC2981),
   provider
 );
 
 export const raribleRoyaltiesV2 = new ethers.Contract(
   ethers.constants.AddressZero,
-  new ethers.utils.Interface(RaribleRoyaltiesV2.abi),
+  new ethers.utils.Interface(RaribleRoyaltiesV2),
   provider
 );
