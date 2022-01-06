@@ -63,6 +63,7 @@ class _OrdersSubscriptionResolver {
         init: async function* ({ args, info }) {
           if (args.query) yield findOrders(args, info);
         },
+        restrict: () => 'id',
         trigger: Trigger.OrderUpdated,
         filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
       }),
