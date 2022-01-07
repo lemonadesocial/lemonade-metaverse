@@ -1,6 +1,6 @@
 import { URL } from 'url';
 
-import { ipfsGatewayUrl } from '../../config';
+import { ipfsGatewayUrl, webUrl } from '../../config';
 
 interface FetchableUrl {
   protocol: 'http:' | 'https:';
@@ -27,4 +27,8 @@ export function getFetchableUrlSafe(url: unknown): string | undefined {
   try {
     return getFetchableUrl(url).href;
   } catch { /* no-op */ }
+}
+
+export function getWebUrl(args: { contract: string, tokenId: string }): string {
+  return `${webUrl}meta/${args.contract}/${args.tokenId}`;
 }

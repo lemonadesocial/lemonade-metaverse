@@ -16,12 +16,10 @@ import { BufferQueue } from '../../utils/buffer-queue';
 import { createConnection } from '../../helpers/bullmq';
 import { erc721MetadataContract, erc2981Contract, raribleRoyaltiesV2 } from '../../helpers/web3';
 import { fetchRegistry } from '../registry';
-import { getFetchableUrl, getFetchableUrlSafe } from '../../utils/url';
+import { getFetchableUrl, getFetchableUrlSafe, getWebUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
-
-import { webUrl } from '../../../config';
 
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
 const FETCH_TIMEOUT = 10000;
@@ -129,15 +127,16 @@ const processor: Processor<JobData> = async (job) => {
   ]);
 
   const imageUrl = getFetchableUrlSafe(token.metadata?.image);
+  const webUrl = getWebUrl(token);
 
   if (orders.length) {
     for (const order of orders) {
-      logger.info({ order, token, imageUrl, webUrl: `${webUrl}meta/order/${order.contract}/${order.orderId}` }, 'enrich order');
+      logger.info({ order, token, imageUrl, webUrl }, 'enrich order');
 
       await pubSub.publish(Trigger.OrderUpdated, { ...order, token });
     }
   } else {
-    logger.info({ token, imageUrl, webUrl: `${webUrl}meta/token/${token.contract}/${token.tokenId}` }, 'enrich token');
+    logger.info({ token, imageUrl, webUrl }, 'enrich token');
   }
 
   enrichDurationTimer();

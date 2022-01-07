@@ -6,7 +6,7 @@ import { createConnection } from '../../helpers/bullmq';
 import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
-import { getFetchableUrlSafe } from '../../utils/url';
+import { getFetchableUrlSafe, getWebUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import * as enrich from '../enrich/queue';
@@ -139,7 +139,7 @@ async function process(data: IngressQuery) {
 
     const token = { ...ordersToken[order.id], ...map[order.token] };
 
-    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata?.image), webUrl: `${webUrl}meta/order/${order.contract}/${order.orderId}` }, 'ingress order');
+    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata?.image), webUrl: getWebUrl(token) }, 'ingress order');
 
     promises.push(
       pubSub.publish(Trigger.OrderUpdated, { ...order, token })
