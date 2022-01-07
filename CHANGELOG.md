@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.9.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.8.0...v6.9.0) (2022-01-07)
+
+
+### Features
+
+* add get web url util ([8855e67](https://github.com/lemonadesocial/lemonade-metaverse/commit/8855e675a113dc55038f3e29372dfc783d12bd13))
+* **order:** add restrict key for orders subscription ([076b535](https://github.com/lemonadesocial/lemonade-metaverse/commit/076b5357f124a7f122e43a67053a3f0388707c83))
+
 ## [6.8.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.7.1...v6.8.0) (2022-01-06)
 
 
