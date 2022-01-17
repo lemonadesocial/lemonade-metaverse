@@ -4,14 +4,10 @@ import * as prom from 'prom-client';
 
 import { logger } from '../helpers/pino';
 
-import { metricsPort, metricsSecret } from '../../config';
+import { metricsPort } from '../../config';
 
 const httpServer = http.createServer(async (req, res) => {
   try {
-    if (metricsSecret && req.headers.authorization?.split(' ')[1] !== metricsSecret) {
-      return res.writeHead(403);
-    }
-
     res.setHeader('Content-Type', prom.register.contentType);
     res.write(await prom.register.metrics());
   } catch (e) {
@@ -29,9 +25,9 @@ export function start(): void {
   prom.collectDefaultMetrics();
 
   if (metricsPort) {
-    const server = httpServer.listen(metricsPort);
-
-    httpTerminator = createHttpTerminator({ server });
+    httpTerminator = createHttpTerminator({
+      server: httpServer.listen(metricsPort),
+    });
   }
 }
 

@@ -10,7 +10,6 @@ export const indexerBackupUrl = env.get('INDEXER_BACKUP_URL').default('https://a
 export const indexerUrl = env.get('INDEXER_URL').default('https://api.thegraph.com/subgraphs/name/lemonadesocial/lemonade-marketplace-testnet').asUrlString();
 export const ipfsGatewayUrl = env.get('IPFS_GATEWAY_URL').default('https://ipfs.lemonade.social/').asUrlString();
 export const metricsPort = env.get('METRICS_PORT').asIntPositive();
-export const metricsSecret = env.get('METRICS_SECRET').asString();
 export const redisUrl = env.get('REDIS_URL').asUrlString();
 export const rpcUrl = env.get('RPC_URL').default('dummy').asString();
 export const slackWebhookUrl = env.get('SLACK_WEBHOOK_URL').asUrlString();
