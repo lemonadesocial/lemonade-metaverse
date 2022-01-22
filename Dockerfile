@@ -1,7 +1,5 @@
-ARG AWS_REGION
-
 ### builder
-FROM 115670576153.dkr.ecr.${AWS_REGION}.amazonaws.com/alpine:3.14 as builder
+FROM public.ecr.aws/docker/library/alpine:3.14 as builder
 WORKDIR /app
 
 RUN apk add --no-cache yarn
@@ -16,7 +14,7 @@ RUN yarn build || exit $? && \
     yarn install --frozen-lockfile --ignore-optional --production --offline
 
 ### base
-FROM 115670576153.dkr.ecr.${AWS_REGION}.amazonaws.com/alpine:3.14 as base
+FROM public.ecr.aws/docker/library/alpine:3.14 as base
 WORKDIR /app
 
 RUN apk add --no-cache nodejs
