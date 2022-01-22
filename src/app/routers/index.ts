@@ -1,7 +1,7 @@
 import Router from '@koa/router';
 
-import * as healthcheck from '../controllers/healthcheck';
+import * as livez from '../controllers/livez';
 
 export const router = new Router();
 
-router.get('/healthcheck', healthcheck.get);
+router.get('/livez', livez.get);
