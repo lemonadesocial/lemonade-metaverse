@@ -37,7 +37,6 @@ jobs:
       - name: Build and push
         run: |
           docker build                                                     \
-            --build-arg AWS_REGION=$AWS_REGION                             \
             --build-arg BUILDKIT_INLINE_CACHE=1                            \
             --build-arg SOURCE_VERSION=$SOURCE_VERSION                     \
             --cache-from $REPOSITORY_URI:release-builder                   \
@@ -48,14 +47,12 @@ jobs:
             .
 
           docker build                                                     \
-            --build-arg AWS_REGION=$AWS_REGION                             \
             --build-arg BUILDKIT_INLINE_CACHE=1                            \
             --tag $REPOSITORY_URI:release-builder                          \
             --target builder                                               \
             .
 
           docker build                                                     \
-            --build-arg AWS_REGION=$AWS_REGION                             \
             --build-arg BUILDKIT_INLINE_CACHE=1                            \
             --tag $REPOSITORY_URI:release-base                             \
             --target base                                                  \
