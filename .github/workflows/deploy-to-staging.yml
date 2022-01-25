@@ -91,9 +91,9 @@ jobs:
 
       - name: Deploy
         run: |
-          kubectl set image --namespace $NAMESPACE deployment/metaverse-app app=$REPOSITORY_URI:$SOURCE_VERSION &
-          kubectl set image --namespace $NAMESPACE deployment/metaverse-ingress ingress=$REPOSITORY_URI:$SOURCE_VERSION &
-          kubectl set image --namespace $NAMESPACE deployment/metaverse-enrich enrich=$REPOSITORY_URI:$SOURCE_VERSION &
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-app metaverse-app=$REPOSITORY_URI:$SOURCE_VERSION &
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-ingress metaverse-ingress=$REPOSITORY_URI:$SOURCE_VERSION &
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-enrich metaverse-enrich=$REPOSITORY_URI:$SOURCE_VERSION &
           wait
 
       - name: Verify
