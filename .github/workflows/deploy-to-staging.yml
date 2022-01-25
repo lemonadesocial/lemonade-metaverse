@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: ${{ secrets.STAGING_AWS_REGION }}
   DOCKER_BUILDKIT: 1
   SOURCE_REF: ${{ github.ref }}
   SOURCE_VERSION: ${{ github.sha }}
