@@ -34,7 +34,7 @@ jobs:
       - name: Amazon ECR login
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build and push
+      - name: Build
         run: |
           docker build                                                     \
             --build-arg BUILDKIT_INLINE_CACHE=1                            \
