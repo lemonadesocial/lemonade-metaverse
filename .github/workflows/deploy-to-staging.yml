@@ -9,12 +9,14 @@ env:
   DOCKER_BUILDKIT: 1
   SOURCE_REF: ${{ github.ref }}
   SOURCE_VERSION: ${{ github.sha }}
-  SSM_PARAMETER_NAME: ${{ secrets.STAGING_SSM_PARAMETER_NAME }}
 
 jobs:
   buildAndPush:
     name: Build and push
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -22,13 +24,12 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: ${{ secrets.STAGING_AWS_REGION }}
-          aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.STAGING_REGION }}
+          role-to-assume: ${{ secrets.STAGING_ROLE_TO_ASSUME }}
 
       - name: Configure environment
         run: |
-          aws ssm get-parameter --name $SSM_PARAMETER_NAME | jq '.Parameter.Value' | jq '. | fromjson' | jq -r 'to_entries | .[] | .key + "=" + .value' >> $GITHUB_ENV || exit 1
+          aws ssm get-parameter --name ${{ secrets.STAGING_PARAMETER_NAME }} | jq '.Parameter.Value' | jq '. | fromjson' | jq -r 'to_entries | .[] | .key + "=" + .value' >> $GITHUB_ENV || exit 1
 
       - name: Amazon ECR login
         uses: aws-actions/amazon-ecr-login@v1
@@ -72,17 +73,19 @@ jobs:
     needs: buildAndPush
     name: Deploy
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: ${{ secrets.STAGING_AWS_REGION }}
-          aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.STAGING_REGION }}
+          role-to-assume: ${{ secrets.STAGING_ROLE_TO_ASSUME }}
 
       - name: Configure environment
         run: |
-          aws ssm get-parameter --name $SSM_PARAMETER_NAME | jq '.Parameter.Value' | jq '. | fromjson' | jq -r 'to_entries | .[] | .key + "=" + .value' >> $GITHUB_ENV || exit 1
+          aws ssm get-parameter --name ${{ secrets.STAGING_PARAMETER_NAME }} | jq '.Parameter.Value' | jq '. | fromjson' | jq -r 'to_entries | .[] | .key + "=" + .value' >> $GITHUB_ENV || exit 1
 
       - name: Configure kube
         run: |
