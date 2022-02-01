@@ -31,6 +31,7 @@ const fetchAgent: Record<string, http.Agent> = {
   'https:': new https.Agent({ keepAlive: true }),
 };
 const fetchInit: RequestInit = {
+  agent: ({ protocol }) => fetchAgent[protocol],
   headers: { 'User-Agent': FETCH_HEADERS_USER_AGENT },
   timeout: FETCH_TIMEOUT,
 };
@@ -85,7 +86,7 @@ const processor: Processor<JobData> = async (job) => {
 
       if (tokenURI) {
         const url = getFetchableUrl(tokenURI);
-        const response = await fetch(url, { agent: fetchAgent[url.protocol], ...fetchInit });
+        const response = await fetch(url, fetchInit);
 
         assert.ok(response.ok, response.statusText);
 
