@@ -1,8 +1,10 @@
 {
   "name": "lemonade-metaverse",
-  "version": "6.9.0",
+  "version": "7.0.0",
   "private": true,
-  "engines": { "node": ">=14" },
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "build": "tsc",
     "codegen": "graphql-codegen --config codegen.yml",

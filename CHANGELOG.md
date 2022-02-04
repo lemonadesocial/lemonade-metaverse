@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.9.0...v7.0.0) (2022-02-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename healthcheck to livez
+
+### Features
+
+* **metrics:** remove metrics secret as server isn't exposed ([6fc5639](https://github.com/lemonadesocial/lemonade-metaverse/commit/6fc5639099da730b34cd8990021c61a1a7d031ac))
+* **metrics:** set default value for metrics port ([c819a3a](https://github.com/lemonadesocial/lemonade-metaverse/commit/c819a3ac64ba553e873d64dcc6dbaa4fd5b3fb0f))
+* rename healthcheck to livez ([3251c60](https://github.com/lemonadesocial/lemonade-metaverse/commit/3251c605ffe138e4cb581f50a853b5a6461f02db))
+
+
+### Bug Fixes
+
+* **enrich:** fix fetch agent error when redirecting across http and https ([c651673](https://github.com/lemonadesocial/lemonade-metaverse/commit/c6516730cf7c73777c888bb01b5024c9a4000551))
+
 ## [6.9.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.8.0...v6.9.0) (2022-01-07)
 
 
