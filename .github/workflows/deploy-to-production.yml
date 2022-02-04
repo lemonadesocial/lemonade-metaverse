@@ -1,0 +1,105 @@
+name: Deploy to Production
+on:
+  push:
+    branches:
+      - master
+
+env:
+  DOCKER_BUILDKIT: 1
+  SOURCE_REF: ${{ github.ref }}
+  SOURCE_VERSION: ${{ github.sha }}
+
+jobs:
+  buildAndPush:
+    name: Build and push
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.PRODUCTION_REGION }}
+          role-to-assume: ${{ secrets.PRODUCTION_ROLE_TO_ASSUME }}
+
+      - name: Configure environment
+        run: |
+          aws ssm get-parameter --name ${{ secrets.PRODUCTION_PARAMETER_NAME }} | jq '.Parameter.Value' | jq '. | fromjson' | jq -r 'to_entries | .[] | .key + "=" + .value' >> $GITHUB_ENV || exit 1
+
+      - name: Amazon ECR login
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build
+        run: |
+          docker build                                                     \
+            --build-arg BUILDKIT_INLINE_CACHE=1                            \
+            --build-arg SOURCE_VERSION=$SOURCE_VERSION                     \
+            --cache-from $REPOSITORY_URI:release-builder                   \
+            --cache-from $REPOSITORY_URI:release-base                      \
+            --tag $REPOSITORY_URI:$SOURCE_VERSION                          \
+            --tag $REPOSITORY_URI:release                                  \
+            --target app                                                   \
+            .
+
+          docker build                                                     \
+            --build-arg BUILDKIT_INLINE_CACHE=1                            \
+            --tag $REPOSITORY_URI:release-builder                          \
+            --target builder                                               \
+            .
+
+          docker build                                                     \
+            --build-arg BUILDKIT_INLINE_CACHE=1                            \
+            --tag $REPOSITORY_URI:release-base                             \
+            --target base                                                  \
+            .
+
+      - name: Push version
+        run: |
+          docker push $REPOSITORY_URI:$SOURCE_VERSION
+
+      - name: Push release
+        if: github.event_name == 'push'
+        run: |
+          docker push $REPOSITORY_URI:release
+          docker push $REPOSITORY_URI:release-builder
+          docker push $REPOSITORY_URI:release-base
+
+  deploy:
+    needs: buildAndPush
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.PRODUCTION_REGION }}
+          role-to-assume: ${{ secrets.PRODUCTION_ROLE_TO_ASSUME }}
+
+      - name: Configure environment
+        run: |
+          aws ssm get-parameter --name ${{ secrets.PRODUCTION_PARAMETER_NAME }} | jq '.Parameter.Value' | jq '. | fromjson' | jq -r 'to_entries | .[] | .key + "=" + .value' >> $GITHUB_ENV || exit 1
+
+      - name: Configure kube
+        run: |
+          eval $KUBECONFIG_COMMAND
+
+      - name: Deploy
+        run: |
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-app metaverse-app=$REPOSITORY_URI:$SOURCE_VERSION &
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-ingress metaverse-ingress=$REPOSITORY_URI:$SOURCE_VERSION &
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-enrich metaverse-enrich=$REPOSITORY_URI:$SOURCE_VERSION &
+          wait
+
+      - name: Verify
+        run: |
+          kubectl rollout status --namespace $NAMESPACE deployment/metaverse-app &
+          kubectl rollout status --namespace $NAMESPACE deployment/metaverse-ingress &
+          kubectl rollout status --namespace $NAMESPACE deployment/metaverse-enrich &
+          wait
