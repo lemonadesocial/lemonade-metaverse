@@ -2,30 +2,21 @@ import { URL } from 'url';
 
 import { ipfsGatewayUrl, webUrl } from '../../config';
 
-interface FetchableUrl {
-  protocol: 'http:' | 'https:';
-  href: string;
-}
+export function parseUrl(input: string): URL {
+  const url = new URL(input);
 
-export function getFetchableUrl(url: string): FetchableUrl {
-  const { protocol, href } = new URL(url);
-
-  switch (protocol) {
-    case 'http:':
-    case 'https:':
-      return { protocol, href };
-    case 'ipfs:':
-      return { protocol: 'https:', href: `${ipfsGatewayUrl}ipfs/${href.substr('ipfs://'.length)}` };
-    default:
-      throw new Error(`unsupported protocol ${protocol}`);
+  if (url.protocol === 'ipfs:') {
+    return new URL(`${ipfsGatewayUrl}ipfs/${url.href.substring('ipfs://'.length)}`);
   }
+
+  return url;
 }
 
-export function getFetchableUrlSafe(url: unknown): string | undefined {
-  if (typeof url !== 'string') return;
+export function getParsedUrl(input: unknown): string | undefined {
+  if (typeof input !== 'string') return;
 
   try {
-    return getFetchableUrl(url).href;
+    return parseUrl(input).href;
   } catch { /* no-op */ }
 }
 

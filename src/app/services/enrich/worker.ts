@@ -16,7 +16,7 @@ import { BufferQueue } from '../../utils/buffer-queue';
 import { createConnection } from '../../helpers/bullmq';
 import { erc721MetadataContract, erc2981Contract, raribleRoyaltiesV2 } from '../../helpers/web3';
 import { fetchRegistry } from '../registry';
-import { getFetchableUrl, getFetchableUrlSafe, getWebUrl } from '../../utils/url';
+import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
@@ -82,16 +82,33 @@ const processor: Processor<JobData> = async (job) => {
     (async () => {
       if (!registry.supportsERC721Metadata) return;
 
-      const tokenURI = await erc721MetadataContract.attach(token.contract).tokenURI(token.tokenId).catch(() => null);
+      token.uri = await erc721MetadataContract.attach(token.contract).tokenURI(token.tokenId).catch(() => undefined);
 
-      if (tokenURI) {
-        const url = getFetchableUrl(tokenURI);
-        const response = await fetch(url, fetchInit);
+      if (token.uri) {
+        const { href, pathname, protocol } = parseUrl(token.uri);
 
-        assert.ok(response.ok, response.statusText);
+        switch (protocol) {
+          case 'data:': {
+            const pos = pathname.indexOf(',');
 
-        token.uri = tokenURI;
-        token.metadata = await response.json() as Record<string, unknown>; // @todo: validate metadata
+            assert.notStrictEqual(pos, -1);
+
+            const base64ed = pathname.substring(0, pos).endsWith(';base64');
+            const data = pathname.substring(pos + 1);
+
+            token.metadata = JSON.parse(base64ed ? Buffer.from(data, 'base64').toString() : data);
+            break; }
+          case 'http:':
+          case 'https:': {
+            const response = await fetch(href, fetchInit);
+
+            assert.ok(response.ok, response.statusText);
+
+            token.metadata = await response.json();
+            break; }
+          default:
+            throw new Error(`unsupported protocol ${protocol}`);
+        }
       }
     })(),
     (async () => {
@@ -127,7 +144,7 @@ const processor: Processor<JobData> = async (job) => {
     pubSub.publish(Trigger.TokenUpdated, token),
   ]);
 
-  const imageUrl = getFetchableUrlSafe(token.metadata?.image);
+  const imageUrl = getParsedUrl(token.metadata?.image);
   const webUrl = getWebUrl(token);
 
   if (orders.length) {

@@ -6,7 +6,7 @@ import { createConnection } from '../../helpers/bullmq';
 import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
-import { getFetchableUrlSafe, getWebUrl } from '../../utils/url';
+import { getParsedUrl, getWebUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import * as enrich from '../enrich/queue';
@@ -19,7 +19,7 @@ import { Token, TokenModel } from '../../models/token';
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 
-import { isProduction, webUrl } from '../../../config';
+import { isProduction } from '../../../config';
 
 const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
@@ -139,7 +139,7 @@ async function process(data: IngressQuery) {
 
     const token = { ...ordersToken[order.id], ...map[order.token] };
 
-    logger.info({ order, token, imageUrl: getFetchableUrlSafe(token.metadata?.image), webUrl: getWebUrl(token) }, 'ingress order');
+    logger.info({ order, token, imageUrl: getParsedUrl(token.metadata?.image), webUrl: getWebUrl(token) }, 'ingress order');
 
     promises.push(
       pubSub.publish(Trigger.OrderUpdated, { ...order, token })
