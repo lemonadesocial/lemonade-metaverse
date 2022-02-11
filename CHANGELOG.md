@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v7.0.0...v7.1.0) (2022-02-11)
+
+
+### Features
+
+* **enrich:** support tokens that have token uri with data scheme ([5f7a854](https://github.com/lemonadesocial/lemonade-metaverse/commit/5f7a854097df057d8c2d0b317c97c79698bf773b))
+
 ## [7.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v6.9.0...v7.0.0) (2022-02-04)
 
 
