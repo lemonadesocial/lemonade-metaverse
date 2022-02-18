@@ -18,7 +18,7 @@ export const provider = new ethers.providers.Web3Provider(
   new Web3ProviderWS(rpcUrl, {
     clientConfig: {
       keepalive: true,
-      keepaliveInterval: 60000,
+      keepaliveInterval: 30000,
     },
     reconnect: {
       auto: true,
