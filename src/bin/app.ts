@@ -11,7 +11,7 @@ import { logger } from '../app/helpers/pino';
 import * as db from '../app/helpers/db';
 import * as metrics from '../app/services/metrics';
 import * as redis from '../app/helpers/redis';
-import * as watchdog from '../app/services/watchdog';
+import * as network from '../app/services/network';
 
 import { appPort, sourceVersion } from '../config';
 
@@ -31,11 +31,11 @@ const shutdown = async () => {
   try {
     if (apolloServer) await apolloServer.stop();
 
+    network.close();
     redis.disconnect();
     await Promise.all([
       db.disconnect(),
       metrics.stop(),
-      watchdog.stop(),
     ]);
 
     process.exit(0);
@@ -54,27 +54,22 @@ process.on('SIGTERM', async function onSigtermSignal() {
 });
 
 const main = async () => {
-  const httpServer = http.createServer(app.callback());
-  httpServer.keepAliveTimeout = 400 * 1000;
-
-  apolloServer = createApolloServer(httpServer);
-
   metrics.start();
-  await Promise.all([
-    apolloServer.start(),
-    db.connect(),
-    watchdog.start(),
-  ]);
+  await db.connect();
+  await network.start();
 
+  const server = http.createServer(app.callback());
+  server.keepAliveTimeout = 400 * 1000;
+
+  apolloServer = createApolloServer(server);
+  await apolloServer.start();
   apolloServer.applyMiddleware({ app, cors: {} });
 
-  httpServer.listen(appPort, function onListening() {
+  server.listen(appPort, function onListening() {
     logger.info({ version: sourceVersion }, 'metaverse app started');
   });
 
-  const getServerConnections = util
-    .promisify(httpServer.getConnections)
-    .bind(httpServer);
+  const getServerConnections = util.promisify(server.getConnections).bind(server);
 
   new prom.Gauge({
     name: 'http_open_connections',

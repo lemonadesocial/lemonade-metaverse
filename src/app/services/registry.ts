@@ -1,31 +1,38 @@
 import { erc165Contract, ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from '../helpers/web3';
+import { ethers } from 'ethers';
+
+import { Network } from './network';
 
 import { Registry, RegistryModel } from '../models/registry';
 
-async function supportsInterface(address: string, interfaceId: string) {
+async function supportsInterface(contract: ethers.Contract, interfaceId: string) {
   try {
-    return await erc165Contract.attach(address).supportsInterface(interfaceId) as boolean;
-  } catch {
+    return await contract.supportsInterface(interfaceId) as boolean;
+  } catch (err) {
     return null;
   }
 }
 
-export async function fetchRegistry(address: string): Promise<Registry> {
-  let registry = await RegistryModel.findOne({ id: address }).lean<Registry | null>();
+export async function fetchRegistry(network: Network, address: string): Promise<Registry> {
+  const query = { network: network.name, id: address };
+
+  let registry = await RegistryModel.findOne(query).lean<Registry | null>();
 
   if (!registry) {
+    const contract = erc165Contract.connect(network.provider()).attach(address);
+
     const [{ isERC721, supportsERC721Metadata }, supportsERC2981, supportsRaribleRoyaltiesV2] = await Promise.all([
       (async () => {
-        const supportsERC721Metadata = await supportsInterface(address, ERC721Metadata_INTERFACE_ID);
+        const supportsERC721Metadata = await supportsInterface(contract, ERC721Metadata_INTERFACE_ID);
         const supportsERC165 = supportsERC721Metadata !== null;
 
         return {
-          isERC721: supportsERC721Metadata || (supportsERC165 && await supportsInterface(address, ERC721_INTERFACE_ID)),
+          isERC721: supportsERC721Metadata || (supportsERC165 && await supportsInterface(contract, ERC721_INTERFACE_ID)),
           supportsERC721Metadata,
         };
       })(),
-      supportsInterface(address, ERC2981_INTERFACE_ID),
-      supportsInterface(address, RaribleRoyaltiesV2_INTERFACE_ID),
+      supportsInterface(contract, ERC2981_INTERFACE_ID),
+      supportsInterface(contract, RaribleRoyaltiesV2_INTERFACE_ID),
     ]);
 
     registry = new Registry();
@@ -36,7 +43,7 @@ export async function fetchRegistry(address: string): Promise<Registry> {
     registry.supportsERC2981 = supportsERC2981 || false;
     registry.supportsRaribleRoyaltiesV2 = supportsRaribleRoyaltiesV2 || false;
 
-    await RegistryModel.updateOne({ id: address }, registry, { upsert: true });
+    await RegistryModel.updateOne(query, registry, { upsert: true });
   }
 
   return registry;

@@ -1,7 +1,10 @@
 import { getModelForClass, index, prop } from '@typegoose/typegoose';
 
-@index({ id: 1 }, { unique: true })
+@index({ network: 1, id: 1 }, { unique: true })
 export class Registry {
+  @prop({ required: true })
+  public network!: string;
+
   @prop({ required: true })
   public id!: string;
 

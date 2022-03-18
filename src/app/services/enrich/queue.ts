@@ -40,7 +40,7 @@ export async function enqueue(
   const jobs: { name: string; data: JobData; opts?: BulkJobOptions }[] = [];
 
   items.forEach(({ token, orders }) => {
-    const jobId = token.id;
+    const jobId = `${token.contract}:${token.id}`;
 
     if (orders?.length) {
       commands.push(['call', 'SADD', `${ORDERS_KEY}:${jobId}`, ...orders.map((order) => JSON.stringify(order))]);

@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
 
+import { enqueue } from './enrich/queue';
 import { excludeNull } from '../utils/object';
 import { getDate } from '../utils/date';
 import { getOrSet } from '../helpers/redis';
+import { Network } from './network';
 import { pubSub } from '../helpers/pub-sub';
-import * as enrich from './enrich/queue';
-import * as indexer from '../helpers/indexer';
 
 import { Token, TokenModel } from '../models/token';
 
@@ -21,10 +21,11 @@ pubSub.subscribe<Token>('token_updated', function onMessage(token) {
 });
 
 type RequiredKeys<T> = { [K in keyof T]-?: Record<string, unknown> extends Pick<T, K> ? never : K }[keyof T];
-type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Token>> & Partial<Pick<GeneratedToken, 'createdAt'>>;
+type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Omit<Token, 'network'>>> & Partial<Pick<GeneratedToken, 'createdAt'>>;
 
-export function createToken<T extends GraphQLToken>(token: T) {
+export function createToken<T extends GraphQLToken>(network: Network, token: T) {
   return {
+    network: network.name,
     ...excludeNull(token),
     createdAt: token.createdAt ? getDate(token.createdAt) : undefined,
   };
@@ -52,7 +53,7 @@ async function waitForEnrich(tokens: Token[]) {
 
         emitter.on('token_updated', listener);
 
-        await enrich.enqueue(...tokens.map((token) => ({
+        await enqueue(...tokens.map((token) => ({
           token,
         })));
       })()),
@@ -71,11 +72,11 @@ async function waitForEnrich(tokens: Token[]) {
   }
 }
 
-async function fetch<T extends GraphQLToken>(items: T[]) {
+async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
   const docs = await TokenModel.find(
-    { id: { $in: items.map(({ id }) => id) } },
+    { network: network.name, id: { $in: items.map(({ id }) => id) } },
     { id: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1 },
-  ).lean<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royalties' | 'metadata'>[]>();
+  ).lean<Pick<Token, 'network' | 'id' | 'enrichedAt' | 'uri' | 'royalties' | 'metadata'>[]>();
   const map = Object.fromEntries(docs.map((doc) => [doc.id, doc]));
 
   const tokens = [];
@@ -83,7 +84,7 @@ async function fetch<T extends GraphQLToken>(items: T[]) {
 
   for (const item of items) {
     const doc = map[item.id];
-    const token = createToken({ ...item, ...doc });
+    const token = createToken(network, { ...item, ...doc });
 
     tokens.push(token);
     if (!doc) missing.push(token);
@@ -96,29 +97,29 @@ async function fetch<T extends GraphQLToken>(items: T[]) {
   return tokens;
 }
 
-export async function getTokens(variables: GetTokensQueryVariables) {
-  const { data: { tokens } } = await indexer.client.query<GetTokensQuery, GetTokensQueryVariables>({
+export async function getTokens(network: Network, variables: GetTokensQueryVariables) {
+  const { data: { tokens } } = await network.indexer().query<GetTokensQuery, GetTokensQueryVariables>({
     query: GetTokens,
     variables,
   });
 
   if (!tokens.length) return [];
 
-  return await fetch(tokens);
+  return await fetch(network, tokens);
 }
 
-export async function getToken(id: string, shouldResolveExternally?: boolean) {
+export async function getToken(network: Network, id: string, shouldResolveExternally?: boolean) {
   const externalResolver = () =>
     getOrSet(id, async function fn() {
-      const { data: { token } } = await indexer.client.query<GetTokenQuery, GetTokenQueryVariables>({
+      const { data: { token } } = await network.indexer().query<GetTokenQuery, GetTokenQueryVariables>({
         query: GetToken,
         variables: { id },
       });
 
-      if (token) return createToken(token);
+      if (token) return createToken(network, token);
     });
   const internalResolver = () =>
-    TokenModel.findOne({ id }).lean<Token>();
+    TokenModel.findOne({ network: network.name, id }).lean<Token>();
 
   let external;
   let internal;

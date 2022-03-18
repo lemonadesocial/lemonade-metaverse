@@ -18,7 +18,7 @@ interface Context<TSource, TArgs, TContext> {
 
 interface Options<TPayload, TSource, TArgs, TContext> {
   init?: (params: Context<TSource, TArgs, TContext>) => AsyncIterator<TPayload[]>;
-  restrict?: (params: Context<TSource, TArgs, TContext>) => keyof TPayload | null;
+  restrict?: (params: Context<TSource, TArgs, TContext>) => ((payload: TPayload) => string) | null;
   trigger: Trigger,
   filter?: (payload: TPayload, params: Context<TSource, TArgs, TContext>) => boolean;
 }
@@ -38,7 +38,7 @@ export function createSubscribe<TPayload, TSource = any, TArgs = any, TContext =
 
     if (init) {
       for await (const payloads of { [Symbol.asyncIterator]: () => init(ctx) }) {
-        if (restrictKey) payloads.forEach((payload) => restrictions.add(payload[restrictKey]));
+        if (restrictKey) payloads.forEach((payload) => restrictions.add(restrictKey(payload)));
 
         yield payloads;
       }
@@ -52,13 +52,13 @@ export function createSubscribe<TPayload, TSource = any, TArgs = any, TContext =
       for await (const payload of { [Symbol.asyncIterator]: () => ({ ...iterator, next: () => Promise.race([state.returned, iterator.next()]) }) }) {
         const hasRestrictions = restrictKey && restrictions.size > 0;
 
-        if ((hasRestrictions && !restrictions.has(payload[restrictKey]))
+        if ((hasRestrictions && !restrictions.has(restrictKey(payload)))
           || (!hasRestrictions && filter && !filter(payload, ctx))) {
           continue;
         }
 
         if (restrictKey && !hasRestrictions) {
-          restrictions.add(payload[restrictKey]);
+          restrictions.add(restrictKey(payload));
         }
 
         yield [payload];

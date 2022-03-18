@@ -1,5 +1,6 @@
 import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
+import * as assert from 'assert';
 
 import { Fields } from '../decorators/fields';
 
@@ -13,6 +14,7 @@ import { getFieldTree, getFieldProjection, FieldTree } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { getSort } from '../utils/sort';
 import { getToken, getTokens } from '../../app/services/token';
+import { networks } from '../../app/services/network';
 
 const findTokens = async (
   { skip, limit, sort, where }: PaginationArgs & { sort?: TokenSort | null; where?: TokenWhere | null },
@@ -34,15 +36,19 @@ const findTokens = async (
 class _TokensQueryResolver {
   @Query(() => TokenDetail, { nullable: true })
   async getToken(
+    @Arg('network', () => String) network: string,
     @Arg('id', () => String) id: string,
     @Fields() fields: FieldTree,
   ): Promise<TokenDetail | undefined> {
-    return await getToken(id, !!fields.owner || !!fields.transfers);
+    assert.ok(networks[network]);
+
+    return await getToken(networks[network], id, !!fields.owner || !!fields.transfers);
   }
 
   @Query(() => [Token])
   async getTokens(
     @Args() { skip, limit }: PaginationArgs,
+    @Arg('network', () => String, { nullable: true }) network?: string,
     @Arg('id', () => String, { nullable: true }) id?: string,
     @Arg('id_in', () => [String], { nullable: true }) id_in?: string[],
     @Arg('contract', () => String, { nullable: true }) contract?: string,
@@ -50,11 +56,23 @@ class _TokensQueryResolver {
     @Arg('tokenId', () => String, { nullable: true }) tokenId?: string,
     @Arg('owner', () => String, { nullable: true }) owner?: string,
   ): Promise<Token[]> {
-    return await getTokens({
+    const variables = {
       where: { id, id_in, contract, creator, tokenId, owner },
       skip,
       first: limit,
-    });
+    };
+
+    if (network) {
+      assert.ok(networks[network]);
+
+      return await getTokens(networks[network], variables);
+    }
+
+    const tokens = await Promise.all(Object.values(networks).map((network) =>
+      getTokens(network, variables))
+    );
+
+    return tokens.flat().slice(0, limit);
   }
 
   @Query(() => [Token])

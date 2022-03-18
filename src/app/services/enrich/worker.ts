@@ -18,6 +18,7 @@ import { erc721MetadataContract, erc2981Contract, raribleRoyaltiesV2 } from '../
 import { fetchRegistry } from '../registry';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
+import { networks } from '../network';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
 
@@ -42,11 +43,12 @@ const writer = new BufferQueue<AnyBulkWriteOperation<Token>>(
 );
 
 const enrichesTotal = new Counter({
-  labelNames: ['status'],
+  labelNames: ['network', 'status'],
   name: 'metaverse_enriches_total',
   help: 'Total number of metaverse enriches',
 });
 const enrichDurationSeconds = new Histogram({
+  labelNames: ['network'],
   name: 'metaverse_enrich_duration_seconds',
   help: 'Duration of metaverse enrich in seconds',
 });
@@ -73,8 +75,12 @@ const processor: Processor<JobData> = async (job) => {
   const enrichDurationTimer = enrichDurationSeconds.startTimer();
 
   const { token } = job.data;
+  const network = networks[token.network];
 
-  const registry = await fetchRegistry(token.contract);
+  assert.ok(network);
+
+  const registry = await fetchRegistry(network, token.contract);
+  const provider = network.provider();
 
   assert.ok(registry.isERC721);
 
@@ -82,7 +88,7 @@ const processor: Processor<JobData> = async (job) => {
     (async () => {
       if (!registry.supportsERC721Metadata) return;
 
-      token.uri = await erc721MetadataContract.attach(token.contract).tokenURI(token.tokenId).catch(() => undefined);
+      token.uri = await erc721MetadataContract.connect(provider).attach(token.contract).tokenURI(token.tokenId).catch(() => undefined);
 
       if (token.uri) {
         const { href, pathname, protocol } = parseUrl(token.uri);
@@ -113,14 +119,14 @@ const processor: Processor<JobData> = async (job) => {
     })(),
     (async () => {
       if (registry.supportsRaribleRoyaltiesV2) {
-        const royalties = await raribleRoyaltiesV2.attach(token.contract).getRaribleV2Royalties(token.tokenId).catch(() => null) as [string, ethers.BigNumber][] | null;
+        const royalties = await raribleRoyaltiesV2.connect(provider).attach(token.contract).getRaribleV2Royalties(token.tokenId).catch(() => null) as [string, ethers.BigNumber][] | null;
 
         if (royalties?.length) {
           token.royalties = royalties.map(([account, value]) => ({ account: account.toLowerCase(), value: value.toString() }));
         }
       } else if (registry.supportsERC2981) {
         const price = ethers.utils.parseEther('1');
-        const royaltyInfo = await erc2981Contract.attach(token.contract).royaltyInfo(token.tokenId, price).catch(() => null) as [string, ethers.BigNumber] | null;
+        const royaltyInfo = await erc2981Contract.connect(provider).attach(token.contract).royaltyInfo(token.tokenId, price).catch(() => null) as [string, ethers.BigNumber] | null;
 
         if (royaltyInfo?.[1].gt(0)) {
           token.royalties = [{ account: royaltyInfo[0].toLowerCase(), value: royaltyInfo[1].div(price).mul(10000).toString() }];
@@ -133,7 +139,7 @@ const processor: Processor<JobData> = async (job) => {
 
   writer.enqueue({
     updateOne: {
-      filter: { id: token.id },
+      filter: { network: token.network, id: token.id },
       update: { $set: token },
       upsert: true,
     },
@@ -168,12 +174,12 @@ export async function start(): Promise<void> {
   await queueScheduler.waitUntilReady();
 
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: createConnection(), concurrency: WORKER_CONCURRENCY });
-  worker.on('failed', function onFailed(_, error) {
-    enrichesTotal.inc({ status: 'fail' });
+  worker.on('failed', function onFailed(job: Job<JobData>, error) {
+    enrichesTotal.inc({ network: job.data.token.network, status: 'fail' });
     logger.error(error, 'failed to enrich');
   });
-  worker.on('completed', function onCompleted() {
-    enrichesTotal.inc({ status: 'success' });
+  worker.on('completed', function onCompleted(job: Job<JobData>) {
+    enrichesTotal.inc({ network: job.data.token.network, status: 'success' });
   });
   await worker.waitUntilReady();
 }

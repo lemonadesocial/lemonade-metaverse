@@ -1,6 +1,6 @@
 import { AnyBulkWriteOperation } from 'mongodb';
 import { Counter, Histogram } from 'prom-client';
-import { Job, JobsOptions, Processor, Queue, QueueScheduler, Worker } from 'bullmq';
+import { Job, JobsOptions, Queue, QueueScheduler, Worker } from 'bullmq';
 
 import { createConnection } from '../../helpers/bullmq';
 import { createToken } from '../token';
@@ -8,41 +8,32 @@ import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
 import { getParsedUrl, getWebUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
-import { pubSub, Trigger } from '../../helpers/pub-sub';
-import * as enrich from '../enrich/queue';
-import * as indexer from '../../helpers/indexer';
-
+import { Network, networks } from '../network';
 import { Order, OrderKind, OrderModel } from '../../models/order';
+import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { StateModel } from '../../models/state';
 import { Token, TokenModel } from '../../models/token';
+import * as enrich from '../enrich/queue';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 
-import { isProduction } from '../../../config';
-
 const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
-const POLL_TOKENS_CONTRACTS_IN = isProduction
-  ? ['0x7254e06afb533964b389be742524fa696a290c81', '0x94f73287bc1667f5472485a7bf2bfadc639436c8', '0x069751D80a3b3B3948d4c511F7498C8BceD8a92e', '0x20a8f0a2535f21bc3b7ee2ed634a6550f23b1ebb']
-  : ['0x7254e06afb533964b389be742524fa696a290c81', '0x71deb1a1cfae375ef779b8d4f39f145ab07aa66c', '0x3973F56ba966BFEb7B0FC88365DD61CFa25A3810', '0x94f73287bc1667f5472485a7bf2bfadc639436c8'];
-const QUEUE_NAME = 'bullmq:ingress';
-const STATE_KEY = 'ingress';
 
-const ingressesTotal = new Counter({
-  labelNames: ['status'],
-  name: 'metaverse_ingresses_total',
-  help: 'Total number of metaverse ingresses',
-});
-const ingressDurationSeconds = new Histogram({
-  name: 'metaverse_ingress_duration_seconds',
-  help: 'Duration of metaverse ingress in seconds',
-});
-const ingressTimeToRecoverySeconds = new Histogram({
-  name: 'metaverse_ingress_time_to_recovery_seconds',
-  help: 'Time to recovery of metaverse ingress in seconds',
-  buckets: [1, 5, 30, 60, 300, 900, 1800, 3600, 7200, 10800, 14400],
-});
+interface JobData {
+  orders_lastBlock_gt?: string;
+  tokens_createdAt_gt?: string;
+}
+
+interface State {
+  name: string;
+  network: Network;
+  queue: Queue;
+  queueScheduler: QueueScheduler;
+  worker?: Worker<JobData>;
+}
+
 const jobOptions: JobsOptions = {
   attempts: Number.MAX_VALUE,
   backoff: JOB_DELAY,
@@ -50,8 +41,26 @@ const jobOptions: JobsOptions = {
   removeOnComplete: true,
   removeOnFail: true,
 };
+const states: Record<string, State> = {};
 
-async function process(data: IngressQuery) {
+const ingressesTotal = new Counter({
+  labelNames: ['network', 'status'],
+  name: 'metaverse_ingresses_total',
+  help: 'Total number of metaverse ingresses',
+});
+const ingressDurationSeconds = new Histogram({
+  labelNames: ['network'],
+  name: 'metaverse_ingress_duration_seconds',
+  help: 'Duration of metaverse ingress in seconds',
+});
+const ingressTimeToRecoverySeconds = new Histogram({
+  labelNames: ['network'],
+  name: 'metaverse_ingress_time_to_recovery_seconds',
+  help: 'Time to recovery of metaverse ingress in seconds',
+  buckets: [1, 5, 30, 60, 300, 900, 1800, 3600, 7200, 10800, 14400],
+});
+
+async function process(state: State, data: IngressQuery) {
   const orders: Order[] = [];
   const ordersToken: Record<string, Token> = {};
   const tokens: Token[] = [];
@@ -59,6 +68,7 @@ async function process(data: IngressQuery) {
 
   data.orders?.forEach((item) => {
     const order = {
+      network: state.network.name,
       ...excludeNull(item),
       createdAt: getDate(item.createdAt),
       kind: item.kind as string as OrderKind,
@@ -67,7 +77,7 @@ async function process(data: IngressQuery) {
       token: item.token.id,
     };
 
-    const token = createToken(item.token);
+    const token = createToken(state.network, item.token);
 
     orders.push(order);
     ordersToken[order.id] = token;
@@ -83,7 +93,7 @@ async function process(data: IngressQuery) {
   data.tokens?.forEach((item) => {
     if (tokensOrders[item.id]) return; // when processing data of multiple blocks, the token can be in both tokens and orders
 
-    const token = createToken(item);
+    const token = createToken(state.network, item);
 
     tokens.push(token);
   });
@@ -91,7 +101,7 @@ async function process(data: IngressQuery) {
   const [docs] = await Promise.all([
     tokens.length
       ? TokenModel.find(
-        { id: { $in: tokens.map(({ id }) => id) }, enrichedAt: { $exists: true } },
+        { network: state.network.name, id: { $in: tokens.map(({ id }) => id) }, enrichedAt: { $exists: true } },
         { id: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1 },
       ).lean<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royalties' | 'metadata'>[]>()
       : undefined,
@@ -99,7 +109,7 @@ async function process(data: IngressQuery) {
       ? TokenModel.bulkWrite(
         tokens.map<AnyBulkWriteOperation<Token>>(({ id, ...token }) => ({
           updateOne: {
-            filter: { id },
+            filter: { network: state.network.name, id },
             update: { $set: token },
             upsert: true,
           },
@@ -111,7 +121,7 @@ async function process(data: IngressQuery) {
       ? OrderModel.bulkWrite(
         orders.map<AnyBulkWriteOperation<Order>>(({ id, ...order }) => ({
           updateOne: {
-            filter: { id },
+            filter: { network: state.network.name, id },
             update: { $set: order },
             upsert: true,
           },
@@ -149,7 +159,7 @@ async function process(data: IngressQuery) {
   await Promise.all(promises);
 }
 
-async function poll(data: JobData): Promise<JobData> {
+async function poll(state: State, data: JobData): Promise<JobData> {
   const { orders_lastBlock_gt, tokens_createdAt_gt } = data;
   const nextData = { ...data };
 
@@ -158,7 +168,7 @@ async function poll(data: JobData): Promise<JobData> {
   let tokens_skip = 0;
   let tokens_first = POLL_FIRST;
   do {
-    const { data } = await indexer.client.query<IngressQuery, IngressQueryVariables>({
+    const { data } = await state.network.indexer().query<IngressQuery, IngressQueryVariables>({
       query: Ingress,
       variables: {
         orders_include: orders_first > 0,
@@ -166,7 +176,7 @@ async function poll(data: JobData): Promise<JobData> {
         orders_skip,
         orders_first,
         tokens_include: tokens_first > 0,
-        tokens_contract_in: POLL_TOKENS_CONTRACTS_IN,
+        tokens_contract_in: state.network.contracts,
         tokens_createdAt_gt,
         tokens_skip,
         tokens_first,
@@ -177,7 +187,7 @@ async function poll(data: JobData): Promise<JobData> {
     const tokens_length = data.tokens?.length || 0;
 
     if (orders_length || tokens_length) {
-      await process(data);
+      await process(state, data);
 
       if (orders_length) {
         nextData.orders_lastBlock_gt = data.orders![orders_length - 1].lastBlock;
@@ -197,76 +207,90 @@ async function poll(data: JobData): Promise<JobData> {
   return nextData;
 }
 
-interface JobData {
-  orders_lastBlock_gt?: string;
-  tokens_createdAt_gt?: string;
-}
+async function processor(state: State, { data }: Job<JobData>) {
+  const ingressDurationTimer = ingressDurationSeconds.startTimer({ network: state.network.name });
 
-let queue: Queue | undefined;
-let queueScheduler: QueueScheduler | undefined;
-let worker: Worker<JobData> | undefined;
-
-const processor: Processor<JobData> = async ({ data }) => {
-  const ingressDurationTimer = ingressDurationSeconds.startTimer();
-
-  const nextData = await poll(data);
-
-  const keys = Object.keys(nextData) as (keyof JobData)[];
-  const hasChanged = keys.length !== Object.keys(data).length || keys.some((x) => nextData[x] !== data[x]);
+  const nextData = await poll(state, data);
 
   await Promise.all([
-    hasChanged ? StateModel.updateOne({ key: STATE_KEY }, { $set: { value: nextData } }, { upsert: true }) : null,
-    queue!.add('*', nextData, jobOptions),
+    data.orders_lastBlock_gt !== nextData.orders_lastBlock_gt || data.tokens_createdAt_gt !== nextData.tokens_createdAt_gt &&
+      StateModel.updateOne(
+        { key: state.name },
+        { $set: { value: nextData } },
+        { upsert: true }
+      ),
+    state.queue.add('*', nextData, jobOptions),
   ]);
 
   ingressDurationTimer();
-};
+}
 
-function getJobTiming({ timestamp }: Job<JobData>) {
+function timing({ timestamp }: Job<JobData>) {
   return {
     secondsElapsed: (Date.now() - timestamp) / 1000,
     timestamp: new Date(timestamp),
   };
 }
 
-export async function start(): Promise<void> {
-  queue = new Queue<JobData>(QUEUE_NAME, { connection: createConnection() });
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: createConnection() });
+async function startNetwork(network: Network) {
+  const name = `ingress:${network.name}`;
+  const state: State = states[network.name] = {
+    name,
+    network,
+    queue: new Queue<JobData>(name, { connection: createConnection() }),
+    queueScheduler: new QueueScheduler(name, { connection: createConnection() }),
+  };
   await Promise.all([
-    enrich.waitUntilReady(),
-    queue.waitUntilReady(),
-    queueScheduler.waitUntilReady(),
+    state.queue.waitUntilReady(),
+    state.queueScheduler.waitUntilReady(),
   ]);
 
-  if (!await queue.getJobCountByTypes('wait', 'delayed', 'paused', 'active', 'failed')) {
-    const state = await StateModel.findOne({ key: STATE_KEY }, { value: 1 }, { lean: true });
-    const job = await queue.add('*', state?.value || {}, jobOptions);
+  if (!await state.queue.getJobCountByTypes('wait', 'delayed', 'paused', 'active', 'failed')) {
+    const extstate = await StateModel.findOne(
+      { key: state.name },
+      { value: 1 },
+      { lean: true }
+    );
+    const job = await state.queue.add('*', extstate?.value || {}, jobOptions);
     logger.info(job.asJSON(), 'created ingress job');
   }
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: createConnection() });
-  worker.on('failed', function onFailed(job, err) {
-    ingressesTotal.inc({ status: 'fail' });
-    logger.error({ ...getJobTiming(job), err }, 'failed ingress');
+  state.worker = new Worker<JobData>(
+    name,
+    processor.bind(null, state),
+    { connection: createConnection() }
+  );
+  state.worker.on('failed', function onFailed(job: Job<JobData>, err) {
+    ingressesTotal.inc({ network: state.network.name, status: 'fail' });
+    logger.error({ ...timing(job), err }, 'failed ingress');
   });
-  worker.on('completed', function onCompleted(job) {
-    ingressesTotal.inc({ status: 'success' });
+  state.worker.on('completed', function onCompleted(job: Job<JobData>) {
+    ingressesTotal.inc({ network: state.network.name, status: 'success' });
 
     if (job.attemptsMade) {
-      const timing = getJobTiming(job);
+      const obj = timing(job);
 
-      ingressTimeToRecoverySeconds.observe(timing.secondsElapsed);
-      logger.info(timing, 'recovered ingress');
+      ingressTimeToRecoverySeconds.observe(obj.secondsElapsed);
+      logger.info(obj, 'recovered ingress');
     }
   });
-  await worker.waitUntilReady();
+  await state.worker.waitUntilReady();
+}
+
+export async function start(): Promise<void> {
+  await enrich.waitUntilReady();
+  await Promise.all(Object.values(networks).map(startNetwork));
+}
+
+async function stopNetwork(network: Network) {
+  const state = states[network.name];
+
+  if (state.worker) await state.worker.close();
+  await state.queue.close();
+  await state.queueScheduler.close();
 }
 
 export async function stop(): Promise<void> {
-  if (worker) await worker.close();
-  indexer.stop();
-
+  await Promise.all(Object.values(networks).map(stopNetwork));
   await enrich.close();
-  if (queue) await queue.close();
-  if (queueScheduler) await queueScheduler.close();
 }

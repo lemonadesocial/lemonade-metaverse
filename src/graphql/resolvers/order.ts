@@ -14,6 +14,7 @@ import { getSort } from '../utils/sort';
 const findOrders = async (
   { skip, limit, sort, where }: PaginationArgs & { sort?: OrderSort | null; where?: OrderWhere | null },
   info: GraphQLResolveInfo,
+  projection?: { [P in keyof Order]?: 1 },
 ) => {
   const fields = getFieldTree(info);
   const filterToken = where?.token ? getFilter(where.token) : {};
@@ -27,8 +28,8 @@ const findOrders = async (
       {
         $lookup: {
           from: 'tokens',
-          let: { token: '$token' },
-          pipeline: [{ $match: { $expr: { $eq: ['$id', '$$token'] }, ...filterToken } }],
+          let: { network: '$network', token: '$token' },
+          pipeline: [{ $match: { $expr: { $and: [{ $eq: ['$network', '$$network'] }, { $eq: ['$id', '$$token'] }] }, ...filterToken } }],
           as: 'token',
         },
       },
@@ -37,7 +38,7 @@ const findOrders = async (
     ...sort ? [{ $sort: getSort(sort) }] : [],
     { $skip: skip },
     { $limit: limit },
-    { $project: getFieldProjection(fields) },
+    { $project: { ...getFieldProjection(fields), ...projection } },
   ]);
 };
 
@@ -61,9 +62,9 @@ class _OrdersSubscriptionResolver {
     {
       subscribe: createSubscribe<Order>({
         init: async function* ({ args, info }) {
-          if (args.query) yield findOrders(args, info);
+          if (args.query) yield findOrders(args, info, { network: 1, id: 1 });
         },
-        restrict: () => 'id',
+        restrict: () => (payload) => payload.network + payload.id,
         trigger: Trigger.OrderUpdated,
         filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
       }),
