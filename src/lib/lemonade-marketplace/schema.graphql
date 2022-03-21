@@ -1,10 +1,3 @@
-query GetMeta {
-  _meta {
-    block { number }
-    hasIndexingErrors
-  }
-}
-
 fragment tokenFields on Token {
   id
   contract
@@ -17,6 +10,11 @@ query Ingress(
   $orders_include: Boolean!, $orders_lastBlock_gt: BigInt = -1, $orders_skip: Int, $orders_first: Int
   $tokens_include: Boolean!, $tokens_contract_in: [Bytes!], $tokens_createdAt_gt: BigInt = -1, $tokens_skip: Int, $tokens_first: Int
 ) {
+  _meta {
+    block { number }
+    hasIndexingErrors
+  }
+
   orders(
     orderBy: lastBlock,
     orderDirection: asc,

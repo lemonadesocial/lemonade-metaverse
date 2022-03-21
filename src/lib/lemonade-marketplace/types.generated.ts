@@ -86,9 +86,19 @@ export enum Bid_orderBy {
   transaction = 'transaction'
 }
 
+/** The block at which the query should be executed. */
 export type Block_height = {
+  /** Value containing a block hash */
   hash?: Maybe<Scalars['Bytes']>;
+  /** Value containing a block number */
   number?: Maybe<Scalars['Int']>;
+  /**
+   * Value containing the minimum block number.
+   * In the case of `number_gte`, the query will be executed on the latest block only if
+   * the subgraph has progressed to or past the minimum block number.
+   * Defaults to the latest block when omitted.
+   *
+   */
   number_gte?: Maybe<Scalars['Int']>;
 };
 
@@ -176,6 +186,8 @@ export type Order = {
   taker?: Maybe<Scalars['Bytes']>;
   token: Token;
   transaction: Scalars['Bytes'];
+  updatedAt?: Maybe<Scalars['BigInt']>;
+  updatedTransaction?: Maybe<Scalars['Bytes']>;
 };
 
 
@@ -187,6 +199,7 @@ export type OrderbidsArgs = {
   where?: Maybe<Bid_filter>;
 };
 
+/** Defines the order direction, either ascending or descending */
 export enum OrderDirection {
   asc = 'asc',
   desc = 'desc'
@@ -336,6 +349,20 @@ export type Order_filter = {
   transaction_not?: Maybe<Scalars['Bytes']>;
   transaction_not_contains?: Maybe<Scalars['Bytes']>;
   transaction_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  updatedAt?: Maybe<Scalars['BigInt']>;
+  updatedAt_gt?: Maybe<Scalars['BigInt']>;
+  updatedAt_gte?: Maybe<Scalars['BigInt']>;
+  updatedAt_in?: Maybe<Array<Scalars['BigInt']>>;
+  updatedAt_lt?: Maybe<Scalars['BigInt']>;
+  updatedAt_lte?: Maybe<Scalars['BigInt']>;
+  updatedAt_not?: Maybe<Scalars['BigInt']>;
+  updatedAt_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  updatedTransaction?: Maybe<Scalars['Bytes']>;
+  updatedTransaction_contains?: Maybe<Scalars['Bytes']>;
+  updatedTransaction_in?: Maybe<Array<Scalars['Bytes']>>;
+  updatedTransaction_not?: Maybe<Scalars['Bytes']>;
+  updatedTransaction_not_contains?: Maybe<Scalars['Bytes']>;
+  updatedTransaction_not_in?: Maybe<Array<Scalars['Bytes']>>;
 };
 
 export enum Order_orderBy {
@@ -357,7 +384,9 @@ export enum Order_orderBy {
   price = 'price',
   taker = 'taker',
   token = 'token',
-  transaction = 'transaction'
+  transaction = 'transaction',
+  updatedAt = 'updatedAt',
+  updatedTransaction = 'updatedTransaction'
 }
 
 export type Query = {
@@ -863,11 +892,6 @@ export enum _SubgraphErrorPolicy_ {
   deny = 'deny'
 }
 
-export type GetMetaQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetMetaQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number } } | null | undefined };
-
 export type tokenFieldsFragment = { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string };
 
 export type IngressQueryVariables = Exact<{
@@ -883,7 +907,7 @@ export type IngressQueryVariables = Exact<{
 }>;
 
 
-export type IngressQuery = { __typename?: 'Query', orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
+export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;

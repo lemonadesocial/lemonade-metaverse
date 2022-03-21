@@ -8,18 +8,14 @@ export const tokenFields = gql`
   tokenId
 }
     `;
-export const GetMeta = gql`
-    query GetMeta {
+export const Ingress = gql`
+    query Ingress($orders_include: Boolean!, $orders_lastBlock_gt: BigInt = -1, $orders_skip: Int, $orders_first: Int, $tokens_include: Boolean!, $tokens_contract_in: [Bytes!], $tokens_createdAt_gt: BigInt = -1, $tokens_skip: Int, $tokens_first: Int) {
   _meta {
     block {
       number
     }
     hasIndexingErrors
   }
-}
-    `;
-export const Ingress = gql`
-    query Ingress($orders_include: Boolean!, $orders_lastBlock_gt: BigInt = -1, $orders_skip: Int, $orders_first: Int, $tokens_include: Boolean!, $tokens_contract_in: [Bytes!], $tokens_createdAt_gt: BigInt = -1, $tokens_skip: Int, $tokens_first: Int) {
   orders(
     orderBy: lastBlock
     orderDirection: asc

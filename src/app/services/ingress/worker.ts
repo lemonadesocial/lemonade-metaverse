@@ -1,5 +1,5 @@
 import { AnyBulkWriteOperation } from 'mongodb';
-import { Counter, Histogram } from 'prom-client';
+import { Counter, Gauge, Histogram } from 'prom-client';
 import { Job, JobsOptions, Queue, QueueScheduler, Worker } from 'bullmq';
 
 import { createConnection } from '../../helpers/bullmq';
@@ -22,6 +22,7 @@ const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
 
 interface JobData {
+  meta?: { block: number; hasIndexingErrors: boolean };
   orders_lastBlock_gt?: string;
   tokens_createdAt_gt?: string;
 }
@@ -58,6 +59,21 @@ const ingressTimeToRecoverySeconds = new Histogram({
   name: 'metaverse_ingress_time_to_recovery_seconds',
   help: 'Time to recovery of metaverse ingress in seconds',
   buckets: [1, 5, 30, 60, 300, 900, 1800, 3600, 7200, 10800, 14400],
+});
+const watchdogIndexerDelayBlocks = new Gauge({
+  labelNames: ['network'],
+  name: 'metaverse_watchdog_indexer_delay_blocks',
+  help: 'Delay of metaverse indexer in blocks',
+});
+const watchdogIndexerDelaySeconds = new Gauge({
+  labelNames: ['network'],
+  name: 'metaverse_watchdog_indexer_delay_seconds',
+  help: 'Delay of metaverse indexer in seconds',
+});
+const watchdogIndexerError = new Gauge({
+  labelNames: ['network'],
+  name: 'metaverse_watchdog_indexer_error',
+  help: 'Whether there is a metaverse indexer error',
 });
 
 async function process(state: State, data: IngressQuery) {
@@ -183,6 +199,11 @@ async function poll(state: State, data: JobData): Promise<JobData> {
       },
     });
 
+    if (data._meta) nextData.meta = {
+      block: data._meta.block.number,
+      hasIndexingErrors: data._meta.hasIndexingErrors,
+    };
+
     const orders_length = data.orders?.length || 0;
     const tokens_length = data.tokens?.length || 0;
 
@@ -207,10 +228,12 @@ async function poll(state: State, data: JobData): Promise<JobData> {
   return nextData;
 }
 
-async function processor(state: State, { data }: Job<JobData>) {
-  const ingressDurationTimer = ingressDurationSeconds.startTimer({ network: state.network.name });
+async function processor(state: State, { data, timestamp }: Job<JobData>) {
+  const labels = { network: state.network.name };
+  const ingressDurationTimer = ingressDurationSeconds.startTimer(labels);
 
   const nextData = await poll(state, data);
+  const now = Date.now();
 
   await Promise.all([
     data.orders_lastBlock_gt !== nextData.orders_lastBlock_gt || data.tokens_createdAt_gt !== nextData.tokens_createdAt_gt &&
@@ -223,6 +246,18 @@ async function processor(state: State, { data }: Job<JobData>) {
   ]);
 
   ingressDurationTimer();
+
+  if (nextData.meta) {
+    if (nextData.meta.block !== data.meta?.block) {
+      const latestBlock = await state.network.provider().getBlockNumber();
+      const block = await state.network.provider().getBlock(nextData.meta.block);
+
+      watchdogIndexerDelaySeconds.labels(labels).set(timestamp + (now - timestamp) / 2 - block.timestamp);
+      watchdogIndexerDelayBlocks.labels(labels).set(latestBlock - block.number);
+    }
+
+    watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
+  }
 }
 
 function timing({ timestamp }: Job<JobData>) {
