@@ -5,7 +5,7 @@ import { excludeNull } from '../utils/object';
 import { getDate } from '../utils/date';
 import { getOrSet } from '../helpers/redis';
 import { Network } from './network';
-import { pubSub } from '../helpers/pub-sub';
+import { pubSub, Trigger } from '../helpers/pub-sub';
 
 import { Token, TokenModel } from '../models/token';
 
@@ -16,9 +16,12 @@ const ENRICH_TIMEOUT = 10000;
 
 const emitter = new EventEmitter();
 
-pubSub.subscribe<Token>('token_updated', function onMessage(token) {
-  emitter.emit('token_updated', token);
-});
+function onMessage(token: Token) {
+  emitter.emit('token', token);
+}
+
+pubSub.subscribe<Token>(Trigger.EnrichFailed, onMessage);
+pubSub.subscribe<Token>(Trigger.TokenUpdated, onMessage);
 
 type RequiredKeys<T> = { [K in keyof T]-?: Record<string, unknown> extends Pick<T, K> ? never : K }[keyof T];
 type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Omit<Token, 'network'>>> & Partial<Pick<GeneratedToken, 'createdAt'>>;
@@ -51,7 +54,7 @@ async function waitForEnrich(tokens: Token[]) {
           }
         };
 
-        emitter.on('token_updated', listener);
+        emitter.on('token', listener);
 
         await enqueue(...tokens.map((token) => ({
           token,

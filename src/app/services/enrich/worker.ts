@@ -176,6 +176,7 @@ export async function start(): Promise<void> {
   worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: createConnection(), concurrency: WORKER_CONCURRENCY });
   worker.on('failed', function onFailed(job: Job<JobData>, error) {
     enrichesTotal.inc({ network: job.data.token.network, status: 'fail' });
+    pubSub.publish(Trigger.EnrichFailed, job.data.token);
     logger.error(error, 'failed to enrich');
   });
   worker.on('completed', function onCompleted(job: Job<JobData>) {
