@@ -36,7 +36,7 @@ const findTokens = async (
 class _TokensQueryResolver {
   @Query(() => TokenDetail, { nullable: true })
   async getToken(
-    @Arg('network', () => String) network: string,
+    @Arg('network', () => String, { defaultValue: 'polygon' }) network: string,
     @Arg('id', () => String) id: string,
     @Fields() fields: FieldTree,
   ): Promise<TokenDetail | undefined> {
