@@ -252,7 +252,7 @@ async function processor(state: State, { data, timestamp }: Job<JobData>) {
       const latestBlock = await state.network.provider().getBlockNumber();
       const block = await state.network.provider().getBlock(nextData.meta.block);
 
-      watchdogIndexerDelaySeconds.labels(labels).set(timestamp + (now - timestamp) / 2 - block.timestamp);
+      watchdogIndexerDelaySeconds.labels(labels).set((timestamp + (now - timestamp) / 2 - block.timestamp * 1000) / 1000);
       watchdogIndexerDelayBlocks.labels(labels).set(latestBlock - block.number);
     }
 
