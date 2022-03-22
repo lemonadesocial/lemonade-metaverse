@@ -3,11 +3,11 @@
     /* Redirect output structure to the directory. */
     "outDir": "dist",
     /* List of library files to be included in the compilation. */
-    "lib": ["ES2020"],
+    "lib": ["ES2021"],
     /* Specify module code generation */
     "module": "commonjs",
     /* Specify ECMAScript target version */
-    "target": "ES2020",
+    "target": "ES2022",
     /* Allow default imports from modules with no default export. */
     "esModuleInterop": true,
     /* Skip type checking of all declaration files (*.d.ts). */

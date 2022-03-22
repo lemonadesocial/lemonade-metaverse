@@ -1,8 +1,7 @@
 ### builder
-FROM public.ecr.aws/docker/library/alpine:3.14 as builder
+FROM public.ecr.aws/docker/library/node:current-alpine as builder
 WORKDIR /app
 
-RUN apk add --no-cache yarn
 COPY package.json yarn.lock /app/
 RUN yarn install --frozen-lockfile --ignore-optional
 
@@ -14,10 +13,9 @@ RUN yarn build || exit $? && \
     yarn install --frozen-lockfile --ignore-optional --production --offline
 
 ### base
-FROM public.ecr.aws/docker/library/alpine:3.14 as base
+FROM public.ecr.aws/docker/library/node:current-alpine as base
 WORKDIR /app
 
-RUN apk add --no-cache nodejs
 RUN wget https://github.com/segmentio/chamber/releases/download/v2.10.6/chamber-v2.10.6-linux-amd64 -O /usr/local/bin/chamber && \
     echo '8b2750d2f93c6014c7a26d5695472a9d164624915fb140879abe77d746356f5f  /usr/local/bin/chamber' | sha256sum -c && \
     chmod +x /usr/local/bin/chamber

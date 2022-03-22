@@ -24,7 +24,7 @@ export class OrderWhere extends WhereInput(OrderClass) {
 @ObjectType()
 export class Order extends OrderClass {
   @Field(() => Token, { description: 'The ERC721 token.' })
-  public token!: string;
+  declare public token: string;
 
   @Directive('@expanded(modelName: "User", foreignField: "wallets")')
   @Field(() => User, { nullable: true })
