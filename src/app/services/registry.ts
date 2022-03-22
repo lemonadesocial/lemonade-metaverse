@@ -1,9 +1,12 @@
 import { erc165Contract, ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from '../helpers/web3';
 import { ethers } from 'ethers';
+import LRU from 'lru-cache';
 
 import { Network } from './network';
 
 import { Registry, RegistryModel } from '../models/registry';
+
+const lru = new LRU<string, Registry>({ max: 1000 });
 
 async function supportsInterface(contract: ethers.Contract, interfaceId: string) {
   try {
@@ -15,8 +18,9 @@ async function supportsInterface(contract: ethers.Contract, interfaceId: string)
 
 export async function fetchRegistry(network: Network, address: string): Promise<Registry> {
   const query = { network: network.name, id: address };
+  const key = query.network + query.id;
 
-  let registry = await RegistryModel.findOne(query).lean<Registry | null>();
+  let registry = lru.get(key) || await RegistryModel.findOne(query).lean<Registry | null>();
 
   if (!registry) {
     const contract = erc165Contract.connect(network.provider()).attach(address);
@@ -43,6 +47,7 @@ export async function fetchRegistry(network: Network, address: string): Promise<
     registry.supportsERC2981 = supportsERC2981 || false;
     registry.supportsRaribleRoyaltiesV2 = supportsRaribleRoyaltiesV2 || false;
 
+    lru.set(key, registry);
     await RegistryModel.updateOne(query, registry, { upsert: true });
   }
 

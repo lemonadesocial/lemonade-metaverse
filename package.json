@@ -31,6 +31,7 @@
     "http-terminator": "^3.0.3",
     "ioredis": "^4.28.0",
     "koa": "^2.13.4",
+    "lru-cache": "^7.7.1",
     "mongoose": "^6.0.12",
     "node-fetch": "^2.6.6",
     "pino": "^7.1.0",
