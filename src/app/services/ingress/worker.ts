@@ -87,6 +87,7 @@ async function process(state: State, data: IngressQuery) {
       network: state.network.name,
       ...excludeNull(item),
       createdAt: getDate(item.createdAt),
+      updatedAt: item.updatedAt ? getDate(item.updatedAt) : undefined,
       kind: item.kind as string as OrderKind,
       openFrom: item.openFrom ? getDate(item.openFrom) : undefined,
       openTo: item.openTo ? getDate(item.openTo) : undefined,

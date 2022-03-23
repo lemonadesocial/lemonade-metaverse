@@ -57,7 +57,9 @@ export type Bid_filter = {
   id_not_in?: Maybe<Array<Scalars['ID']>>;
   order?: Maybe<Scalars['String']>;
   order_contains?: Maybe<Scalars['String']>;
+  order_contains_nocase?: Maybe<Scalars['String']>;
   order_ends_with?: Maybe<Scalars['String']>;
+  order_ends_with_nocase?: Maybe<Scalars['String']>;
   order_gt?: Maybe<Scalars['String']>;
   order_gte?: Maybe<Scalars['String']>;
   order_in?: Maybe<Array<Scalars['String']>>;
@@ -65,10 +67,14 @@ export type Bid_filter = {
   order_lte?: Maybe<Scalars['String']>;
   order_not?: Maybe<Scalars['String']>;
   order_not_contains?: Maybe<Scalars['String']>;
+  order_not_contains_nocase?: Maybe<Scalars['String']>;
   order_not_ends_with?: Maybe<Scalars['String']>;
+  order_not_ends_with_nocase?: Maybe<Scalars['String']>;
   order_not_in?: Maybe<Array<Scalars['String']>>;
   order_not_starts_with?: Maybe<Scalars['String']>;
+  order_not_starts_with_nocase?: Maybe<Scalars['String']>;
   order_starts_with?: Maybe<Scalars['String']>;
+  order_starts_with_nocase?: Maybe<Scalars['String']>;
   transaction?: Maybe<Scalars['Bytes']>;
   transaction_contains?: Maybe<Scalars['Bytes']>;
   transaction_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -130,7 +136,9 @@ export type Currency_filter = {
   id_not_in?: Maybe<Array<Scalars['ID']>>;
   name?: Maybe<Scalars['String']>;
   name_contains?: Maybe<Scalars['String']>;
+  name_contains_nocase?: Maybe<Scalars['String']>;
   name_ends_with?: Maybe<Scalars['String']>;
+  name_ends_with_nocase?: Maybe<Scalars['String']>;
   name_gt?: Maybe<Scalars['String']>;
   name_gte?: Maybe<Scalars['String']>;
   name_in?: Maybe<Array<Scalars['String']>>;
@@ -138,13 +146,19 @@ export type Currency_filter = {
   name_lte?: Maybe<Scalars['String']>;
   name_not?: Maybe<Scalars['String']>;
   name_not_contains?: Maybe<Scalars['String']>;
+  name_not_contains_nocase?: Maybe<Scalars['String']>;
   name_not_ends_with?: Maybe<Scalars['String']>;
+  name_not_ends_with_nocase?: Maybe<Scalars['String']>;
   name_not_in?: Maybe<Array<Scalars['String']>>;
   name_not_starts_with?: Maybe<Scalars['String']>;
+  name_not_starts_with_nocase?: Maybe<Scalars['String']>;
   name_starts_with?: Maybe<Scalars['String']>;
+  name_starts_with_nocase?: Maybe<Scalars['String']>;
   symbol?: Maybe<Scalars['String']>;
   symbol_contains?: Maybe<Scalars['String']>;
+  symbol_contains_nocase?: Maybe<Scalars['String']>;
   symbol_ends_with?: Maybe<Scalars['String']>;
+  symbol_ends_with_nocase?: Maybe<Scalars['String']>;
   symbol_gt?: Maybe<Scalars['String']>;
   symbol_gte?: Maybe<Scalars['String']>;
   symbol_in?: Maybe<Array<Scalars['String']>>;
@@ -152,10 +166,14 @@ export type Currency_filter = {
   symbol_lte?: Maybe<Scalars['String']>;
   symbol_not?: Maybe<Scalars['String']>;
   symbol_not_contains?: Maybe<Scalars['String']>;
+  symbol_not_contains_nocase?: Maybe<Scalars['String']>;
   symbol_not_ends_with?: Maybe<Scalars['String']>;
+  symbol_not_ends_with_nocase?: Maybe<Scalars['String']>;
   symbol_not_in?: Maybe<Array<Scalars['String']>>;
   symbol_not_starts_with?: Maybe<Scalars['String']>;
+  symbol_not_starts_with_nocase?: Maybe<Scalars['String']>;
   symbol_starts_with?: Maybe<Scalars['String']>;
+  symbol_starts_with_nocase?: Maybe<Scalars['String']>;
 };
 
 export enum Currency_orderBy {
@@ -241,7 +259,9 @@ export type Order_filter = {
   createdAt_not_in?: Maybe<Array<Scalars['BigInt']>>;
   currency?: Maybe<Scalars['String']>;
   currency_contains?: Maybe<Scalars['String']>;
+  currency_contains_nocase?: Maybe<Scalars['String']>;
   currency_ends_with?: Maybe<Scalars['String']>;
+  currency_ends_with_nocase?: Maybe<Scalars['String']>;
   currency_gt?: Maybe<Scalars['String']>;
   currency_gte?: Maybe<Scalars['String']>;
   currency_in?: Maybe<Array<Scalars['String']>>;
@@ -249,10 +269,14 @@ export type Order_filter = {
   currency_lte?: Maybe<Scalars['String']>;
   currency_not?: Maybe<Scalars['String']>;
   currency_not_contains?: Maybe<Scalars['String']>;
+  currency_not_contains_nocase?: Maybe<Scalars['String']>;
   currency_not_ends_with?: Maybe<Scalars['String']>;
+  currency_not_ends_with_nocase?: Maybe<Scalars['String']>;
   currency_not_in?: Maybe<Array<Scalars['String']>>;
   currency_not_starts_with?: Maybe<Scalars['String']>;
+  currency_not_starts_with_nocase?: Maybe<Scalars['String']>;
   currency_starts_with?: Maybe<Scalars['String']>;
+  currency_starts_with_nocase?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['ID']>;
   id_gt?: Maybe<Scalars['ID']>;
   id_gte?: Maybe<Scalars['ID']>;
@@ -331,7 +355,9 @@ export type Order_filter = {
   taker_not_in?: Maybe<Array<Scalars['Bytes']>>;
   token?: Maybe<Scalars['String']>;
   token_contains?: Maybe<Scalars['String']>;
+  token_contains_nocase?: Maybe<Scalars['String']>;
   token_ends_with?: Maybe<Scalars['String']>;
+  token_ends_with_nocase?: Maybe<Scalars['String']>;
   token_gt?: Maybe<Scalars['String']>;
   token_gte?: Maybe<Scalars['String']>;
   token_in?: Maybe<Array<Scalars['String']>>;
@@ -339,10 +365,14 @@ export type Order_filter = {
   token_lte?: Maybe<Scalars['String']>;
   token_not?: Maybe<Scalars['String']>;
   token_not_contains?: Maybe<Scalars['String']>;
+  token_not_contains_nocase?: Maybe<Scalars['String']>;
   token_not_ends_with?: Maybe<Scalars['String']>;
+  token_not_ends_with_nocase?: Maybe<Scalars['String']>;
   token_not_in?: Maybe<Array<Scalars['String']>>;
   token_not_starts_with?: Maybe<Scalars['String']>;
+  token_not_starts_with_nocase?: Maybe<Scalars['String']>;
   token_starts_with?: Maybe<Scalars['String']>;
+  token_starts_with_nocase?: Maybe<Scalars['String']>;
   transaction?: Maybe<Scalars['Bytes']>;
   transaction_contains?: Maybe<Scalars['Bytes']>;
   transaction_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -756,7 +786,9 @@ export type Token_filter = {
   owner_not_in?: Maybe<Array<Scalars['Bytes']>>;
   registry?: Maybe<Scalars['String']>;
   registry_contains?: Maybe<Scalars['String']>;
+  registry_contains_nocase?: Maybe<Scalars['String']>;
   registry_ends_with?: Maybe<Scalars['String']>;
+  registry_ends_with_nocase?: Maybe<Scalars['String']>;
   registry_gt?: Maybe<Scalars['String']>;
   registry_gte?: Maybe<Scalars['String']>;
   registry_in?: Maybe<Array<Scalars['String']>>;
@@ -764,10 +796,14 @@ export type Token_filter = {
   registry_lte?: Maybe<Scalars['String']>;
   registry_not?: Maybe<Scalars['String']>;
   registry_not_contains?: Maybe<Scalars['String']>;
+  registry_not_contains_nocase?: Maybe<Scalars['String']>;
   registry_not_ends_with?: Maybe<Scalars['String']>;
+  registry_not_ends_with_nocase?: Maybe<Scalars['String']>;
   registry_not_in?: Maybe<Array<Scalars['String']>>;
   registry_not_starts_with?: Maybe<Scalars['String']>;
+  registry_not_starts_with_nocase?: Maybe<Scalars['String']>;
   registry_starts_with?: Maybe<Scalars['String']>;
+  registry_starts_with_nocase?: Maybe<Scalars['String']>;
   tokenId?: Maybe<Scalars['BigInt']>;
   tokenId_gt?: Maybe<Scalars['BigInt']>;
   tokenId_gte?: Maybe<Scalars['BigInt']>;
@@ -831,7 +867,9 @@ export type Transfer_filter = {
   to_not_in?: Maybe<Array<Scalars['Bytes']>>;
   token?: Maybe<Scalars['String']>;
   token_contains?: Maybe<Scalars['String']>;
+  token_contains_nocase?: Maybe<Scalars['String']>;
   token_ends_with?: Maybe<Scalars['String']>;
+  token_ends_with_nocase?: Maybe<Scalars['String']>;
   token_gt?: Maybe<Scalars['String']>;
   token_gte?: Maybe<Scalars['String']>;
   token_in?: Maybe<Array<Scalars['String']>>;
@@ -839,10 +877,14 @@ export type Transfer_filter = {
   token_lte?: Maybe<Scalars['String']>;
   token_not?: Maybe<Scalars['String']>;
   token_not_contains?: Maybe<Scalars['String']>;
+  token_not_contains_nocase?: Maybe<Scalars['String']>;
   token_not_ends_with?: Maybe<Scalars['String']>;
+  token_not_ends_with_nocase?: Maybe<Scalars['String']>;
   token_not_in?: Maybe<Array<Scalars['String']>>;
   token_not_starts_with?: Maybe<Scalars['String']>;
+  token_not_starts_with_nocase?: Maybe<Scalars['String']>;
   token_starts_with?: Maybe<Scalars['String']>;
+  token_starts_with_nocase?: Maybe<Scalars['String']>;
   transaction?: Maybe<Scalars['Bytes']>;
   transaction_contains?: Maybe<Scalars['Bytes']>;
   transaction_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -907,7 +949,7 @@ export type IngressQueryVariables = Exact<{
 }>;
 
 
-export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
+export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, updatedAt?: string | null | undefined, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;
@@ -923,4 +965,4 @@ export type GetTokenQueryVariables = Exact<{
 }>;
 
 
-export type GetTokenQuery = { __typename?: 'Query', token?: { __typename?: 'Token', owner?: string | null | undefined, id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, orders: Array<{ __typename?: 'Order', createdAt: string, transaction: string, maker: string, price: string, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, bids: Array<{ __typename?: 'Bid', createdAt: string, transaction: string, bidder: string, bidAmount: string }> }>, transfers: Array<{ __typename?: 'Transfer', createdAt: string, transaction: string, from: string, to: string }> } | null | undefined };
+export type GetTokenQuery = { __typename?: 'Query', token?: { __typename?: 'Token', owner?: string | null | undefined, id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, orders: Array<{ __typename?: 'Order', createdAt: string, transaction: string, updatedAt?: string | null | undefined, updatedTransaction?: string | null | undefined, maker: string, price: string, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, bids: Array<{ __typename?: 'Bid', createdAt: string, transaction: string, bidder: string, bidAmount: string }> }>, transfers: Array<{ __typename?: 'Transfer', createdAt: string, transaction: string, from: string, to: string }> } | null | undefined };

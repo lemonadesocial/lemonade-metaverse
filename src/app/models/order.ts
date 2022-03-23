@@ -51,6 +51,10 @@ export class Order {
   @prop({ required: true })
   public createdAt!: Date;
 
+  @Field({ nullable: true, description: 'When this order was last updated.' })
+  @prop()
+  public updatedAt?: Date;
+
   @Field(() => OrderKind, { description: 'Is `AUCTION` for auctions and `DIRECT` for direct sales.' })
   @prop({ required: true, enum: OrderKind })
   public kind!: OrderKind;

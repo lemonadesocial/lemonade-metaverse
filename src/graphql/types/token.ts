@@ -39,6 +39,12 @@ export class TokenOrder {
   @Field()
   public transaction!: string;
 
+  @Field({ nullable: true })
+  public updatedAt?: string;
+
+  @Field({ nullable: true })
+  public updatedTransaction?: string;
+
   @Field()
   public maker!: string;
 

@@ -28,6 +28,7 @@ query Ingress(
     contract
     orderId
     createdAt
+    updatedAt
 
     kind
     open
@@ -78,6 +79,8 @@ query GetToken($id: ID!) {
     orders(orderBy: createdAt, orderDirection: desc) {
       createdAt
       transaction
+      updatedAt
+      updatedTransaction
       maker
       currency {
         id
