@@ -60,6 +60,16 @@ export class TokenOrder {
 
   @Field(() => [TokenOrderBid])
   public bids!: TokenOrderBid[];
+
+  @Field({ nullable: true })
+  public taker?: string;
+
+  @Directive('@expanded(key: "TokenDetailUser", modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public takerExpanded?: never;
+
+  @Field({ nullable: true })
+  public paidAmount?: string;
 }
 
 @ObjectType()

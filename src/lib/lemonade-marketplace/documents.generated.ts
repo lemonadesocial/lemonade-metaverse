@@ -93,6 +93,8 @@ export const GetToken = gql`
         bidder
         bidAmount
       }
+      taker
+      paidAmount
     }
     transfers(orderBy: createdAt, orderDirection: desc) {
       createdAt

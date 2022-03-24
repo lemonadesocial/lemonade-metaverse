@@ -94,6 +94,8 @@ query GetToken($id: ID!) {
         bidder
         bidAmount
       }
+      taker
+      paidAmount
     }
     transfers(orderBy: createdAt, orderDirection: desc) {
       createdAt
