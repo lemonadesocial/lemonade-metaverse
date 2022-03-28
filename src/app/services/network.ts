@@ -29,20 +29,20 @@ export class Network extends NetworkBase {
     return this._provider;
   }
 
-  public close() {
+  public async close() {
     if (this._indexer) {
       this._indexer.stop();
     }
 
-    if (this._provider) {
-      this._provider.close?.();
+    if (this._provider && this._provider.destroy) {
+      await this._provider.destroy();
     }
   }
 }
 
 export const networks: Record<string, Network> = {};
 
-export async function start(): Promise<void> {
+export async function init(): Promise<void> {
   const docs = await NetworkModel.find({ active: true }).lean();
 
   for (const network of docs) {
@@ -50,8 +50,12 @@ export async function start(): Promise<void> {
   }
 }
 
-export function close(): void {
+export async function close(): Promise<void> {
+  const promises: Promise<void>[] = [];
+
   for (const key in networks) {
-    networks[key].close();
+    promises.push(networks[key].close());
   }
+
+  if (promises.length) await Promise.all(promises);
 }

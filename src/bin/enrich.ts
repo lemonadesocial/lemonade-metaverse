@@ -23,11 +23,11 @@ const shutdown = async () => {
   try {
     await enrich.stop();
 
-    network.close();
     redis.disconnect();
     await Promise.all([
       db.disconnect(),
       metrics.stop(),
+      network.close(),
     ]);
 
     process.exit(0);
@@ -48,7 +48,7 @@ process.on('SIGTERM', async function onSigtermSignal() {
 const main = async () => {
   metrics.start();
   await db.connect();
-  await network.start();
+  await network.init();
 
   await enrich.start();
 

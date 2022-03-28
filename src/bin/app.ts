@@ -31,11 +31,11 @@ const shutdown = async () => {
   try {
     if (apolloServer) await apolloServer.stop();
 
-    network.close();
     redis.disconnect();
     await Promise.all([
       db.disconnect(),
       metrics.stop(),
+      network.close(),
     ]);
 
     process.exit(0);
@@ -56,7 +56,7 @@ process.on('SIGTERM', async function onSigtermSignal() {
 const main = async () => {
   metrics.start();
   await db.connect();
-  await network.start();
+  await network.init();
 
   const server = http.createServer(app.callback());
   server.keepAliveTimeout = 400 * 1000;

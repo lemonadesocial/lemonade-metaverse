@@ -1,34 +1,24 @@
 import { ethers } from 'ethers';
-import Web3ProviderWS from 'web3-providers-ws'
+import { URL } from 'url';
 
 import { Network } from '../models/network';
 
 export interface Provider extends ethers.providers.BaseProvider {
-  close?: () => void;
+  destroy?: () => Promise<void>;
 }
+
 export const providers: Record<string, Provider> = {};
 
-export function getProvider(network: Network): Provider {
-  let provider: Provider;
+export function getProvider({ rpcUrl }: Network): Provider {
+  const url = new URL(rpcUrl);
 
-  if (network.rpcUrl.match(/^ws?s:\/\//)) {
-    const web3ProviderWS = new Web3ProviderWS(network.rpcUrl, {
-      clientConfig: {
-        keepalive: true,
-        keepaliveInterval: 30000,
-      },
-      reconnect: {
-        auto: true,
-        delay: 100,
-      },
-      timeout: 1000,
-    });
-
-    provider = new ethers.providers.Web3Provider(web3ProviderWS as any);
-    provider.close = () => { web3ProviderWS.disconnect(1000, 'close'); };
-  } else {
-    provider = new ethers.providers.JsonRpcProvider(network.rpcUrl);
+  switch (url.protocol) {
+    case 'alchemy:':
+      return new ethers.providers.AlchemyProvider(url.hostname, url.pathname.substring(1));
+    case 'ws:':
+    case 'wss:':
+      return new ethers.providers.WebSocketProvider(rpcUrl);
+    default:
+      return new ethers.providers.JsonRpcProvider(rpcUrl);
   }
-
-  return provider;
 }
