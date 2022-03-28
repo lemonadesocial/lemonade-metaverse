@@ -306,8 +306,8 @@ async function startNetwork(network: Network) {
     if (job.attemptsMade) {
       const obj = timing(job);
 
-      ingressTimeToRecoverySeconds.observe(obj.secondsElapsed);
-      logger.info(obj, 'recovered ingress');
+      ingressTimeToRecoverySeconds.labels({ network: state.network.name }).observe(obj.secondsElapsed);
+      logger.info({ network: state.network.name, ...obj }, 'recovered ingress');
     }
   });
   await state.worker.waitUntilReady();
