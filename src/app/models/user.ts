@@ -23,7 +23,7 @@ export class User {
   @prop()
   public username?: string;
 
-  @prop({ type: () => String })
+  @prop({ lowercase: true, type: () => String })
   public wallets?: string[];
 }
 

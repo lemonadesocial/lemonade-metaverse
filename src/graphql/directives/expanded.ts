@@ -56,10 +56,10 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
         ).lean();
 
         const map = Object.fromEntries(
-          docs.map((doc) => [].concat(doc[foreignField]).map((key) => [`${key}`, doc])).flat()
+          docs.map((doc) => [].concat(doc[foreignField]).map((key) => [`${key}`.toLowerCase(), doc])).flat()
         );
 
-        return keys.map((key) => map[key] || null);
+        return keys.map((key) => map[key.toLowerCase()] || null);
       });
 
       const keys = localPath instanceof Array
