@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v7.1.0...v8.0.0) (2022-03-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* add multi-chain support
+
+### Features
+
+* add enrich failed pubsub to avoid waiting when enrich failed ([f4122ad](https://github.com/lemonadesocial/lemonade-metaverse/commit/f4122ada9066aee434b0f97b84427df4e2a56d77))
+* add multi-chain support ([d5c3d5a](https://github.com/lemonadesocial/lemonade-metaverse/commit/d5c3d5abab763636fcfda02ca67a7d882f9ad28b))
+* add order taker, taker expanded, and paid amount ([10808dc](https://github.com/lemonadesocial/lemonade-metaverse/commit/10808dcdae51892d1030ca3346c39df07eb5b413))
+* add order updated at and updated transaction ([b55a005](https://github.com/lemonadesocial/lemonade-metaverse/commit/b55a005ce6d1590fdc10d3f0e36534fffcaf7e59))
+* add temporary network default value for backwards compatibility ([99b74d5](https://github.com/lemonadesocial/lemonade-metaverse/commit/99b74d560ce6127904e7b549ec39abe2a4c40e47))
+* add watchdog to ingress ([e15b9ba](https://github.com/lemonadesocial/lemonade-metaverse/commit/e15b9ba3ae4be23f4e0bcaeb7d76ef2fac12d114))
+* **ingress:** add network name to ingress recovery metric and logging ([9251df6](https://github.com/lemonadesocial/lemonade-metaverse/commit/9251df6c1a4d7c3bc6154c98fc728d3d603fa2cf))
+* **token:** expose network in graphql type ([fcee86a](https://github.com/lemonadesocial/lemonade-metaverse/commit/fcee86afba3b2adae4b2bf2218eae1b4c6e069f1))
+* upgrade network handling ([0bb6ac1](https://github.com/lemonadesocial/lemonade-metaverse/commit/0bb6ac1ce977ce3adc05813d16add5eea1cef6f2))
+* use lru cache before fetching registry ([0502db3](https://github.com/lemonadesocial/lemonade-metaverse/commit/0502db344cfc8d9034cc82e7c2233fe4f53794e5))
+
+
+### Bug Fixes
+
+* fix metadata creators not being expanded due to capitalization ([fbf0cec](https://github.com/lemonadesocial/lemonade-metaverse/commit/fbf0cec1965789bc0284ed8f628a6da25e14affb))
+* fix watchdog indexer delay metric calculation ([e61a478](https://github.com/lemonadesocial/lemonade-metaverse/commit/e61a47864754b1eb54f99694179e735b24ba086f))
+
 ## [7.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v7.0.0...v7.1.0) (2022-02-11)
 
 
