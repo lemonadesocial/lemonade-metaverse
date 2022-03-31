@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.0.0...v8.0.1) (2022-03-31)
+
+
+### Bug Fixes
+
+* fix watchdog indexer delay metric becoming negative ([986ef21](https://github.com/lemonadesocial/lemonade-metaverse/commit/986ef2169e93ebe99bfdbc03268b6982728b0e5c))
+
 ## [8.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v7.1.0...v8.0.0) (2022-03-31)
 
 
