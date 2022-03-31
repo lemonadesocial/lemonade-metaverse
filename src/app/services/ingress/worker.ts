@@ -229,7 +229,7 @@ async function poll(state: State, data: JobData): Promise<JobData> {
   return nextData;
 }
 
-async function processor(state: State, { data, timestamp }: Job<JobData>) {
+async function processor(state: State, { data }: Job<JobData>) {
   const labels = { network: state.network.name };
   const ingressDurationTimer = ingressDurationSeconds.startTimer(labels);
 
@@ -253,7 +253,7 @@ async function processor(state: State, { data, timestamp }: Job<JobData>) {
       const latestBlock = await state.network.provider().getBlockNumber();
       const block = await state.network.provider().getBlock(nextData.meta.block);
 
-      watchdogIndexerDelaySeconds.labels(labels).set((timestamp + (now - timestamp) / 2 - block.timestamp * 1000) / 1000);
+      watchdogIndexerDelaySeconds.labels(labels).set((now - block.timestamp * 1000) / 1000);
       watchdogIndexerDelayBlocks.labels(labels).set(latestBlock - block.number);
     }
 
