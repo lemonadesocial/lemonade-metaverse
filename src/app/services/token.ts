@@ -70,7 +70,7 @@ async function waitForEnrich(tokens: Token[]) {
     }
 
     if (listener) {
-      emitter.removeListener('token_updated', listener);
+      emitter.removeListener('token', listener);
     }
   }
 }
