@@ -20,6 +20,6 @@ export function getParsedUrl(input: unknown): string | undefined {
   } catch { /* no-op */ }
 }
 
-export function getWebUrl(args: { contract: string, tokenId: string }): string {
-  return `${webUrl}meta/${args.contract}/${args.tokenId}`;
+export function getWebUrl(args: { network: string; contract: string, tokenId: string }): string {
+  return `${webUrl}meta/${args.network}/${args.contract}/${args.tokenId}`;
 }
