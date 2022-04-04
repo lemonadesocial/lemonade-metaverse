@@ -17,6 +17,7 @@ import { networks } from '../../app/services/network';
 const findTokens = async (
   { skip, limit, sort, where }: PaginationArgs & { sort?: TokenSort | null; where?: TokenWhereComplex | null },
   info: GraphQLResolveInfo,
+  projection?: { [P in keyof TokenComplex]?: 1 },
 ) => {
   const fields = getFieldTree(info);
   const filterOrder = where?.order ? getFilter(where.order) : {};
@@ -43,7 +44,7 @@ const findTokens = async (
     ...sort ? [{ $sort: getSort(sort) }] : [],
     { $skip: skip },
     { $limit: limit },
-    { $project: getFieldProjection(fields) },
+    { $project: { ...getFieldProjection(fields), ...projection } },
   ]);
 };
 
@@ -107,8 +108,9 @@ class _TokensSubscriptionResolver {
     {
       subscribe: createSubscribe<TokenComplex>({
         init: async function* ({ args, info }) {
-          if (args.query) yield findTokens(args, info);
+          if (args.query) yield findTokens(args, info, { network: 1, id: 1 });
         },
+        restrict: () => (payload) => payload.network + payload.id,
         trigger: Trigger.TokenUpdated,
         filter: (payload, { args }) => args.where ? validate(args.where, payload) : true,
       }),
