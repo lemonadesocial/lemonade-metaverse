@@ -78,9 +78,7 @@ const watchdogIndexerError = new Gauge({
 
 async function process(state: State, data: IngressQuery) {
   const orders: Order[] = [];
-  const ordersToken: Record<string, Token> = {};
-  const tokens: Token[] = [];
-  const tokensOrders: Record<string, Order[]> = {};
+  const tokenMap: Record<string, Token> = {};
 
   data.orders?.forEach((item) => {
     const order = {
@@ -93,27 +91,21 @@ async function process(state: State, data: IngressQuery) {
       openTo: item.openTo ? getDate(item.openTo) : undefined,
       token: item.token.id,
     };
-
-    const token = createToken(state.network, item.token);
-
     orders.push(order);
-    ordersToken[order.id] = token;
 
-    if (tokensOrders[token.id]) { // multiple orders can have the same token, which are all closed except potentially the last
-      tokensOrders[token.id].push(order);
-    } else {
-      tokens.push(token);
-      tokensOrders[token.id] = [order];
-    }
+    const token: Token = createToken(state.network, item.token);
+    token.order = order.id;
+    tokenMap[token.id] = token;
   });
 
   data.tokens?.forEach((item) => {
-    if (tokensOrders[item.id]) return; // when processing data of multiple blocks, the token can be in both tokens and orders
+    if (tokenMap[item.id]) return;
 
     const token = createToken(state.network, item);
-
-    tokens.push(token);
+    tokenMap[token.id] = token;
   });
+
+  const tokens = Object.values(tokenMap);
 
   const [docs] = await Promise.all([
     tokens.length
@@ -155,22 +147,28 @@ async function process(state: State, data: IngressQuery) {
   if (missing.length) {
     promises.push(
       enrich.enqueue(...missing.map((token) => ({
-        orders: tokensOrders[token.id],
+        orders: orders.filter((order) => order.token === token.id),
         token,
       }))),
     );
   }
 
   orders.forEach((order) => {
-    if (!map[order.token]) return; // deligate to enrich
+    if (!map[order.token as string]) return; // deligate to enrich
 
-    const token = { ...ordersToken[order.id], ...map[order.token] };
+    const token = { ...tokenMap[order.token as string], ...map[order.token as string] };
 
     logger.info({ order, token, imageUrl: getParsedUrl(token.metadata?.image), webUrl: getWebUrl(token) }, 'ingress order');
 
     promises.push(
       pubSub.publish(Trigger.OrderUpdated, { ...order, token })
     );
+
+    if (token.order === order.id) {
+      promises.push(
+        pubSub.publish(Trigger.TokenUpdated, { ...token, order })
+      );
+    }
   });
 
   await Promise.all(promises);

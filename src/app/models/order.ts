@@ -1,6 +1,8 @@
 import { getModelForClass, index, prop } from '@typegoose/typegoose';
 import { registerEnumType, Field, ObjectType } from 'type-graphql';
 
+import { Token } from './token';
+
 export enum OrderKind {
   AUCTION = 'AUCTION',
   DIRECT = 'DIRECT',
@@ -84,7 +86,7 @@ export class Order {
   public price!: string;
 
   @prop({ required: true, type: () => String })
-  public token!: string;
+  public token!: string | Token;
 
   @Field({ nullable: true, description: 'The highest bidder (for auctions).' })
   @prop()

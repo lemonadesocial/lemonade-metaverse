@@ -1,6 +1,7 @@
 import { Directive, Field, InputType, ObjectType } from 'type-graphql';
 
 import { OrderCurrency } from '../../app/models/order';
+import { OrderSimple, OrderWhereSimple } from './order';
 import { SortInput } from './sort-input';
 import { Token as TokenClass } from '../../app/models/token';
 import { User } from '../../app/models/user';
@@ -10,10 +11,41 @@ import { WhereInput } from './where-input';
 export class TokenSort extends SortInput(TokenClass) { }
 
 @InputType()
-export class TokenWhere extends WhereInput(TokenClass) { }
+class TokenWhere extends WhereInput(TokenClass) { }
+@InputType()
+export class TokenWhereSimple extends TokenWhere {
+  @Field(() => String, { nullable: true })
+  order?: string;
+}
+@InputType()
+export class TokenWhereComplex extends TokenWhere {
+  @Field(() => OrderWhereSimple, { nullable: true })
+  order?: OrderWhereSimple;
+}
 
 @ObjectType()
-export class TokenOrderBid {
+class Token extends TokenClass {
+  @Directive('@expanded(modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public creatorExpanded?: string;
+
+  @Directive('@expanded(localPath: ["metadata", "creators"], modelName: "User", foreignField: "wallets")')
+  @Field(() => [User], { nullable: 'itemsAndList' })
+  public metadataCreatorsExpanded?: never;
+}
+@ObjectType()
+export class TokenSimple extends Token {
+  @Field(() => String, { nullable: true, description: 'The order.' })
+  declare public order?: string;
+}
+@ObjectType()
+export class TokenComplex extends Token {
+  @Field(() => OrderSimple, { nullable: true, description: 'The order.' })
+  declare public order?: OrderSimple;
+}
+
+@ObjectType()
+class TokenDetailOrderBid {
   @Field()
   public createdAt!: string;
 
@@ -30,9 +62,8 @@ export class TokenOrderBid {
   @Field()
   public bidAmount!: string;
 }
-
 @ObjectType()
-export class TokenOrder {
+class TokenDetailOrder {
   @Field()
   public createdAt!: string;
 
@@ -58,8 +89,8 @@ export class TokenOrder {
   @Field()
   public price!: string;
 
-  @Field(() => [TokenOrderBid])
-  public bids!: TokenOrderBid[];
+  @Field(() => [TokenDetailOrderBid])
+  public bids!: TokenDetailOrderBid[];
 
   @Field({ nullable: true })
   public taker?: string;
@@ -71,9 +102,8 @@ export class TokenOrder {
   @Field({ nullable: true })
   public paidAmount?: string;
 }
-
 @ObjectType()
-export class TokenTransfer {
+class TokenDetailTransfer {
   @Field()
   public createdAt!: string;
 
@@ -94,20 +124,8 @@ export class TokenTransfer {
   @Field(() => User, { nullable: true })
   public toExpanded?: never;
 }
-
 @ObjectType()
-export class Token extends TokenClass {
-  @Directive('@expanded(modelName: "User", foreignField: "wallets")')
-  @Field(() => User, { nullable: true })
-  public creatorExpanded?: string;
-
-  @Directive('@expanded(localPath: ["metadata", "creators"], modelName: "User", foreignField: "wallets")')
-  @Field(() => [User], { nullable: 'itemsAndList' })
-  public metadataCreatorsExpanded?: never;
-}
-
-@ObjectType()
-export class TokenDetail extends Token {
+export class TokenDetail extends TokenComplex {
   @Field({ nullable: true, description: 'The owner.' })
   public owner?: string;
 
@@ -115,9 +133,9 @@ export class TokenDetail extends Token {
   @Field(() => User, { nullable: true })
   public ownerExpanded?: never;
 
-  @Field(() => [TokenOrder], { nullable: true, description: 'This token\'s orders.' })
-  public orders?: TokenOrder[];
+  @Field(() => [TokenDetailOrder], { nullable: true, description: 'This token\'s orders.' })
+  public orders?: TokenDetailOrder[];
 
-  @Field(() => [TokenTransfer], { nullable: true, description: 'This token\'s transfers.' })
-  public transfers?: TokenTransfer[];
+  @Field(() => [TokenDetailTransfer], { nullable: true, description: 'This token\'s transfers.' })
+  public transfers?: TokenDetailTransfer[];
 }

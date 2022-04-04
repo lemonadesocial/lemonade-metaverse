@@ -7,6 +7,7 @@ import { getOrSet } from '../helpers/redis';
 import { Network } from './network';
 import { pubSub, Trigger } from '../helpers/pub-sub';
 
+import { Order } from '../models/order';
 import { Token, TokenModel } from '../models/token';
 
 import { GetToken, GetTokens } from '../../lib/lemonade-marketplace/documents.generated';
@@ -76,10 +77,22 @@ async function waitForEnrich(tokens: Token[]) {
 }
 
 async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
-  const docs = await TokenModel.find(
-    { network: network.name, id: { $in: items.map(({ id }) => id) } },
-    { id: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1 },
-  ).lean<Pick<Token, 'network' | 'id' | 'enrichedAt' | 'uri' | 'royalties' | 'metadata'>[]>();
+  const docs = await TokenModel.aggregate<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royalties' | 'metadata'> & { order: Omit<Order, 'token'> & { token: string } }>([
+    { $match: { network: network.name, id: { $in: items.map(({ id }) => id) } } },
+    {
+      $lookup: {
+        from: 'orders',
+        let: { order: '$order' },
+        pipeline: [
+          { $match: { network: network.name, $expr: { $eq: ['$id', '$$order'] } } },
+          { $limit: 1 },
+        ],
+        as: 'order',
+      },
+    },
+    { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } },
+    { $project: { id: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1, order: 1 } },
+  ]);
   const map = Object.fromEntries(docs.map((doc) => [doc.id, doc]));
 
   const tokens = [];
@@ -111,8 +124,8 @@ export async function getTokens(network: Network, variables: GetTokensQueryVaria
   return await fetch(network, tokens);
 }
 
-export async function getToken(network: Network, id: string, shouldResolveExternally?: boolean) {
-  const externalResolver = () =>
+export async function getToken(network: Network, id: string) {
+  const [external, internal] = await Promise.all([
     getOrSet(id, async function fn() {
       const { data: { token } } = await network.indexer().query<GetTokenQuery, GetTokenQueryVariables>({
         query: GetToken,
@@ -120,23 +133,28 @@ export async function getToken(network: Network, id: string, shouldResolveExtern
       });
 
       if (token) return createToken(network, token);
-    });
-  const internalResolver = () =>
-    TokenModel.findOne({ network: network.name, id }).lean<Token>();
+    }),
+    (async () => {
+      const tokens = await TokenModel.aggregate<Omit<Token, 'order'> & { order: Omit<Order, 'token'> & { token: string } }>([
+        { $match: { network: network.name, id } },
+        { $limit: 1 },
+        {
+          $lookup: {
+            from: 'orders',
+            let: { order: '$order' },
+            pipeline: [
+              { $match: { network: network.name, $expr: { $eq: ['$id', '$$order'] } } },
+              { $limit: 1 },
+            ],
+            as: 'order',
+          },
+        },
+        { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } },
+      ]);
 
-  let external;
-  let internal;
-
-  if (shouldResolveExternally) {
-    [external, internal] = await Promise.all([
-      externalResolver(),
-      internalResolver(),
-    ]);
-  } else {
-    internal = await internalResolver();
-
-    if (!internal) external = await externalResolver();
-  }
+      return tokens[0];
+    })(),
+  ]);
 
   if (!external && !internal) return;
 

@@ -145,22 +145,32 @@ const processor: Processor<JobData> = async (job) => {
     },
   });
 
-  const [orders] = await Promise.all([
-    getOrders(job),
-    pubSub.publish(Trigger.TokenUpdated, token),
-  ]);
-
+  const orders = await getOrders(job);
   const imageUrl = getParsedUrl(token.metadata?.image);
   const webUrl = getWebUrl(token);
 
   if (orders.length) {
+    const promises: Promise<void>[] = [];
+
     for (const order of orders) {
       logger.info({ order, token, imageUrl, webUrl }, 'enrich order');
 
-      await pubSub.publish(Trigger.OrderUpdated, { ...order, token });
+      promises.push(
+        pubSub.publish(Trigger.OrderUpdated, { ...order, token })
+      );
+
+      if (token.order === order.id) {
+        promises.push(
+          pubSub.publish(Trigger.TokenUpdated, { ...token, order })
+        );
+      }
     }
+
+    await Promise.all(promises);
   } else {
     logger.info({ token, imageUrl, webUrl }, 'enrich token');
+
+    await pubSub.publish(Trigger.TokenUpdated, token);
   }
 
   enrichDurationTimer();

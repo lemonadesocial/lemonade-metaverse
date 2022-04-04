@@ -2,29 +2,44 @@ import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graph
 import { GraphQLResolveInfo } from 'graphql';
 import * as assert from 'assert';
 
-import { Fields } from '../decorators/fields';
-
 import { PaginationArgs } from '../types/pagination';
-import { Token, TokenDetail, TokenSort, TokenWhere } from '../types/token';
+import { TokenDetail, TokenSort, TokenComplex, TokenWhereComplex } from '../types/token';
 import { TokenModel } from '../../app/models/token';
 import { Trigger } from '../../app/helpers/pub-sub';
 
 import { createSubscribe } from '../utils/subscription';
-import { getFieldTree, getFieldProjection, FieldTree } from '../utils/field';
+import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { getSort } from '../utils/sort';
 import { getToken, getTokens } from '../../app/services/token';
 import { networks } from '../../app/services/network';
 
 const findTokens = async (
-  { skip, limit, sort, where }: PaginationArgs & { sort?: TokenSort | null; where?: TokenWhere | null },
+  { skip, limit, sort, where }: PaginationArgs & { sort?: TokenSort | null; where?: TokenWhereComplex | null },
   info: GraphQLResolveInfo,
 ) => {
   const fields = getFieldTree(info);
-  const query = where ? getFilter({ ...where, token: undefined }) : {};
+  const filterOrder = where?.order ? getFilter(where.order) : {};
+  const filter = where ? getFilter({ ...where, order: undefined }) : {};
+
+  if (filterOrder.id) filter.order = filterOrder.id;
 
   return await TokenModel.aggregate([
-    { $match: query },
+    { $match: filter },
+    ...fields.order ? [
+      {
+        $lookup: {
+          from: 'orders',
+          let: { network: '$network', order: '$order' },
+          pipeline: [
+            { $match: { $expr: { $and: [{ $eq: ['$network', '$$network'] }, { $eq: ['$id', '$$order'] }] }, ...filterOrder } },
+            { $limit: 1 },
+          ],
+          as: 'order',
+        },
+      },
+      { $unwind: { path: '$order', preserveNullAndEmptyArrays: !where?.order } },
+    ] : [],
     ...sort ? [{ $sort: getSort(sort) }] : [],
     { $skip: skip },
     { $limit: limit },
@@ -38,14 +53,13 @@ class _TokensQueryResolver {
   async getToken(
     @Arg('network', () => String, { defaultValue: 'polygon' }) network: string,
     @Arg('id', () => String) id: string,
-    @Fields() fields: FieldTree,
   ): Promise<TokenDetail | undefined> {
     assert.ok(networks[network]);
 
-    return await getToken(networks[network], id, !!fields.owner || !!fields.transfers);
+    return await getToken(networks[network], id);
   }
 
-  @Query(() => [Token])
+  @Query(() => [TokenComplex])
   async getTokens(
     @Args() { skip, limit }: PaginationArgs,
     @Arg('network', () => String, { nullable: true }) network?: string,
@@ -55,7 +69,7 @@ class _TokensQueryResolver {
     @Arg('creator', () => String, { nullable: true }) creator?: string,
     @Arg('tokenId', () => String, { nullable: true }) tokenId?: string,
     @Arg('owner', () => String, { nullable: true }) owner?: string,
-  ): Promise<Token[]> {
+  ): Promise<TokenComplex[]> {
     const variables = {
       where: { id, id_in, contract, creator, tokenId, owner },
       skip,
@@ -75,13 +89,13 @@ class _TokensQueryResolver {
     return tokens.flat().slice(0, limit);
   }
 
-  @Query(() => [Token])
+  @Query(() => [TokenComplex])
   async tokens(
     @Info() info: GraphQLResolveInfo,
     @Args() args: PaginationArgs,
     @Arg('sort', () => TokenSort, { nullable: true }) sort?: TokenSort | null,
-    @Arg('where', () => TokenWhere, { nullable: true }) where?: TokenWhere | null,
-  ): Promise<Token[]> {
+    @Arg('where', () => TokenWhereComplex, { nullable: true }) where?: TokenWhereComplex | null,
+  ): Promise<TokenComplex[]> {
     return await findTokens({ ...args, sort, where }, info);
   }
 }
@@ -89,9 +103,9 @@ class _TokensQueryResolver {
 @Resolver()
 class _TokensSubscriptionResolver {
   @Subscription(
-    () => [Token],
+    () => [TokenComplex],
     {
-      subscribe: createSubscribe<Token>({
+      subscribe: createSubscribe<TokenComplex>({
         init: async function* ({ args, info }) {
           if (args.query) yield findTokens(args, info);
         },
@@ -101,12 +115,12 @@ class _TokensSubscriptionResolver {
     }
   )
   tokens(
-    @Root() root: Token[],
+    @Root() root: TokenComplex[],
     @Args() _: PaginationArgs,
     @Arg('query', () => Boolean, { nullable: true }) __?: boolean | null,
     @Arg('sort', () => TokenSort, { nullable: true }) ___?: TokenSort | null,
-    @Arg('where', () => TokenWhere, { nullable: true }) ____?: TokenWhere | null,
-  ): Token[] {
+    @Arg('where', () => TokenWhereComplex, { nullable: true }) ____?: TokenWhereComplex | null,
+  ): TokenComplex[] {
     return root;
   }
 }

@@ -2,6 +2,8 @@ import { Field, ObjectType } from 'type-graphql';
 import { getModelForClass, index, prop, modelOptions, Severity } from '@typegoose/typegoose';
 import { GraphQLJSONObject } from 'graphql-type-json';
 
+import { Order } from './order';
+
 @ObjectType()
 export class TokenRoyalty {
   @Field()
@@ -64,6 +66,9 @@ export class Token {
   @Field(() => GraphQLJSONObject, { nullable: true, description: 'The actual metadata.' })
   @prop()
   public metadata?: Record<string, unknown>;
+
+  @prop({ type: () => String })
+  public order?: string | Order;
 }
 
 export const TokenModel = getModelForClass(Token);
