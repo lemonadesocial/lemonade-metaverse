@@ -23,7 +23,7 @@ export class Network extends NetworkBase {
 
   public provider() {
     if (!this._provider) {
-      this._provider = createProvider(this.rpcUrl);
+      this._provider = createProvider(this.providerUrl);
     }
 
     return this._provider;
