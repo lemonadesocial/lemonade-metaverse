@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.0.1...v8.1.0) (2022-04-13)
+
+
+### Features
+
+* **token:** add order to tokens ([db9da9d](https://github.com/lemonadesocial/lemonade-metaverse/commit/db9da9d033cb99e97bd833d6078cb8f13dcdde48))
+* **token:** restrict subscription triggers to the initial result ([955a08f](https://github.com/lemonadesocial/lemonade-metaverse/commit/955a08f6e9ba5e3ab39a352c80f50816eb695d8b))
+* **utils:** add network name to web url ([b66cc40](https://github.com/lemonadesocial/lemonade-metaverse/commit/b66cc4069e43b044da702f1eccc04858d97031d2))
+
+
+### Bug Fixes
+
+* **token:** fix waiting for enrich event listener leak ([a67b8cc](https://github.com/lemonadesocial/lemonade-metaverse/commit/a67b8ccf5090545fd3622cfaeb307e75af43cd22))
+
 ### [8.0.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.0.0...v8.0.1) (2022-03-31)
 
 
