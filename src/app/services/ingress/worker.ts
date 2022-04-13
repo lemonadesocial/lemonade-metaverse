@@ -191,7 +191,7 @@ async function poll(state: State, data: JobData): Promise<JobData> {
         orders_skip,
         orders_first,
         tokens_include: tokens_first > 0,
-        tokens_contract_in: state.network.contracts,
+        tokens_contract_in: state.network.ingressContracts,
         tokens_createdAt_gt,
         tokens_skip,
         tokens_first,

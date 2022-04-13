@@ -14,7 +14,7 @@ export class Network {
   public providerUrl!: string;
 
   @prop({ type: String })
-  public contracts?: string[];
+  public ingressContracts?: string[];
 }
 
 export const NetworkModel = getModelForClass(Network);
