@@ -1,7 +1,7 @@
 import { Network as NetworkBase, NetworkModel } from '../models/network';
 
-import { getIndexer, Indexer } from './indexer';
-import { getProvider, Provider } from './provider';
+import { createIndexer, Indexer } from './indexer';
+import { createProvider, Provider } from './provider';
 
 export class Network extends NetworkBase {
   private _indexer?: Indexer;
@@ -15,7 +15,7 @@ export class Network extends NetworkBase {
 
   public indexer() {
     if (!this._indexer) {
-      this._indexer = getIndexer(this);
+      this._indexer = createIndexer(this.indexerUrl);
     }
 
     return this._indexer;
@@ -23,7 +23,7 @@ export class Network extends NetworkBase {
 
   public provider() {
     if (!this._provider) {
-      this._provider = getProvider(this);
+      this._provider = createProvider(this.rpcUrl);
     }
 
     return this._provider;

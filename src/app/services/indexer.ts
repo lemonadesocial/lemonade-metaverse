@@ -3,8 +3,6 @@ import * as http from 'http';
 import * as https from 'https';
 import fetch, { RequestInit } from 'node-fetch';
 
-import { Network } from '../models/network';
-
 const agent: Record<string, http.Agent> = {
   'http:': new http.Agent({ keepAlive: true }),
   'https:': new https.Agent({ keepAlive: true }),
@@ -17,7 +15,7 @@ const fetchOptions: RequestInit = {
 
 export type Indexer = ApolloClient<NormalizedCacheObject>;
 
-export function getIndexer(network: Network): Indexer {
+export function createIndexer(indexerUrl: string): Indexer {
   return new ApolloClient({
     cache: new InMemoryCache(),
     defaultOptions: {
@@ -26,7 +24,7 @@ export function getIndexer(network: Network): Indexer {
     link: new HttpLink({
       fetch,
       fetchOptions,
-      uri: network.indexerUrl,
+      uri: indexerUrl,
     }),
   });
 }
