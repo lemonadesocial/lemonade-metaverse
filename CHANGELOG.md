@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.1.0...v8.2.0) (2022-04-13)
+
+
+### Features
+
+* make indexer and provider service independent of network ([d718c12](https://github.com/lemonadesocial/lemonade-metaverse/commit/d718c123bf5396af974c3ebdbaf9bcc9f83d1a5a))
+* **network:** rename contracts to ingress contracts ([9d260c5](https://github.com/lemonadesocial/lemonade-metaverse/commit/9d260c51ebe2555e7e7c09c025cbd833d10a5ef7))
+* **network:** rename rpc url to provider url ([93f01cb](https://github.com/lemonadesocial/lemonade-metaverse/commit/93f01cb61f00565d4ee2b97c279b016d91afdf04))
+
 ## [8.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.0.1...v8.1.0) (2022-04-13)
 
 
