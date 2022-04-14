@@ -85,39 +85,35 @@ const processor: Processor<JobData> = async (job) => {
   assert.ok(registry.isERC721);
 
   await Promise.all([
-    (async () => {
-      if (!registry.supportsERC721Metadata) return;
+    registry.supportsERC721Metadata && (async () => {
+      token.uri = await erc721MetadataContract.connect(provider).attach(token.contract).tokenURI(token.tokenId) as string;
 
-      token.uri = await erc721MetadataContract.connect(provider).attach(token.contract).tokenURI(token.tokenId).catch(() => undefined);
+      const { href, pathname, protocol } = parseUrl(token.uri);
 
-      if (token.uri) {
-        const { href, pathname, protocol } = parseUrl(token.uri);
+      switch (protocol) {
+        case 'data:': {
+          const pos = pathname.indexOf(',');
 
-        switch (protocol) {
-          case 'data:': {
-            const pos = pathname.indexOf(',');
+          assert.notStrictEqual(pos, -1);
 
-            assert.notStrictEqual(pos, -1);
+          const base64ed = pathname.substring(0, pos).endsWith(';base64');
+          const data = pathname.substring(pos + 1);
 
-            const base64ed = pathname.substring(0, pos).endsWith(';base64');
-            const data = pathname.substring(pos + 1);
+          token.metadata = JSON.parse(base64ed ? Buffer.from(data, 'base64').toString() : data);
+          break; }
+        case 'http:':
+        case 'https:': {
+          const response = await fetch(href, fetchInit);
 
-            token.metadata = JSON.parse(base64ed ? Buffer.from(data, 'base64').toString() : data);
-            break; }
-          case 'http:':
-          case 'https:': {
-            const response = await fetch(href, fetchInit);
+          assert.ok(response.ok, response.statusText);
 
-            assert.ok(response.ok, response.statusText);
-
-            token.metadata = await response.json();
-            break; }
-          default:
-            throw new Error(`unsupported protocol ${protocol}`);
-        }
+          token.metadata = await response.json();
+          break; }
+        default:
+          throw new Error(`unsupported protocol ${protocol}`);
       }
     })(),
-    (async () => {
+    registry.supportsRaribleRoyaltiesV2 || registry.supportsERC2981 && (async () => {
       if (registry.supportsRaribleRoyaltiesV2) {
         const royalties = await raribleRoyaltiesV2.connect(provider).attach(token.contract).getRaribleV2Royalties(token.tokenId).catch(() => null) as [string, ethers.BigNumber][] | null;
 
