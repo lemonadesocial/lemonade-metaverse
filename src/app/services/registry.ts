@@ -34,13 +34,12 @@ async function createRegistry(network: Network, address: string) {
   ]);
 
   const registry = new Registry();
-
   registry.id = address;
-  registry.isERC721 = isERC721 || false;
 
-  registry.supportsERC721Metadata = supportsERC721Metadata || false;
-  registry.supportsERC2981 = supportsERC2981 || false;
-  registry.supportsRaribleRoyaltiesV2 = supportsRaribleRoyaltiesV2 || false;
+  if (isERC721) registry.isERC721 = true;
+  if (supportsERC721Metadata) registry.supportsERC721Metadata = true;
+  if (supportsERC2981) registry.supportsERC2981 = true;
+  if (supportsRaribleRoyaltiesV2) registry.supportsRaribleRoyaltiesV2 = true;
 
   return registry;
 }
