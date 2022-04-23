@@ -60,10 +60,15 @@ const ingressTimeToRecoverySeconds = new Histogram({
   help: 'Time to recovery of metaverse ingress in seconds',
   buckets: [1, 5, 30, 60, 300, 900, 1800, 3600, 7200, 10800, 14400],
 });
-const watchdogIndexerDelayBlocks = new Gauge({
+const watchdogChainBlock = new Gauge({
   labelNames: ['network'],
-  name: 'metaverse_watchdog_indexer_delay_blocks',
-  help: 'Delay of metaverse indexer in blocks',
+  name: 'metaverse_watchdog_chain_block',
+  help: 'Block of metaverse indexer',
+});
+const watchdogIndexerBlock = new Gauge({
+  labelNames: ['network'],
+  name: 'metaverse_watchdog_indexer_block',
+  help: 'Block of metaverse indexer',
 });
 const watchdogIndexerDelaySeconds = new Gauge({
   labelNames: ['network'],
@@ -248,11 +253,12 @@ async function processor(state: State, { data }: Job<JobData>) {
 
   if (nextData.meta) {
     if (nextData.meta.block !== data.meta?.block) {
-      const latestBlock = await state.network.provider().getBlockNumber();
-      const block = await state.network.provider().getBlock(nextData.meta.block);
+      const chainBlockNumber = await state.network.provider().getBlockNumber();
+      const indexerBlock = await state.network.provider().getBlock(nextData.meta.block);
 
-      watchdogIndexerDelaySeconds.labels(labels).set((now - block.timestamp * 1000) / 1000);
-      watchdogIndexerDelayBlocks.labels(labels).set(latestBlock - block.number);
+      watchdogChainBlock.labels(labels).set(chainBlockNumber);
+      watchdogIndexerBlock.labels(labels).set(indexerBlock.number);
+      watchdogIndexerDelaySeconds.labels(labels).set((now - indexerBlock.timestamp * 1000) / 1000);
     }
 
     watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
