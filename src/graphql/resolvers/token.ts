@@ -84,8 +84,8 @@ class _TokensQueryResolver {
     }
 
     const tokens = await Promise.all(Object.values(networks).map((network) =>
-      getTokens(network, variables))
-    );
+      getTokens(network, variables).catch(() => [])
+    ));
 
     return tokens.flat().slice(0, limit);
   }
