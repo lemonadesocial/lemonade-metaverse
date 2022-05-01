@@ -21,5 +21,5 @@ export function getParsedUrl(input: unknown): string | undefined {
 }
 
 export function getWebUrl(args: { network: string; contract: string, tokenId: string }): string {
-  return `${webUrl}meta/${args.network}/${args.contract}/${args.tokenId}`;
+  return `${webUrl}nft/${args.network}/${args.contract}/${args.tokenId}`;
 }
