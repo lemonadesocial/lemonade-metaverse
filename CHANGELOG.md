@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.2.0...v8.3.0) (2022-05-01)
+
+
+### Features
+
+* **ingress:** increment state version ([0bc8a38](https://github.com/lemonadesocial/lemonade-metaverse/commit/0bc8a383f5f1519b83d89e74ed78d63c67aa6bbc))
+* **registry:** use undefined instead of false when standard not supported ([72232b1](https://github.com/lemonadesocial/lemonade-metaverse/commit/72232b18839c9508a976e16fe16e08d1ef28cdd8))
+* **token:** hide network error when get tokens from multiple networks ([31c5d62](https://github.com/lemonadesocial/lemonade-metaverse/commit/31c5d6258000af6ed5b44281c90794bee9aecf9b))
+
+
+### Bug Fixes
+
+* **ingress:** fix state never updating ([bcf407c](https://github.com/lemonadesocial/lemonade-metaverse/commit/bcf407ce882562734731425f77bdce4195a510b0))
+
 ## [8.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.1.0...v8.2.0) (2022-04-13)
 
 
