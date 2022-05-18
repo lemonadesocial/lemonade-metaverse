@@ -6,8 +6,7 @@ on:
 
 env:
   DOCKER_BUILDKIT: 1
-  SOURCE_REF: ${{ github.ref }}
-  SOURCE_VERSION: ${{ github.sha }}
+  GITHUB_SHA: ${{ github.sha }}
 
 jobs:
   buildAndPush:
@@ -37,10 +36,10 @@ jobs:
         run: |
           docker build                                                     \
             --build-arg BUILDKIT_INLINE_CACHE=1                            \
-            --build-arg SOURCE_VERSION=$SOURCE_VERSION                     \
+            --build-arg GITHUB_SHA=$GITHUB_SHA                             \
             --cache-from $REPOSITORY_URI:release-builder                   \
             --cache-from $REPOSITORY_URI:release-base                      \
-            --tag $REPOSITORY_URI:$SOURCE_VERSION                          \
+            --tag $REPOSITORY_URI:$GITHUB_SHA                              \
             --tag $REPOSITORY_URI:release                                  \
             --target app                                                   \
             .
@@ -59,7 +58,7 @@ jobs:
 
       - name: Push version
         run: |
-          docker push $REPOSITORY_URI:$SOURCE_VERSION
+          docker push $REPOSITORY_URI:$GITHUB_SHA
 
       - name: Push release
         if: github.event_name == 'push'
@@ -92,9 +91,9 @@ jobs:
 
       - name: Deploy
         run: |
-          kubectl set image --namespace $NAMESPACE deployment/metaverse-app metaverse-app=$REPOSITORY_URI:$SOURCE_VERSION &
-          kubectl set image --namespace $NAMESPACE deployment/metaverse-ingress metaverse-ingress=$REPOSITORY_URI:$SOURCE_VERSION &
-          kubectl set image --namespace $NAMESPACE deployment/metaverse-enrich metaverse-enrich=$REPOSITORY_URI:$SOURCE_VERSION &
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-app metaverse-app=$REPOSITORY_URI:$GITHUB_SHA &
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-ingress metaverse-ingress=$REPOSITORY_URI:$GITHUB_SHA &
+          kubectl set image --namespace $NAMESPACE deployment/metaverse-enrich metaverse-enrich=$REPOSITORY_URI:$GITHUB_SHA &
           wait
 
       - name: Verify
