@@ -1,26 +1,28 @@
-import { AnyBulkWriteOperation } from 'mongodb';
 import { Counter, Histogram } from 'prom-client';
+import { ethers } from 'ethers';
 import { Job, Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
-import * as ethers from 'ethers';
 import * as http from 'http';
 import * as https from 'https';
 import fetch, { RequestInit } from 'node-fetch';
+import type { AnyBulkWriteOperation } from 'mongodb';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 
-import { Order } from '../../models/order';
-import { Token, TokenModel } from '../../models/token';
+import { fetchRegistry } from '../registry';
+import { networks } from '../network';
 
-import { BufferQueue } from '../../utils/buffer-queue';
 import { connection } from '../../helpers/bullmq';
 import { erc721MetadataContract, erc2981Contract, raribleRoyaltiesV2 } from '../../helpers/web3';
-import { fetchRegistry } from '../registry';
-import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 import { logger } from '../../helpers/pino';
-import { networks } from '../network';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
+
+import { Token, TokenModel } from '../../models/token';
+import type { Order } from '../../models/order';
+
+import { BufferQueue } from '../../utils/buffer-queue';
+import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 
 const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
 const FETCH_TIMEOUT = 10000;

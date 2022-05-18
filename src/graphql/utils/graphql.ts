@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { ClassType, getMetadataStorage, InputType, registerEnumType, ObjectType } from 'type-graphql';
-import { FieldMetadata } from 'type-graphql/dist/metadata/definitions';
+import type { FieldMetadata } from 'type-graphql/dist/metadata/definitions';
 
 const metadata = getMetadataStorage();
 

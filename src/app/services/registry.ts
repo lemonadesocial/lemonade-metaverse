@@ -1,9 +1,10 @@
 import { ethers } from 'ethers';
 import LRU from 'lru-cache';
 
+import { Network } from './network';
+
 import { erc165Contract, ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from '../helpers/web3';
 
-import { Network } from './network';
 import { Registry, RegistryModel } from '../models/registry';
 
 const lru = new LRU<string, Registry>({ max: 1000 });

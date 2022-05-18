@@ -1,19 +1,22 @@
-import { AnyBulkWriteOperation } from 'mongodb';
 import { Counter, Gauge, Histogram } from 'prom-client';
 import { Job, JobsOptions, Queue, QueueScheduler, Worker } from 'bullmq';
+import type { AnyBulkWriteOperation } from 'mongodb';
+
+import { createToken } from '../token';
+import { Network, networks } from '../network';
+import * as enrich from '../enrich/queue';
 
 import { connection } from '../../helpers/bullmq';
-import { createToken } from '../token';
+import { logger } from '../../helpers/pino';
+import { pubSub, Trigger } from '../../helpers/pub-sub';
+
+import { Order, OrderKind, OrderModel } from '../../models/order';
+import { StateModel } from '../../models/state';
+import { Token, TokenModel } from '../../models/token';
+
 import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
 import { getParsedUrl, getWebUrl } from '../../utils/url';
-import { logger } from '../../helpers/pino';
-import { Network, networks } from '../network';
-import { Order, OrderKind, OrderModel } from '../../models/order';
-import { pubSub, Trigger } from '../../helpers/pub-sub';
-import { StateModel } from '../../models/state';
-import { Token, TokenModel } from '../../models/token';
-import * as enrich from '../enrich/queue';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';

@@ -1,4 +1,4 @@
-import { Where } from '../types/where-input';
+import type { Where } from '../types/where-input';
 
 const beforeEnd = (
   str: string,

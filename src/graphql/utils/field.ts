@@ -1,5 +1,5 @@
-import { GraphQLResolveInfo } from 'graphql';
 import { parseResolveInfo, ResolveTree } from 'graphql-parse-resolve-info';
+import type { GraphQLResolveInfo } from 'graphql';
 
 export type FieldProjection = { [key: string]: FieldProjection | 1 };
 

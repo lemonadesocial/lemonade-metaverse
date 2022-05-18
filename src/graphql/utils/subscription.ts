@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import type { GraphQLResolveInfo } from 'graphql';
 
 import { pubSub, Trigger } from '../../app/helpers/pub-sub';
 

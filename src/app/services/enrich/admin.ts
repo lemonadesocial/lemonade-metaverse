@@ -1,8 +1,8 @@
 import type { FastifyPluginCallback, RouteHandlerMethod } from 'fastify';
 
-import { TokenModel } from '../../models/token';
-
 import * as queue from './queue';
+
+import { TokenModel } from '../../models/token';
 
 const postEnqueue: RouteHandlerMethod = async (request, reply) => {
   const token = new TokenModel(request.body as Record<string, unknown>);
