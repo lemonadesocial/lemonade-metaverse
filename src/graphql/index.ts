@@ -1,40 +1,53 @@
-import { ApolloServer } from 'apollo-server-koa';
-import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageGraphQLPlayground, ApolloServerPluginLandingPageDisabled } from 'apollo-server-core';
-import { execute, subscribe } from 'graphql';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
-import * as http from 'http';
+import { ApolloServer } from 'apollo-server-fastify';
+import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { WebSocketServer } from 'ws';
+import type { FastifyInstance } from 'fastify';
 
-import { schema } from './schema';
+import { createSchema } from './schema';
 
-import { apolloDebug, apolloIntrospection, isProduction } from '../config';
+import { apolloDebug, apolloIntrospection } from '../config';
 
-const KEEP_ALIVE = 5000;
+export type { ApolloServer } from 'apollo-server-fastify';
 
-export const createApolloServer = (httpServer: http.Server): ApolloServer => {
-  const subscriptionServer = SubscriptionServer.create(
+export async function createApolloServer(app: FastifyInstance) {
+  const schema = await createSchema();
+
+  const webSocketServer = new WebSocketServer({
+    server: app.server,
+    path: '/graphql',
+  });
+  const webSocketServerDisposer = useServer(
     {
-      execute,
-      keepAlive: KEEP_ALIVE,
+      context: () => ({ ctx: null }),
       schema,
-      subscribe,
     },
-    { server: httpServer, path: '/graphql' }
+    webSocketServer
   );
 
   return new ApolloServer({
-    context: ({ ctx }) => ({ app: ctx }),
+    context: (ctx) => ({ ctx }),
     debug: apolloDebug,
     introspection: apolloIntrospection,
     plugins: [
-      ApolloServerPluginDrainHttpServer({ httpServer }),
-      isProduction
-        ? ApolloServerPluginLandingPageDisabled()
-        : ApolloServerPluginLandingPageGraphQLPlayground(),
+      ApolloServerPluginDrainHttpServer({ httpServer: app.server }),
+      apolloIntrospection
+        ? ApolloServerPluginLandingPageGraphQLPlayground()
+        : ApolloServerPluginLandingPageDisabled(),
       {
         async serverWillStart() {
           return {
             async drainServer() {
-              subscriptionServer.close();
+              await app.close();
+            },
+          };
+        },
+      },
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await webSocketServerDisposer.dispose();
             },
           };
         },
@@ -43,4 +56,4 @@ export const createApolloServer = (httpServer: http.Server): ApolloServer => {
     schema,
     stopOnTerminationSignals: false,
   });
-};
+}

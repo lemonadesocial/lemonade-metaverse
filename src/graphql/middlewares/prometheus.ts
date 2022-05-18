@@ -1,4 +1,4 @@
-import { MiddlewareFn } from 'type-graphql';
+import type { MiddlewareFn } from 'type-graphql';
 import * as prom from 'prom-client';
 
 import { isChildOfRoot } from '../utils/schema';

@@ -1,10 +1,9 @@
-import { pino } from 'pino';
-import DataLoader from 'dataloader';
-
-import { ParameterizedContext } from '../app/types';
+import type { FastifyContext } from 'apollo-server-fastify';
+import type { FastifyLoggerInstance } from 'fastify';
+import type DataLoader from 'dataloader';
 
 export interface Context {
-  app?: ParameterizedContext;
+  ctx: FastifyContext | null;
   dataLoaders?: Record<string, DataLoader<string, unknown> | undefined>;
-  logger: pino.Logger;
+  logger: FastifyLoggerInstance;
 }
