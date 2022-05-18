@@ -5,9 +5,10 @@ import 'source-map-support/register';
 import { logger } from '../app/helpers/pino';
 import * as admin from '../app/services/admin';
 import * as db from '../app/helpers/db';
-import * as ingress from '../app/services/ingress/worker';
 import * as network from '../app/services/network';
 import * as redis from '../app/helpers/redis';
+
+import * as ingress from '../app/services/ingress/worker';
 
 import { sourceVersion } from '../config';
 
@@ -29,8 +30,6 @@ async function shutdown() {
       db.disconnect(),
       network.close(),
     ]);
-
-    process.exit(0);
   } catch (err: any) {
     logger.fatal(err);
     process.exit(1);
