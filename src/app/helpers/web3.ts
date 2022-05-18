@@ -1,4 +1,4 @@
-import * as ethers from 'ethers';
+import { ethers } from 'ethers';
 
 import IERC165 from '../../assets/abis/IERC165.json';
 import IERC2981 from '../../assets/abis/IERC2981.json';

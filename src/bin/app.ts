@@ -17,11 +17,11 @@ import { createApolloServer, ApolloServer } from '../graphql';
 
 let apolloServer: ApolloServer | undefined;
 
-process.on('uncaughtException', function onUncaughtException(err) {
+process.on('uncaughtException', (err) => {
   logger.error(err, 'uncaughtException');
 });
 
-process.on('uncaughtRejection', function onUncaughtRejection(err) {
+process.on('uncaughtRejection', (err) => {
   logger.error(err, 'uncaughtRejection');
 });
 

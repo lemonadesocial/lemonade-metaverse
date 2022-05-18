@@ -4,10 +4,10 @@ import { databaseDebug, databaseUrl } from '../../config';
 
 mongoose.set('debug', databaseDebug);
 
-export const connect = async (): Promise<void> => {
+export async function connect() {
   await mongoose.connect(databaseUrl, { serverSelectionTimeoutMS: 1000 });
-};
+}
 
-export const disconnect = async (): Promise<void> => {
+export async function disconnect() {
   await mongoose.disconnect();
-};
+}

@@ -11,7 +11,7 @@ const RETRY_INTERVAL = 1000;
 function createRedis() {
   const redis = new Redis(redisUrl, { retryStrategy: () => RETRY_INTERVAL });
 
-  redis.on('error', function onError(err: Error) {
+  redis.on('error', (err: Error) => {
     logger.error(err);
   });
 
@@ -42,7 +42,7 @@ export async function getOrSet<T>(
   return result;
 }
 
-export function disconnect(): void {
+export function disconnect() {
   redis.disconnect();
   publisher.disconnect(),
   subscriber.disconnect();

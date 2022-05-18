@@ -11,15 +11,15 @@ import * as redis from '../app/helpers/redis';
 
 import { sourceVersion } from '../config';
 
-process.on('uncaughtException', function onUncaughtException(err) {
+process.on('uncaughtException', (err) => {
   logger.error(err, 'uncaughtException');
 });
 
-process.on('uncaughtRejection', function onUncaughtRejection(err) {
+process.on('uncaughtRejection', (err) => {
   logger.error(err, 'uncaughtRejection');
-});
+})
 
-const shutdown = async () => {
+async function shutdown() {
   try {
     await ingress.stop();
 
@@ -35,17 +35,12 @@ const shutdown = async () => {
     logger.fatal(err);
     process.exit(1);
   }
-};
+}
 
-process.on('SIGINT', async function onSigintSignal() {
-  await shutdown();
-});
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
-process.on('SIGTERM', async function onSigtermSignal() {
-  await shutdown();
-});
-
-const main = async () => {
+async function main() {
   metrics.start();
   await db.connect();
   await network.init();
@@ -53,6 +48,6 @@ const main = async () => {
   await ingress.start();
 
   logger.info({ version: sourceVersion }, 'metaverse ingress started');
-};
+}
 
 void main();

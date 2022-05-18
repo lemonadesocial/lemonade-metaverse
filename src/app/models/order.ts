@@ -1,7 +1,7 @@
 import { getModelForClass, index, prop } from '@typegoose/typegoose';
 import { registerEnumType, Field, ObjectType } from 'type-graphql';
 
-import { Token } from './token';
+import type { Token } from './token';
 
 export enum OrderKind {
   AUCTION = 'AUCTION',

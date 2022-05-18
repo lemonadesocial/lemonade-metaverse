@@ -2,7 +2,7 @@ import { Field, ObjectType } from 'type-graphql';
 import { getModelForClass, index, prop, modelOptions, Severity } from '@typegoose/typegoose';
 import { GraphQLJSONObject } from 'graphql-type-json';
 
-import { Order } from './order';
+import type { Order } from './order';
 
 @ObjectType()
 export class TokenRoyalty {

@@ -3,8 +3,8 @@ import { GraphQLResolveInfo } from 'graphql';
 
 import { OrderComplex, OrderSort, OrderWhereComplex } from '../types/order';
 import { OrderModel } from '../../app/models/order';
-import { PaginationArgs } from '../types/pagination';
 import { Trigger } from '../../app/helpers/pub-sub';
+import { PaginationArgs } from '../types/pagination';
 
 import { createSubscribe } from '../utils/subscription';
 import { getFieldTree, getFieldProjection } from '../utils/field';

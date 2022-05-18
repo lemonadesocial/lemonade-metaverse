@@ -1,11 +1,11 @@
 import { getModelWithString } from '@typegoose/typegoose';
-import { GraphQLFieldConfig, GraphQLSchema } from 'graphql';
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
 import { pathToArray } from 'graphql/jsutils/Path';
 import * as assert from 'assert';
 import DataLoader from 'dataloader';
+import type { GraphQLFieldConfig, GraphQLSchema } from 'graphql';
 
-import { Context } from '../types';
+import type { Context } from '../types';
 
 import { getExpandedField, getFieldProjection, getFieldTree } from '../utils/field';
 

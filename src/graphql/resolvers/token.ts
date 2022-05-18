@@ -2,10 +2,10 @@ import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graph
 import { GraphQLResolveInfo } from 'graphql';
 import * as assert from 'assert';
 
-import { PaginationArgs } from '../types/pagination';
 import { TokenDetail, TokenSort, TokenComplex, TokenWhereComplex } from '../types/token';
 import { TokenModel } from '../../app/models/token';
 import { Trigger } from '../../app/helpers/pub-sub';
+import { PaginationArgs } from '../types/pagination';
 
 import { createSubscribe } from '../utils/subscription';
 import { getFieldTree, getFieldProjection } from '../utils/field';
