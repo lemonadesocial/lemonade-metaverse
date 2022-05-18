@@ -1,5 +1,5 @@
 import * as prom from 'prom-client';
-import fastify from 'fastify'
+import fastify, { FastifyPluginCallback } from 'fastify'
 
 import { adminPort } from '../../config';
 
@@ -10,6 +10,10 @@ app.get('/metrics', async (_, reply) => {
 
   reply.type(prom.register.contentType).send(payload);
 });
+
+export function register(plugin: FastifyPluginCallback) {
+  app.register(plugin);
+}
 
 export async function start() {
   prom.collectDefaultMetrics();

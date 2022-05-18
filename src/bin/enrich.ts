@@ -5,7 +5,8 @@ import 'source-map-support/register';
 import { logger } from '../app/helpers/pino';
 import * as admin from '../app/services/admin';
 import * as db from '../app/helpers/db';
-import * as enrich from '../app/services/enrich/worker';
+import * as enrichAdmin from '../app/services/enrich/admin';
+import * as enrichWorker from '../app/services/enrich/worker';
 import * as network from '../app/services/network';
 import * as redis from '../app/helpers/redis';
 
@@ -21,7 +22,7 @@ process.on('uncaughtRejection', (err) => {
 
 async function shutdown() {
   try {
-    await enrich.stop();
+    await enrichWorker.stop();
 
     redis.disconnect();
     await Promise.all([
@@ -41,11 +42,13 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 async function main() {
+  admin.register(enrichAdmin.plugin);
+
   await admin.start();
   await db.connect();
   await network.init();
 
-  await enrich.start();
+  await enrichWorker.start();
 
   logger.info({ version: sourceVersion }, 'metaverse enrich started');
 }
