@@ -30,7 +30,6 @@
     "graphql-tag": "^2.12.5",
     "graphql-type-json": "^0.3.2",
     "graphql-ws": "^5.8.2",
-    "http-terminator": "^3.0.3",
     "ioredis": "^4.28.0",
     "lru-cache": "^7.7.1",
     "mongoose": "^6.0.12",

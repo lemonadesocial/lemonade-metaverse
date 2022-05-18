@@ -3,9 +3,9 @@ import 'reflect-metadata';
 import 'source-map-support/register';
 
 import { logger } from '../app/helpers/pino';
+import * as admin from '../app/services/admin';
 import * as db from '../app/helpers/db';
 import * as enrich from '../app/services/enrich/worker';
-import * as metrics from '../app/services/metrics';
 import * as network from '../app/services/network';
 import * as redis from '../app/helpers/redis';
 
@@ -25,8 +25,8 @@ async function shutdown() {
 
     redis.disconnect();
     await Promise.all([
+      admin.stop(),
       db.disconnect(),
-      metrics.stop(),
       network.close(),
     ]);
 
@@ -41,7 +41,7 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 async function main() {
-  metrics.start();
+  await admin.start();
   await db.connect();
   await network.init();
 
