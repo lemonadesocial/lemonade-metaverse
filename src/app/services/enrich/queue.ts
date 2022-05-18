@@ -1,21 +1,20 @@
 import { BulkJobOptions, Queue, QueueScheduler } from 'bullmq';
+import * as assert from 'assert';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
+
+import { redis } from '../../helpers/redis';
+import { connection } from '../../helpers/bullmq';
 
 import { Order } from '../../models/order';
 import { Token } from '../../models/token';
 
-import { createConnection } from '../../helpers/bullmq';
-import { redis } from '../../helpers/redis';
+let queue: Queue<JobData> | undefined;
+let queueScheduler: QueueScheduler | undefined;
 
-const queue = new Queue<JobData>(QUEUE_NAME, { connection: createConnection() });
-const queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: createConnection() });
-
-export async function waitUntilReady(): Promise<void> {
-  await Promise.all([
-    queue.waitUntilReady(),
-    queueScheduler.waitUntilReady(),
-  ]);
+export async function start() {
+  queue = new Queue<JobData>(QUEUE_NAME, { connection });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection });
 }
 
 /**
@@ -35,6 +34,8 @@ export async function enqueue(
    ...items: { token: Token; orders?: Order[] }[]
 ): Promise<void> {
   if (!items.length) return;
+
+  assert.ok(queue);
 
   const commands: string[][] = [];
   const jobs: { name: string; data: JobData; opts?: BulkJobOptions }[] = [];
@@ -63,7 +64,7 @@ export async function enqueue(
   await queue.addBulk(jobs);
 }
 
-export async function close(): Promise<void> {
-  await queue.close();
-  await queueScheduler.close();
+export async function stop() {
+  if (queue) await queue.close();
+  if (queueScheduler) await queueScheduler.close();
 }

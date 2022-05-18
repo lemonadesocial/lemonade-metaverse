@@ -13,7 +13,7 @@ import { Order } from '../../models/order';
 import { Token, TokenModel } from '../../models/token';
 
 import { BufferQueue } from '../../utils/buffer-queue';
-import { createConnection } from '../../helpers/bullmq';
+import { connection } from '../../helpers/bullmq';
 import { erc721MetadataContract, erc2981Contract, raribleRoyaltiesV2 } from '../../helpers/web3';
 import { fetchRegistry } from '../registry';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
@@ -176,10 +176,10 @@ let queueScheduler: QueueScheduler | undefined;
 let worker: Worker<JobData> | undefined;
 
 export async function start(): Promise<void> {
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection: createConnection() });
+  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection });
   await queueScheduler.waitUntilReady();
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection: createConnection(), concurrency: WORKER_CONCURRENCY });
+  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection, concurrency: WORKER_CONCURRENCY });
   worker.on('failed', function onFailed(job: Job<JobData>, error) {
     enrichesTotal.inc({ network: job.data.token.network, status: 'fail' });
     pubSub.publish(Trigger.EnrichFailed, job.data.token);

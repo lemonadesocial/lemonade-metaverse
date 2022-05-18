@@ -2,7 +2,7 @@ import { AnyBulkWriteOperation } from 'mongodb';
 import { Counter, Gauge, Histogram } from 'prom-client';
 import { Job, JobsOptions, Queue, QueueScheduler, Worker } from 'bullmq';
 
-import { createConnection } from '../../helpers/bullmq';
+import { connection } from '../../helpers/bullmq';
 import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
@@ -271,8 +271,8 @@ async function startNetwork(network: Network) {
   const state: State = states[network.name] = {
     name,
     network,
-    queue: new Queue<JobData>(name, { connection: createConnection() }),
-    queueScheduler: new QueueScheduler(name, { connection: createConnection() }),
+    queue: new Queue<JobData>(name, { connection }),
+    queueScheduler: new QueueScheduler(name, { connection }),
   };
   await Promise.all([
     state.queue.waitUntilReady(),
@@ -292,7 +292,7 @@ async function startNetwork(network: Network) {
   state.worker = new Worker<JobData>(
     name,
     processor.bind(null, state),
-    { connection: createConnection() }
+    { connection }
   );
   state.worker.on('failed', function onFailed(job: Job<JobData>, err) {
     ingressesTotal.inc({ network: state.network.name, status: 'fail' });
@@ -312,7 +312,7 @@ async function startNetwork(network: Network) {
 }
 
 export async function start(): Promise<void> {
-  await enrich.waitUntilReady();
+  await enrich.start();
   await Promise.all(Object.values(networks).map(startNetwork));
 }
 
@@ -326,5 +326,5 @@ async function stopNetwork(network: Network) {
 
 export async function stop(): Promise<void> {
   await Promise.all(Object.values(networks).map(stopNetwork));
-  await enrich.close();
+  await enrich.stop();
 }

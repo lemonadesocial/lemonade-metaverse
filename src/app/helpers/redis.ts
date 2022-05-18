@@ -9,7 +9,9 @@ const CACHE_KEY_PREFIX = 'cache:';
 const RETRY_INTERVAL = 1000;
 
 function createRedis() {
-  const redis = new Redis(redisUrl, { retryStrategy: () => RETRY_INTERVAL });
+  const redis = new Redis(redisUrl, {
+    retryStrategy: () => RETRY_INTERVAL,
+  });
 
   redis.on('error', (err: Error) => {
     logger.error(err);
@@ -21,6 +23,12 @@ function createRedis() {
 export const redis = createRedis();
 export const publisher = createRedis();
 export const subscriber = createRedis();
+
+export function disconnect() {
+  redis.disconnect();
+  publisher.disconnect(),
+  subscriber.disconnect();
+}
 
 export async function getOrSet<T>(
   key: string,
@@ -40,10 +48,4 @@ export async function getOrSet<T>(
   }
 
   return result;
-}
-
-export function disconnect() {
-  redis.disconnect();
-  publisher.disconnect(),
-  subscriber.disconnect();
 }
