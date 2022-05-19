@@ -27,7 +27,7 @@ const findTokens = async (
 
   return await TokenModel.aggregate([
     { $match: filter },
-    ...fields.order ? [
+    ...fields.order || where?.order ? [
       {
         $lookup: {
           from: 'orders',

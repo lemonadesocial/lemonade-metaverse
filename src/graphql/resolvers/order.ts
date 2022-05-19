@@ -24,7 +24,7 @@ const findOrders = async (
 
   return await OrderModel.aggregate([
     { $match: filter },
-    ...fields.token ? [
+    ...fields.token || where?.token ? [
       {
         $lookup: {
           from: 'tokens',
