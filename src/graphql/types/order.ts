@@ -2,7 +2,7 @@ import { Directive, Field, InputType, ObjectType } from 'type-graphql';
 
 import { Order as OrderClass, OrderCurrency } from '../../app/models/order';
 import { SortInput } from './sort-input';
-import { TokenSimple } from './token';
+import { TokenSimple, TokenWhereSimple } from './token';
 import { User } from '../../app/models/user';
 import { WhereInput } from './where-input';
 
@@ -24,7 +24,7 @@ export class OrderWhereSimple extends OrderWhere {
 @InputType()
 export class OrderWhereComplex extends OrderWhere {
   @Field(() => OrderWhereSimple, { nullable: true })
-  token?: OrderWhereSimple;
+  token?: TokenWhereSimple;
 }
 
 @ObjectType()
