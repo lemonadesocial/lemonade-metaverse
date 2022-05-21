@@ -21,9 +21,11 @@ const findTokens = async (
 ) => {
   const fields = getFieldTree(info);
   const filterOrder = where?.order ? getFilter(where.order) : {};
-  const filter = where ? getFilter({ ...where, order: undefined }) : {};
+  const filterRegistry = where?.registry ? getFilter(where.registry) : {};
+  const filter = where ? getFilter({ ...where, order: undefined, registry: undefined }) : {};
 
   if (filterOrder.id) filter.order = filterOrder.id;
+  if (filterRegistry.id) filter.contract = filterRegistry.id;
 
   return await TokenModel.aggregate([
     { $match: filter },
@@ -40,6 +42,20 @@ const findTokens = async (
         },
       },
       { $unwind: { path: '$order', preserveNullAndEmptyArrays: !where?.order } },
+    ] : [],
+    ...fields.registry || where?.registry ? [
+      {
+        $lookup: {
+          from: 'registries',
+          let: { network: '$network', contract: '$contract' },
+          pipeline: [
+            { $match: { $expr: { $and: [{ $eq: ['$network', '$$network'] }, { $eq: ['$id', '$$contract'] }] }, ...filterRegistry } },
+            { $limit: 1 },
+          ],
+          as: 'registry',
+        },
+      },
+      { $unwind: '$registry' },
     ] : [],
     ...sort ? [{ $sort: getSort(sort) }] : [],
     { $skip: skip },

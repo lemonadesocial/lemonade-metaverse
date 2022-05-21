@@ -7,6 +7,7 @@ import { getOrSet } from '../helpers/redis';
 import { pubSub, Trigger } from '../helpers/pub-sub';
 
 import { Order } from '../models/order';
+import { Registry } from '../models/registry';
 import { Token, TokenModel } from '../models/token';
 
 import { excludeNull } from '../utils/object';
@@ -79,8 +80,20 @@ async function waitForEnrich(tokens: Token[]) {
 }
 
 async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
-  const docs = await TokenModel.aggregate<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royalties' | 'metadata'> & { order: Omit<Order, 'token'> & { token: string } }>([
+  const docs = await TokenModel.aggregate<Pick<Token, 'id' | 'enrichedAt' | 'uri' | 'royalties' | 'metadata'> & { registry: Registry; order: Omit<Order, 'token'> & { token: string } }>([
     { $match: { network: network.name, id: { $in: items.map(({ id }) => id) } } },
+    {
+      $lookup: {
+        from: 'registries',
+        let: { contract: '$contract' },
+        pipeline: [
+          { $match: { network: network.name, $expr: { $eq: ['$id', '$$contract'] } } },
+          { $limit: 1 },
+        ],
+        as: 'registry',
+      },
+    },
+    { $unwind: '$registry' },
     {
       $lookup: {
         from: 'orders',
@@ -93,7 +106,7 @@ async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
       },
     },
     { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } },
-    { $project: { id: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1, order: 1 } },
+    { $project: { id: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1, registry: 1, order: 1 } },
   ]);
   const map = Object.fromEntries(docs.map((doc) => [doc.id, doc]));
 
@@ -137,9 +150,21 @@ export async function getToken(network: Network, id: string) {
       if (token) return createToken(network, token);
     }),
     (async () => {
-      const tokens = await TokenModel.aggregate<Omit<Token, 'order'> & { order: Omit<Order, 'token'> & { token: string } }>([
+      const tokens = await TokenModel.aggregate<Omit<Token, 'order'> & { registry: Registry; order: Omit<Order, 'token'> & { token: string } }>([
         { $match: { network: network.name, id } },
         { $limit: 1 },
+        {
+          $lookup: {
+            from: 'registries',
+            let: { contract: '$contract' },
+            pipeline: [
+              { $match: { network: network.name, $expr: { $eq: ['$id', '$$contract'] } } },
+              { $limit: 1 },
+            ],
+            as: 'registry',
+          },
+        },
+        { $unwind: '$registry' },
         {
           $lookup: {
             from: 'orders',

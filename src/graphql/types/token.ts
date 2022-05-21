@@ -1,11 +1,13 @@
 import { Directive, Field, InputType, ObjectType } from 'type-graphql';
 
+import { OrderCurrency } from '../../app/models/order';
 import { OrderSimple, OrderWhereSimple } from './order';
+import { Registry } from '../../app/models/registry';
+import { RegistryWhere } from './registry';
 import { SortInput } from './sort-input';
 import { Token as TokenClass } from '../../app/models/token';
 import { User } from '../../app/models/user';
 import { WhereInput } from './where-input';
-import { OrderCurrency } from '../../app/models/order';
 
 @InputType()
 export class TokenSort extends SortInput(TokenClass) { }
@@ -21,6 +23,9 @@ export class TokenWhereSimple extends TokenWhere {
 export class TokenWhereComplex extends TokenWhere {
   @Field(() => OrderWhereSimple, { nullable: true })
   order?: OrderWhereSimple;
+
+  @Field(() => RegistryWhere, { nullable: true })
+  registry?: RegistryWhere;
 }
 
 @ObjectType()
@@ -42,6 +47,9 @@ export class TokenSimple extends Token {
 export class TokenComplex extends Token {
   @Field(() => OrderSimple, { nullable: true, description: 'The order.' })
   declare public order?: OrderSimple;
+
+  @Field(() => Registry, { nullable: true })
+  public registry?: Registry;
 }
 
 @ObjectType()
