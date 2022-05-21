@@ -25,6 +25,8 @@ export type Bid = {
 };
 
 export type Bid_filter = {
+  /** Filter for the block changed event. */
+  _change_block?: Maybe<BlockChangedFilter>;
   bidAmount?: Maybe<Scalars['BigInt']>;
   bidAmount_gt?: Maybe<Scalars['BigInt']>;
   bidAmount_gte?: Maybe<Scalars['BigInt']>;
@@ -92,19 +94,13 @@ export enum Bid_orderBy {
   transaction = 'transaction'
 }
 
-/** The block at which the query should be executed. */
+export type BlockChangedFilter = {
+  number_gte: Scalars['Int'];
+};
+
 export type Block_height = {
-  /** Value containing a block hash */
   hash?: Maybe<Scalars['Bytes']>;
-  /** Value containing a block number */
   number?: Maybe<Scalars['Int']>;
-  /**
-   * Value containing the minimum block number.
-   * In the case of `number_gte`, the query will be executed on the latest block only if
-   * the subgraph has progressed to or past the minimum block number.
-   * Defaults to the latest block when omitted.
-   *
-   */
   number_gte?: Maybe<Scalars['Int']>;
 };
 
@@ -126,6 +122,8 @@ export type CurrencyordersArgs = {
 };
 
 export type Currency_filter = {
+  /** Filter for the block changed event. */
+  _change_block?: Maybe<BlockChangedFilter>;
   id?: Maybe<Scalars['ID']>;
   id_gt?: Maybe<Scalars['ID']>;
   id_gte?: Maybe<Scalars['ID']>;
@@ -229,6 +227,8 @@ export enum OrderKind {
 }
 
 export type Order_filter = {
+  /** Filter for the block changed event. */
+  _change_block?: Maybe<BlockChangedFilter>;
   bidAmount?: Maybe<Scalars['BigInt']>;
   bidAmount_gt?: Maybe<Scalars['BigInt']>;
   bidAmount_gte?: Maybe<Scalars['BigInt']>;
@@ -567,6 +567,8 @@ export type RegistrytokensArgs = {
 };
 
 export type Registry_filter = {
+  /** Filter for the block changed event. */
+  _change_block?: Maybe<BlockChangedFilter>;
   id?: Maybe<Scalars['ID']>;
   id_gt?: Maybe<Scalars['ID']>;
   id_gte?: Maybe<Scalars['ID']>;
@@ -750,6 +752,8 @@ export type TokentransfersArgs = {
 };
 
 export type Token_filter = {
+  /** Filter for the block changed event. */
+  _change_block?: Maybe<BlockChangedFilter>;
   contract?: Maybe<Scalars['Bytes']>;
   contract_contains?: Maybe<Scalars['Bytes']>;
   contract_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -837,6 +841,8 @@ export type Transfer = {
 };
 
 export type Transfer_filter = {
+  /** Filter for the block changed event. */
+  _change_block?: Maybe<BlockChangedFilter>;
   createdAt?: Maybe<Scalars['BigInt']>;
   createdAt_gt?: Maybe<Scalars['BigInt']>;
   createdAt_gte?: Maybe<Scalars['BigInt']>;
@@ -953,6 +959,8 @@ export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;
+  orderBy?: Maybe<Token_orderBy>;
+  orderDirection?: Maybe<OrderDirection>;
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
 }>;

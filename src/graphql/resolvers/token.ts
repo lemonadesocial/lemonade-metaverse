@@ -2,10 +2,11 @@ import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graph
 import { GraphQLResolveInfo } from 'graphql';
 import * as assert from 'assert';
 
+import { OrderDirection, Token_orderBy } from '../../lib/lemonade-marketplace/types.generated';
+import { PaginationArgs } from '../types/pagination';
 import { TokenDetail, TokenSort, TokenComplex, TokenWhereComplex } from '../types/token';
 import { TokenModel } from '../../app/models/token';
 import { Trigger } from '../../app/helpers/pub-sub';
-import { PaginationArgs } from '../types/pagination';
 
 import { createSubscribe } from '../utils/subscription';
 import { getFieldTree, getFieldProjection } from '../utils/field';
@@ -89,6 +90,8 @@ class _TokensQueryResolver {
   ): Promise<TokenComplex[]> {
     const variables = {
       where: { id, id_in, contract, creator, tokenId, owner },
+      orderBy: Token_orderBy.createdAt,
+      orderDirection: OrderDirection.desc,
       skip,
       first: limit,
     };
@@ -103,7 +106,7 @@ class _TokensQueryResolver {
       getTokens(network, variables).catch(() => [])
     ));
 
-    return tokens.flat().slice(0, limit);
+    return tokens.flat().sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }
 
   @Query(() => [TokenComplex])
