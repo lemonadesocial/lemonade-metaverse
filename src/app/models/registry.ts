@@ -26,6 +26,10 @@ export class Registry {
 
   @Field({ nullable: true })
   @prop()
+  public supportsLemonadePoapV1?: boolean;
+
+  @Field({ nullable: true })
+  @prop()
   public supportsRaribleRoyaltiesV2?: boolean;
 }
 
