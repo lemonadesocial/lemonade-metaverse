@@ -4,7 +4,7 @@ import * as queue from './queue';
 
 import { TokenModel } from '../../models/token';
 
-const postEnqueue: RouteHandlerMethod = async (request, reply) => {
+const handler: RouteHandlerMethod = async (request, reply) => {
   const token = new TokenModel(request.body as Record<string, unknown>);
 
   await token.validate();
@@ -23,7 +23,10 @@ export const plugin: FastifyPluginCallback = (fastify, _, done) => {
     await queue.stop();
   });
 
-  fastify.post('/enqueue', { schema: { body: { type: 'object' } } }, postEnqueue);
+  fastify.post('/enqueue', {
+    handler,
+    schema: { body: { type: 'object' } },
+  });
 
   done();
 };
