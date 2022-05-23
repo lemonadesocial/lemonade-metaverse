@@ -3,7 +3,10 @@ import fastify, { FastifyPluginCallback } from 'fastify'
 
 import { adminPort } from '../../config';
 
-const app = fastify({ logger: true });
+export const app = fastify({
+  logger: true,
+  trustProxy: true,
+});
 
 app.get('/metrics', async (_, reply) => {
   const payload = await prom.register.metrics();
