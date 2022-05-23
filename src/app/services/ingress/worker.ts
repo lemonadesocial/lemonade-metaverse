@@ -4,7 +4,7 @@ import type { AnyBulkWriteOperation } from 'mongodb';
 
 import { createToken } from '../token';
 import { Network, networks } from '../network';
-import * as enrich from '../enrich/queue';
+import * as enrichQueue from '../enrich/queue';
 
 import { connection } from '../../helpers/bullmq';
 import { logger } from '../../helpers/pino';
@@ -149,7 +149,7 @@ async function process(state: State, data: IngressQuery) {
   const missing = tokens.filter((token) => !map[token.id]);
   if (missing.length) {
     promises.push(
-      enrich.enqueue(...missing.map((token) => ({
+      enrichQueue.enqueue(...missing.map((token) => ({
         orders: orders.filter((order) => order.token === token.id),
         token,
       }))),
@@ -314,8 +314,8 @@ async function startNetwork(network: Network) {
   await state.worker.waitUntilReady();
 }
 
-export async function start(): Promise<void> {
-  await enrich.start();
+export async function start() {
+  await enrichQueue.start();
   await Promise.all(Object.values(networks).map(startNetwork));
 }
 
@@ -327,7 +327,7 @@ async function stopNetwork(network: Network) {
   await state.queueScheduler.close();
 }
 
-export async function stop(): Promise<void> {
+export async function stop() {
   await Promise.all(Object.values(networks).map(stopNetwork));
-  await enrich.stop();
+  await enrichQueue.stop();
 }
