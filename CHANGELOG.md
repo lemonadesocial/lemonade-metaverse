@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.3.0...v8.4.0) (2022-05-26)
+
+
+### Features
+
+* add admin service ([de3d5d7](https://github.com/lemonadesocial/lemonade-metaverse/commit/de3d5d7e4d59f3fa7f792854e0f4332dacf2ad3e))
+* add enrich admin plugin ([ac2d8dd](https://github.com/lemonadesocial/lemonade-metaverse/commit/ac2d8dd8a2fb9369e6b387545f76cea3d866c39c))
+* enable fastify trust proxy ([108339a](https://github.com/lemonadesocial/lemonade-metaverse/commit/108339a01d48c32fc5f1080f3a562c1d39ae147c))
+* properly manage redis connections ([60fc33f](https://github.com/lemonadesocial/lemonade-metaverse/commit/60fc33ff30eb013df5f4a851ee77183f81e47ed2))
+* **registry:** add LemonadePoapV1 support ([46362bf](https://github.com/lemonadesocial/lemonade-metaverse/commit/46362bf811c0010d773d72ad3f65891b2d21fdd3))
+* rely on graceful shutdown ([b5abebb](https://github.com/lemonadesocial/lemonade-metaverse/commit/b5abebba4ccea607083d42ac2915a3733d17726b))
+* **token:** add proper multi-chain pagination and sorting to get tokens ([f8dce0b](https://github.com/lemonadesocial/lemonade-metaverse/commit/f8dce0b7bb4a5d84ae0f2dc2099c551866be9fef))
+* **token:** add registry lookup ([dd75fc7](https://github.com/lemonadesocial/lemonade-metaverse/commit/dd75fc75b04dbcb29c708e312d6277444a36e7e7))
+* upgrade apollo and replace koa by fastify ([248714e](https://github.com/lemonadesocial/lemonade-metaverse/commit/248714e482e875e2264e12896d942e7b2e86665f))
+
+
+### Bug Fixes
+
+* fix where filters not working unless selected ([8537ca7](https://github.com/lemonadesocial/lemonade-metaverse/commit/8537ca752548051a1d4818ec13d682349d524f8a))
+* **order:** fix token filter on orders ([1877128](https://github.com/lemonadesocial/lemonade-metaverse/commit/18771289c15acf68140f9bab974f20b77bcda238))
+
 ## [8.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.2.0...v8.3.0) (2022-05-01)
 
 
