@@ -87,9 +87,10 @@ class _TokensQueryResolver {
     @Arg('creator', () => String, { nullable: true }) creator?: string,
     @Arg('tokenId', () => String, { nullable: true }) tokenId?: string,
     @Arg('owner', () => String, { nullable: true }) owner?: string,
+    @Arg('owner_in', () => [String], { nullable: true }) owner_in?: string[],
   ): Promise<TokenComplex[]> {
     const variables = {
-      where: { id, id_in, contract, creator, tokenId, owner },
+      where: { id, id_in, contract, creator, tokenId, owner, owner_in },
       orderBy: Token_orderBy.createdAt,
       orderDirection: OrderDirection.desc,
       skip,
