@@ -39,8 +39,9 @@
     "prom-client": "^14.0.1",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.20",
+    "sturdy-websocket": "^0.2.1",
     "type-graphql": "^1.1.1",
-    "ws": "^8.6.0"
+    "ws": "^8.7.0"
   },
   "devDependencies": {
     "@types/ioredis": "^4.28.1",
