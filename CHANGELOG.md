@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.5.0...v8.6.0) (2022-06-03)
+
+
+### Features
+
+* **provider:** use reliable websocket implementation ([a6a7066](https://github.com/lemonadesocial/lemonade-metaverse/commit/a6a70661aac33e1214d625c89eb054502e320e87))
+
 ## [8.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.4.0...v8.5.0) (2022-06-03)
 
 
