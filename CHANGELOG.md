@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.4.0...v8.5.0) (2022-06-03)
+
+
+### Features
+
+* **token:** allow listing tokens owned by multiple wallets ([17b048b](https://github.com/lemonadesocial/lemonade-metaverse/commit/17b048b45b260f419db897a26904076c36f0c98c))
+
 ## [8.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.3.0...v8.4.0) (2022-05-26)
 
 
