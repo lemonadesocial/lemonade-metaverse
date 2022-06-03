@@ -33,7 +33,7 @@
     "ioredis": "^4.28.0",
     "lru-cache": "^7.7.1",
     "mongoose": "^6.0.12",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2",
     "pino": "^7.1.0",
     "pino-slack-transport": "^1.1.0",
     "prom-client": "^14.0.1",
@@ -45,19 +45,19 @@
   "devDependencies": {
     "@types/ioredis": "^4.28.1",
     "@types/lru-cache": "^5.1.1",
-    "@types/node-fetch": "^2.5.12",
+    "@types/node-fetch": "^2",
     "@types/source-map-support": "^0.5.4",
     "@types/ws": "^8.5.3",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.6"
   },
   "optionalDependencies": {
     "@graphql-codegen/cli": "^2.2.2",
     "@graphql-codegen/typescript": "^2.3.0",
     "@graphql-codegen/typescript-document-nodes": "^2.2.0",
     "@graphql-codegen/typescript-operations": "^2.2.0",
-    "@typescript-eslint/eslint-plugin": "^5.3.0",
-    "@typescript-eslint/parser": "^5.3.0",
-    "eslint": "^7.32.0",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
+    "eslint": "^8.12.0",
     "standard-version": "^9.3.2",
     "ts-node-dev": "^1.1.8"
   }
