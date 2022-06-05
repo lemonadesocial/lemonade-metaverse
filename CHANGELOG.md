@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.7.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.6.0...v8.7.0) (2022-06-05)
+
+
+### Features
+
+* **token:** add founder ([f12400b](https://github.com/lemonadesocial/lemonade-metaverse/commit/f12400bf0fb351957c7699e81791c1b38235b22e))
+
 ## [8.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.5.0...v8.6.0) (2022-06-03)
 
 
