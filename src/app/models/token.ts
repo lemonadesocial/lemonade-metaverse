@@ -35,7 +35,7 @@ export class Token {
   @prop()
   public createdAt?: Date;
 
-  @Field({ nullable: true, description: 'The creator.' })
+  @Field({ nullable: true, description: 'The creator. The transaction creator.' })
   @prop()
   public creator?: string;
 
@@ -66,6 +66,10 @@ export class Token {
   @Field(() => GraphQLJSONObject, { nullable: true, description: 'The actual metadata.' })
   @prop()
   public metadata?: Record<string, unknown>;
+
+  @Field({ nullable: true, description: 'The founder. The first owner.' })
+  @prop()
+  public founder?: string;
 
   @prop({ type: () => String })
   public order?: string | Order;
