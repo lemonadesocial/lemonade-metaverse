@@ -32,7 +32,7 @@ export class TokenWhereComplex extends TokenWhere {
 class Token extends TokenClass {
   @Directive('@expanded(modelName: "User", foreignField: "wallets")')
   @Field(() => User, { nullable: true })
-  public creatorExpanded?: string;
+  public creatorExpanded?: never;
 
   @Directive('@expanded(localPath: ["metadata", "creators"], modelName: "User", foreignField: "wallets")')
   @Field(() => [User], { nullable: 'itemsAndList' })
