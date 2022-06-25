@@ -316,7 +316,7 @@ async function startNetwork(network: Network) {
 
 export async function start() {
   await enrichQueue.start();
-  await Promise.all(Object.values(networks).map(startNetwork));
+  await Promise.all(networks.map(startNetwork));
 }
 
 async function stopNetwork(network: Network) {
@@ -328,6 +328,6 @@ async function stopNetwork(network: Network) {
 }
 
 export async function stop() {
-  await Promise.all(Object.values(networks).map(stopNetwork));
+  await Promise.all(networks.map(stopNetwork));
   await enrichQueue.stop();
 }

@@ -10,7 +10,7 @@ import type { AnyBulkWriteOperation } from 'mongodb';
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 
 import { fetchRegistry } from '../registry';
-import { networks } from '../network';
+import { networkMap } from '../network';
 
 import { connection } from '../../helpers/bullmq';
 import { erc721MetadataContract, erc2981Contract, raribleRoyaltiesV2 } from '../../helpers/web3';
@@ -77,7 +77,7 @@ const processor: Processor<JobData> = async (job) => {
   const enrichDurationTimer = enrichDurationSeconds.startTimer();
 
   const { token } = job.data;
-  const network = networks[token.network];
+  const network = networkMap[token.network];
 
   assert.ok(network);
 

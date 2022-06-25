@@ -13,7 +13,7 @@ import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { getSort } from '../utils/sort';
 import { getToken, getTokens } from '../../app/services/token';
-import { networks } from '../../app/services/network';
+import { networkMap, networks } from '../../app/services/network';
 
 const findTokens = async (
   { skip, limit, sort, where }: PaginationArgs & { sort?: TokenSort | null; where?: TokenWhereComplex | null },
@@ -72,9 +72,9 @@ class _TokensQueryResolver {
     @Arg('network', () => String, { defaultValue: 'polygon' }) network: string,
     @Arg('id', () => String) id: string,
   ): Promise<TokenDetail | undefined> {
-    assert.ok(networks[network]);
+    assert.ok(networkMap[network]);
 
-    return await getToken(networks[network], id);
+    return await getToken(networkMap[network], id);
   }
 
   @Query(() => [TokenComplex])
@@ -98,12 +98,12 @@ class _TokensQueryResolver {
     };
 
     if (network) {
-      assert.ok(networks[network]);
+      assert.ok(networkMap[network]);
 
-      return await getTokens(networks[network], variables);
+      return await getTokens(networkMap[network], variables);
     }
 
-    const tokens = await Promise.all(Object.values(networks).map((network) =>
+    const tokens = await Promise.all(networks.map((network) =>
       getTokens(network, variables).catch(() => [])
     ));
 

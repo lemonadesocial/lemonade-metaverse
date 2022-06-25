@@ -40,22 +40,21 @@ export class Network extends NetworkBase {
   }
 }
 
-export const networks: Record<string, Network> = {};
+export const networkMap: Record<string, Network> = {};
+export const networks: Network[] = [];
 
-export async function init(): Promise<void> {
+export async function init() {
   const docs = await NetworkModel.find({ active: true }).lean();
 
-  for (const network of docs) {
-    networks[network.name] = new Network(network);
-  }
+  networks.length = docs.length;
+
+  docs.forEach((doc, i) =>
+    networkMap[doc.name] = networks[i] = new Network(doc)
+  );
 }
 
-export async function close(): Promise<void> {
-  const promises: Promise<void>[] = [];
-
-  for (const key in networks) {
-    promises.push(networks[key].close());
-  }
-
-  if (promises.length) await Promise.all(promises);
+export async function close() {
+  await Promise.all(networks.map((network) =>
+    network.close()
+  ));
 }
