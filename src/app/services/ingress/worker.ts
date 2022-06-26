@@ -232,6 +232,7 @@ async function poll(state: State, data: JobData): Promise<JobData> {
 
 async function processor(state: State, { data }: Job<JobData>) {
   const labels = { network: state.network.name };
+
   const ingressDurationTimer = ingressDurationSeconds.startTimer(labels);
 
   const nextData = await poll(state, data);
@@ -249,17 +250,21 @@ async function processor(state: State, { data }: Job<JobData>) {
 
   ingressDurationTimer();
 
-  if (nextData.meta) {
-    if (nextData.meta.block !== data.meta?.block) {
-      const latestBlock = await state.network.provider().getBlockNumber();
-      const block = await state.network.provider().getBlock(nextData.meta.block);
-
-      watchdogIndexerDelaySeconds.labels(labels).set((now - block.timestamp * 1000) / 1000);
-      watchdogIndexerDelayBlocks.labels(labels).set(latestBlock - block.number);
-    }
+  (async () => {
+    if (!nextData.meta) return;
 
     watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
-  }
+
+    if (nextData.meta.block === data.meta?.block) return;
+
+    const latestBlock = await state.network.provider().getBlockNumber();
+    const block = await state.network.provider().getBlock(nextData.meta.block);
+
+    watchdogIndexerDelaySeconds.labels(labels).set((now - block.timestamp * 1000) / 1000);
+    watchdogIndexerDelayBlocks.labels(labels).set(latestBlock - block.number);
+  })().catch((err) =>
+    logger.error(err, 'failed to process ingress meta')
+  );
 }
 
 function timing({ timestamp }: Job<JobData>) {
