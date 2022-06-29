@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.8.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.7.0...v8.8.0) (2022-06-29)
+
+
+### Features
+
+* **provider:** use reliable websocket implementation ([e9519b6](https://github.com/lemonadesocial/lemonade-metaverse/commit/e9519b6ac1ab3881db44300ca59637236a0116fe))
+
+
+### Bug Fixes
+
+* **ingress:** don't fail ingress job when processing meta fails ([9af0d04](https://github.com/lemonadesocial/lemonade-metaverse/commit/9af0d0468c2a59dbb4c7f679a6d984aba6cdbcc5))
+
 ## [8.7.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.6.0...v8.7.0) (2022-06-05)
 
 
