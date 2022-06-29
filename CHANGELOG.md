@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.8.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.8.0...v8.8.1) (2022-06-29)
+
+
+### Bug Fixes
+
+* **token:** fix recursive exclude null of local data like metadata ([92be757](https://github.com/lemonadesocial/lemonade-metaverse/commit/92be7574ee0b87345e6b4e7f4197f5940e73a7ee))
+
 ## [8.8.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.7.0...v8.8.0) (2022-06-29)
 
 
