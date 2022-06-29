@@ -115,7 +115,7 @@ async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
 
   for (const item of items) {
     const doc = map[item.id];
-    const token = createToken(network, { ...item, ...doc });
+    const token = { ...createToken(network, item), ...doc };
 
     tokens.push(token);
     if (!doc) missing.push(token);
