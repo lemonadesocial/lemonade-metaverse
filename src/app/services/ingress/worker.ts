@@ -260,8 +260,8 @@ async function processor(state: State, { data }: Job<JobData>) {
     const latestBlock = await state.network.provider().getBlockNumber();
     const block = await state.network.provider().getBlock(nextData.meta.block);
 
-    watchdogIndexerDelaySeconds.labels(labels).set((now - block.timestamp * 1000) / 1000);
-    watchdogIndexerDelayBlocks.labels(labels).set(latestBlock - block.number);
+    watchdogIndexerDelaySeconds.labels(labels).set(block ? (now - block.timestamp * 1000) / 1000 : 0);
+    watchdogIndexerDelayBlocks.labels(labels).set(block ? latestBlock - block.number : 0);
   })().catch((err) =>
     logger.error(err, 'failed to process ingress meta')
   );
