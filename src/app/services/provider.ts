@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import { URL } from 'url';
 
 const WEBSOCKET_PING_INTERVAL = 60000;
 const WEBSOCKET_PONG_TIMEOUT = 5000;
@@ -9,17 +8,11 @@ export interface Provider extends ethers.providers.BaseProvider {
 }
 
 export function createProvider(providerUrl: string): Provider {
-  const url = new URL(providerUrl);
-
-  switch (url.protocol) {
-    case 'alchemy:':
-      return new ethers.providers.AlchemyProvider(url.hostname, url.pathname.substring(1));
-    case 'ws:':
-    case 'wss:':
-      return new WebSocketProvider(providerUrl);
-    default:
-      return new ethers.providers.JsonRpcProvider(providerUrl);
+  if (providerUrl.startsWith('ws')) {
+    return new WebSocketProvider(providerUrl);
   }
+
+  return new ethers.providers.JsonRpcProvider(providerUrl);
 }
 
 const WebSocketProviderClass = (): new () => ethers.providers.WebSocketProvider => (class {} as never);
