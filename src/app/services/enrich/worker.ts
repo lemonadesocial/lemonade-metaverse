@@ -24,7 +24,6 @@ import type { Order } from '../../models/order';
 import { BufferQueue } from '../../utils/buffer-queue';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 
-const FETCH_HEADERS_USER_AGENT = 'Lemonade Metaverse';
 const FETCH_TIMEOUT = 10000;
 const WORKER_CONCURRENCY = 10;
 const WRITER_TIMEOUT = 1000;
@@ -35,7 +34,6 @@ const fetchAgent: Record<string, http.Agent> = {
 };
 const fetchInit: RequestInit = {
   agent: ({ protocol }) => fetchAgent[protocol],
-  headers: { 'User-Agent': FETCH_HEADERS_USER_AGENT },
   timeout: FETCH_TIMEOUT,
 };
 
