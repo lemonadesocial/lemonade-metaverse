@@ -28,15 +28,6 @@ const FETCH_TIMEOUT = 10000;
 const WORKER_CONCURRENCY = 10;
 const WRITER_TIMEOUT = 1000;
 
-const fetchAgent: Record<string, http.Agent> = {
-  'http:': new http.Agent({ keepAlive: true }),
-  'https:': new https.Agent({ keepAlive: true }),
-};
-const fetchInit: RequestInit = {
-  agent: ({ protocol }) => fetchAgent[protocol],
-  timeout: FETCH_TIMEOUT,
-};
-
 const writer = new BufferQueue<AnyBulkWriteOperation<Token>>(
   (operations) => TokenModel.bulkWrite(operations, { ordered: false }).then(),
   WRITER_TIMEOUT
@@ -103,7 +94,7 @@ const processor: Processor<JobData> = async (job) => {
           break; }
         case 'http:':
         case 'https:': {
-          const response = await fetch(href, fetchInit);
+          const response = await fetch(href, { timeout: FETCH_TIMEOUT });
 
           assert.ok(response.ok, response.statusText);
 
