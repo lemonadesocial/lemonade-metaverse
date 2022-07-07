@@ -4,6 +4,7 @@ import fastify, { FastifyPluginCallback } from 'fastify'
 import { adminPort } from '../../config';
 
 export const app = fastify({
+  keepAliveTimeout: 70000,
   logger: true,
   trustProxy: true,
 });
