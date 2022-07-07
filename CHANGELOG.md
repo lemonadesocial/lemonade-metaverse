@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.9.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.8.1...v8.9.0) (2022-07-07)
+
+
+### Features
+
+* add keepalive timeout ([3b6192f](https://github.com/lemonadesocial/lemonade-metaverse/commit/3b6192fb17c54a83d8dd4a341202ae06b9bfad07))
+* **enrich:** remove keepalive agent ([b9b44e6](https://github.com/lemonadesocial/lemonade-metaverse/commit/b9b44e64203e03bc0b054fec041816426a378a81))
+* **enrich:** remove user agent header ([be86ad3](https://github.com/lemonadesocial/lemonade-metaverse/commit/be86ad30782c8784fed67c14d2b09bcf72699803))
+
+
+### Bug Fixes
+
+* **ingress:** handle when get meta block returns null ([5008a9b](https://github.com/lemonadesocial/lemonade-metaverse/commit/5008a9b7233ef99f93ac83b486e447a7d6712c6b))
+
 ### [8.8.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.8.0...v8.8.1) (2022-06-29)
 
 
