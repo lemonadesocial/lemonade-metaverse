@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.10.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.9.0...v8.10.0) (2022-07-08)
+
+
+### Features
+
+* **provider:** remove alchemy schema in favor of web socket provider ([4332e98](https://github.com/lemonadesocial/lemonade-metaverse/commit/4332e98b3675a2c0e022c4c3bdebad78786604d1))
+
 ## [8.9.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.8.1...v8.9.0) (2022-07-07)
 
 
