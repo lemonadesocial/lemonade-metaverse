@@ -1,5 +1,7 @@
 import { ethers } from 'ethers';
 
+import { logger } from '../helpers/pino';
+
 const WEBSOCKET_PING_INTERVAL = 60000;
 const WEBSOCKET_PONG_TIMEOUT = 5000;
 
@@ -51,6 +53,10 @@ class WebSocketProvider extends WebSocketProviderClass() {
         provider._events.push(event);
         provider._startEvent(event);
       });
+    });
+
+    provider._websocket.on('error', (err: Error) => {
+      logger.error({ err, url: this.providerUrl }, 'WebSocket error: %s', err.message);
     });
 
     provider._websocket.on('pong', () => {
