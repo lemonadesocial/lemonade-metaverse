@@ -2,9 +2,7 @@ import { Counter, Histogram } from 'prom-client';
 import { ethers } from 'ethers';
 import { Job, Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
-import * as http from 'http';
-import * as https from 'https';
-import fetch, { RequestInit } from 'node-fetch';
+import fetch from 'node-fetch';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
