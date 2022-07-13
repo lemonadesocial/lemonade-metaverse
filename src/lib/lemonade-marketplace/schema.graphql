@@ -53,7 +53,9 @@ query Ingress(
   tokens(
     orderBy: createdAt,
     orderDirection: asc,
-    where: $tokens_where
+    where: $tokens_where,
+    skip: $tokens_skip,
+    first: $tokens_first
   ) @include(if: $tokens_include) {
     ...tokenFields
   }

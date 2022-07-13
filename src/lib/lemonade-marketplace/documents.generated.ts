@@ -48,7 +48,13 @@ export const Ingress = gql`
     taker
     paidAmount
   }
-  tokens(orderBy: createdAt, orderDirection: asc, where: $tokens_where) @include(if: $tokens_include) {
+  tokens(
+    orderBy: createdAt
+    orderDirection: asc
+    where: $tokens_where
+    skip: $tokens_skip
+    first: $tokens_first
+  ) @include(if: $tokens_include) {
     ...tokenFields
   }
 }
