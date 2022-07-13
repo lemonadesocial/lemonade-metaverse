@@ -20,12 +20,15 @@ const ENRICH_TIMEOUT = 10000;
 
 const emitter = new EventEmitter();
 
-function onMessage(token: Token) {
-  emitter.emit('token', token);
-}
+pubSub.subscribe<Token>(
+  Trigger.TokenUpdated,
+  (token) => emitter.emit('message', Trigger.TokenUpdated, token)
+);
 
-pubSub.subscribe<Token>(Trigger.EnrichFailed, onMessage);
-pubSub.subscribe<Token>(Trigger.TokenUpdated, onMessage);
+pubSub.subscribe<Token>(
+  Trigger.EnrichFailed,
+  (token) => emitter.emit('message', Trigger.EnrichFailed, token)
+);
 
 type RequiredKeys<T> = { [K in keyof T]-?: Record<string, unknown> extends Pick<T, K> ? never : K }[keyof T];
 type GraphQLToken = Pick<GeneratedToken, RequiredKeys<Omit<Token, 'network'>>> & Partial<Pick<GeneratedToken, 'createdAt'>>;
@@ -46,11 +49,13 @@ async function waitForEnrich(tokens: Token[]) {
   try {
     await Promise.race([
       new Promise<void>((approve) => (async () => {
-        listener = (token: Token) => {
+        listener = (trigger: Trigger, token: Token) => {
           const value = map.get(token.id);
 
           if (value) {
-            Object.assign(value, token);
+            if (trigger === Trigger.TokenUpdated) {
+              Object.assign(value, token);
+            }
 
             if (map.delete(token.id) && !map.size) {
               approve();
@@ -58,7 +63,7 @@ async function waitForEnrich(tokens: Token[]) {
           }
         };
 
-        emitter.on('token', listener);
+        emitter.on('message', listener);
 
         await enqueue(...tokens.map((token) => ({
           token,
@@ -74,7 +79,7 @@ async function waitForEnrich(tokens: Token[]) {
     }
 
     if (listener) {
-      emitter.removeListener('token', listener);
+      emitter.removeListener('message', listener);
     }
   }
 }
