@@ -79,7 +79,7 @@ const processor: Processor<JobData> = async (job) => {
 
   assert.ok(network);
 
-  const registry = await fetchRegistry(network, token.contract);
+  const registry = await fetchRegistry(network, token.contract, token.tokenId);
   const provider = network.provider();
 
   assert.ok(registry.isERC721);

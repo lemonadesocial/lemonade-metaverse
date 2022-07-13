@@ -16,6 +16,9 @@ export class Network {
 
   @prop()
   public ingressWhere?: any;
+
+  @prop()
+  public uniqueCollectionPrefix?: string;
 }
 
 export const NetworkModel = getModelForClass(Network);
