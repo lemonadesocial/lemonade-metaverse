@@ -9,7 +9,7 @@ export const tokenFields = gql`
 }
     `;
 export const Ingress = gql`
-    query Ingress($orders_include: Boolean!, $orders_lastBlock_gt: BigInt = -1, $orders_skip: Int, $orders_first: Int, $tokens_include: Boolean!, $tokens_contract_in: [Bytes!], $tokens_createdAt_gt: BigInt = -1, $tokens_skip: Int, $tokens_first: Int) {
+    query Ingress($orders_include: Boolean!, $orders_where: Order_filter, $orders_skip: Int, $orders_first: Int, $tokens_include: Boolean!, $tokens_where: Token_filter, $tokens_skip: Int, $tokens_first: Int) {
   _meta {
     block {
       number
@@ -19,7 +19,7 @@ export const Ingress = gql`
   orders(
     orderBy: lastBlock
     orderDirection: asc
-    where: {lastBlock_gt: $orders_lastBlock_gt}
+    where: $orders_where
     skip: $orders_skip
     first: $orders_first
   ) @include(if: $orders_include) {
@@ -48,11 +48,7 @@ export const Ingress = gql`
     taker
     paidAmount
   }
-  tokens(
-    orderBy: createdAt
-    orderDirection: asc
-    where: {contract_in: $tokens_contract_in, createdAt_gt: $tokens_createdAt_gt}
-  ) @include(if: $tokens_include) {
+  tokens(orderBy: createdAt, orderDirection: asc, where: $tokens_where) @include(if: $tokens_include) {
     ...tokenFields
   }
 }

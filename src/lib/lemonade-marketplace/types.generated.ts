@@ -58,6 +58,7 @@ export type Bid_filter = {
   id_not?: Maybe<Scalars['ID']>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
   order?: Maybe<Scalars['String']>;
+  order_?: Maybe<Order_filter>;
   order_contains?: Maybe<Scalars['String']>;
   order_contains_nocase?: Maybe<Scalars['String']>;
   order_ends_with?: Maybe<Scalars['String']>;
@@ -152,6 +153,7 @@ export type Currency_filter = {
   name_not_starts_with_nocase?: Maybe<Scalars['String']>;
   name_starts_with?: Maybe<Scalars['String']>;
   name_starts_with_nocase?: Maybe<Scalars['String']>;
+  orders_?: Maybe<Order_filter>;
   symbol?: Maybe<Scalars['String']>;
   symbol_contains?: Maybe<Scalars['String']>;
   symbol_contains_nocase?: Maybe<Scalars['String']>;
@@ -243,6 +245,7 @@ export type Order_filter = {
   bidder_not?: Maybe<Scalars['Bytes']>;
   bidder_not_contains?: Maybe<Scalars['Bytes']>;
   bidder_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  bids_?: Maybe<Bid_filter>;
   contract?: Maybe<Scalars['Bytes']>;
   contract_contains?: Maybe<Scalars['Bytes']>;
   contract_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -258,6 +261,7 @@ export type Order_filter = {
   createdAt_not?: Maybe<Scalars['BigInt']>;
   createdAt_not_in?: Maybe<Array<Scalars['BigInt']>>;
   currency?: Maybe<Scalars['String']>;
+  currency_?: Maybe<Currency_filter>;
   currency_contains?: Maybe<Scalars['String']>;
   currency_contains_nocase?: Maybe<Scalars['String']>;
   currency_ends_with?: Maybe<Scalars['String']>;
@@ -354,6 +358,7 @@ export type Order_filter = {
   taker_not_contains?: Maybe<Scalars['Bytes']>;
   taker_not_in?: Maybe<Array<Scalars['Bytes']>>;
   token?: Maybe<Scalars['String']>;
+  token_?: Maybe<Token_filter>;
   token_contains?: Maybe<Scalars['String']>;
   token_contains_nocase?: Maybe<Scalars['String']>;
   token_ends_with?: Maybe<Scalars['String']>;
@@ -581,6 +586,7 @@ export type Registry_filter = {
   isERC721_in?: Maybe<Array<Scalars['Boolean']>>;
   isERC721_not?: Maybe<Scalars['Boolean']>;
   isERC721_not_in?: Maybe<Array<Scalars['Boolean']>>;
+  tokens_?: Maybe<Token_filter>;
 };
 
 export enum Registry_orderBy {
@@ -782,6 +788,7 @@ export type Token_filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  orders_?: Maybe<Order_filter>;
   owner?: Maybe<Scalars['Bytes']>;
   owner_contains?: Maybe<Scalars['Bytes']>;
   owner_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -789,6 +796,7 @@ export type Token_filter = {
   owner_not_contains?: Maybe<Scalars['Bytes']>;
   owner_not_in?: Maybe<Array<Scalars['Bytes']>>;
   registry?: Maybe<Scalars['String']>;
+  registry_?: Maybe<Registry_filter>;
   registry_contains?: Maybe<Scalars['String']>;
   registry_contains_nocase?: Maybe<Scalars['String']>;
   registry_ends_with?: Maybe<Scalars['String']>;
@@ -816,6 +824,7 @@ export type Token_filter = {
   tokenId_lte?: Maybe<Scalars['BigInt']>;
   tokenId_not?: Maybe<Scalars['BigInt']>;
   tokenId_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  transfers_?: Maybe<Transfer_filter>;
 };
 
 export enum Token_orderBy {
@@ -872,6 +881,7 @@ export type Transfer_filter = {
   to_not_contains?: Maybe<Scalars['Bytes']>;
   to_not_in?: Maybe<Array<Scalars['Bytes']>>;
   token?: Maybe<Scalars['String']>;
+  token_?: Maybe<Token_filter>;
   token_contains?: Maybe<Scalars['String']>;
   token_contains_nocase?: Maybe<Scalars['String']>;
   token_ends_with?: Maybe<Scalars['String']>;
@@ -944,12 +954,11 @@ export type tokenFieldsFragment = { __typename?: 'Token', id: string, contract: 
 
 export type IngressQueryVariables = Exact<{
   orders_include: Scalars['Boolean'];
-  orders_lastBlock_gt?: Maybe<Scalars['BigInt']>;
+  orders_where?: Maybe<Order_filter>;
   orders_skip?: Maybe<Scalars['Int']>;
   orders_first?: Maybe<Scalars['Int']>;
   tokens_include: Scalars['Boolean'];
-  tokens_contract_in?: Maybe<Array<Scalars['Bytes']> | Scalars['Bytes']>;
-  tokens_createdAt_gt?: Maybe<Scalars['BigInt']>;
+  tokens_where?: Maybe<Token_filter>;
   tokens_skip?: Maybe<Scalars['Int']>;
   tokens_first?: Maybe<Scalars['Int']>;
 }>;

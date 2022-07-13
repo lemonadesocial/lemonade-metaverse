@@ -1,5 +1,5 @@
 overwrite: true
-schema: ${INDEXER_URL:https://api.thegraph.com/subgraphs/name/lemonadesocial/lemonade-marketplace-testnet}
+schema: ${INDEXER_URL:https://api.thegraph.com/subgraphs/name/lemonadesocial/lemonade-marketplace-matic}
 config:
   scalars:
     BigInt: string

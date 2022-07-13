@@ -1,5 +1,6 @@
-import { getModelForClass, prop } from '@typegoose/typegoose';
+import { getModelForClass, modelOptions, prop, Severity } from '@typegoose/typegoose';
 
+@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Network {
   @prop({ required: true })
   public active!: boolean;
@@ -13,8 +14,8 @@ export class Network {
   @prop({ required: true })
   public providerUrl!: string;
 
-  @prop({ type: String })
-  public ingressContracts?: string[];
+  @prop()
+  public ingressWhere?: any;
 }
 
 export const NetworkModel = getModelForClass(Network);
