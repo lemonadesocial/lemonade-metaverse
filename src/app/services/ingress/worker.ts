@@ -304,7 +304,7 @@ async function startNetwork(network: Network) {
   );
   state.worker.on('failed', function onFailed(job: Job<JobData>, err) {
     ingressesTotal.inc({ network: state.network.name, status: 'fail' });
-    logger.error({ ...timing(job), err }, 'failed ingress');
+    logger.error({ network: state.network.name, ...timing(job), err }, 'failed ingress');
   });
   state.worker.on('completed', function onCompleted(job: Job<JobData>) {
     ingressesTotal.inc({ network: state.network.name, status: 'success' });
