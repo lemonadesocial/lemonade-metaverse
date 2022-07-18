@@ -77,9 +77,9 @@ export class Order {
   @prop({ required: true })
   public maker!: string;
 
-  @Field(() => OrderCurrency, { description: 'The ERC20 token the maker wants to be paid in.' })
-  @prop({ required: true, _id: false })
-  public currency!: OrderCurrency;
+  @Field(() => OrderCurrency, { nullable: true, description: 'The ERC20 token the maker wants to be paid in.' })
+  @prop({ _id: false })
+  public currency?: OrderCurrency;
 
   @Field({ description: 'The (minimum) price or amount of ERC20 tokens the maker wants to be paid.' })
   @prop({ required: true })

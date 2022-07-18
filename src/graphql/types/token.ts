@@ -91,8 +91,8 @@ class TokenDetailOrder {
   @Field(() => User, { nullable: true })
   public makerExpanded?: never;
 
-  @Field()
-  public currency!: OrderCurrency;
+  @Field({ nullable: true })
+  public currency?: OrderCurrency;
 
   @Field()
   public price!: string;
