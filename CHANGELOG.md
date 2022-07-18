@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.11.0...v9.0.0) (2022-07-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ingress:** make ingress where filter configurable
+
+### Features
+
+* **ingress:** add network name to failed ingress log ([94e9b9e](https://github.com/lemonadesocial/lemonade-metaverse/commit/94e9b9e7930da6c25899bc1e179a63d9b45c2a9c))
+* **ingress:** make ingress where filter configurable ([6224a55](https://github.com/lemonadesocial/lemonade-metaverse/commit/6224a55dbfdb936ff1a27ee517fb731ee450c01d))
+* **token:** make currency optional ([e8aa74e](https://github.com/lemonadesocial/lemonade-metaverse/commit/e8aa74e7db850b34c9895d5c5c7cd74a7df65a7f))
+
+
+### Bug Fixes
+
+* **ingress:** fix tokens pagination parameters missing ([22a3de7](https://github.com/lemonadesocial/lemonade-metaverse/commit/22a3de7c41327a2864f1d5d3037973ae462292bb))
+* **token:** fix raw token being merged when enrich fails ([c4acea1](https://github.com/lemonadesocial/lemonade-metaverse/commit/c4acea12f070bcbcf0d67935b1000d213659f52d))
+
 ## [8.11.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.10.0...v8.11.0) (2022-07-12)
 
 
