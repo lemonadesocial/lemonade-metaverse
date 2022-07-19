@@ -51,8 +51,6 @@ export async function enqueue(
       name: '*',
       data: { token },
       opts: {
-        attempts: 10,
-        backoff: 1000,
         jobId,
         removeOnComplete: true,
         removeOnFail: true,
