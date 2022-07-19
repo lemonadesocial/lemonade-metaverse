@@ -2,7 +2,9 @@ import { Counter, Histogram } from 'prom-client';
 import { ethers } from 'ethers';
 import { Job, Processor, QueueScheduler, Worker } from 'bullmq';
 import * as assert from 'assert';
-import fetch from 'node-fetch';
+import * as http from 'http';
+import * as https from 'https';
+import fetch, { RequestInit } from 'node-fetch';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
@@ -25,6 +27,15 @@ import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 const FETCH_TIMEOUT = 10000;
 const WORKER_CONCURRENCY = 10;
 const WRITER_TIMEOUT = 1000;
+
+const fetchAgent: Record<string, http.Agent> = {
+  'http:': new http.Agent({ keepAlive: true }),
+  'https:': new https.Agent({ keepAlive: true }),
+};
+const fetchInit: RequestInit = {
+  agent: ({ protocol }) => fetchAgent[protocol],
+  timeout: FETCH_TIMEOUT,
+};
 
 const writer = new BufferQueue<AnyBulkWriteOperation<Token>>(
   (operations) => TokenModel.bulkWrite(operations, { ordered: false }).then(),
@@ -92,7 +103,7 @@ const processor: Processor<JobData> = async (job) => {
           break; }
         case 'http:':
         case 'https:': {
-          const response = await fetch(href, { timeout: FETCH_TIMEOUT });
+          const response = await fetch(href, fetchInit);
 
           assert.ok(response.ok, response.statusText);
 
