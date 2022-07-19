@@ -7,7 +7,7 @@ import { erc165Contract, ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC7
 
 import { Registry, RegistryModel } from '../models/registry';
 
-const lru = new LRU<string, Registry>({ max: 1000 });
+const lru = new LRU<string, Registry>({ max: 100 });
 
 async function supportsInterface(contract: ethers.Contract, interfaceId: string) {
   try {
