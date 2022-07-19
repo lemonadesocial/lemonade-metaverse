@@ -25,7 +25,7 @@ import { BufferQueue } from '../../utils/buffer-queue';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 
 const FETCH_TIMEOUT = 10000;
-const WORKER_CONCURRENCY = 10;
+const WORKER_CONCURRENCY = 25;
 const WRITER_TIMEOUT = 1000;
 
 const fetchAgent: Record<string, http.Agent> = {
