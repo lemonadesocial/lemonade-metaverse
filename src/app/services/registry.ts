@@ -51,13 +51,18 @@ export async function fetchRegistry(network: Network, address: string): Promise<
   const key = network.name + address;
   const query = { network: network.name, id: address };
 
-  let registry = lru.get(key) || await RegistryModel.findOne(query).lean<Registry | null>();
+  let registry = lru.get(key) || null;
 
   if (!registry) {
-    registry = await createRegistry(network, address);
+    registry = await RegistryModel.findOne(query).lean();
+
+    if (!registry) {
+      registry = await createRegistry(network, address);
+
+      await RegistryModel.updateOne(query, registry, { upsert: true });
+    }
 
     lru.set(key, registry);
-    await RegistryModel.updateOne(query, registry, { upsert: true });
   }
 
   return registry;
