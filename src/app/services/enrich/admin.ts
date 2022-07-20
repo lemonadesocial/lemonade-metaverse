@@ -5,9 +5,13 @@ import * as queue from './queue';
 import { TokenModel } from '../../models/token';
 
 const handler: RouteHandlerMethod = async (request, reply) => {
-  const token = new TokenModel(request.body as Record<string, unknown>);
+  const doc = new TokenModel(request.body as Record<string, unknown>);
 
-  await token.validate();
+  await doc.validate();
+
+  const token = doc.toObject();
+
+  delete token._id;
 
   await queue.enqueue({ token });
 
