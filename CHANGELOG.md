@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v9.0.0...v9.1.0) (2022-07-20)
+
+
+### Features
+
+* add support for unique collections ([d399ea1](https://github.com/lemonadesocial/lemonade-metaverse/commit/d399ea1cd2e628a37ad8c309e422de6c134fa723))
+* **enrich:** don't retry enrich on error ([19a712a](https://github.com/lemonadesocial/lemonade-metaverse/commit/19a712acd5a87121c3b42b075e66fc82e21d627b))
+* **enrich:** increase worker concurrency ([810b13f](https://github.com/lemonadesocial/lemonade-metaverse/commit/810b13f71b07bbcd849f9c80ad4e18f6beb7b9a2))
+* **registry:** decrease cache size ([e1ed197](https://github.com/lemonadesocial/lemonade-metaverse/commit/e1ed19786d7e8d02a7ee9b7e8a64ce921e63d858))
+
+
+### Bug Fixes
+
+* **enrich:** fix _id field in update when enqueue via admin ([9c88f59](https://github.com/lemonadesocial/lemonade-metaverse/commit/9c88f59b4f56f8107f6f39e72155cc3d6df69567))
+* **provider:** fix wrong this reference for proxied functions ([eea2738](https://github.com/lemonadesocial/lemonade-metaverse/commit/eea2738a06f55d83225b2b983a29c18c2de0e228))
+* **registry:** fix registries fetched from database not being cached ([3752178](https://github.com/lemonadesocial/lemonade-metaverse/commit/375217847be84306847b695274af5d13912697b1))
+
 ## [9.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v8.11.0...v9.0.0) (2022-07-18)
 
 
