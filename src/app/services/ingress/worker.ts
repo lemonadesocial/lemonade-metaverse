@@ -33,6 +33,8 @@ interface JobData {
 interface State {
   name: string;
   network: Network;
+  block: number;
+  blockListener: (block: number) => void;
   queue: Queue;
   queueScheduler: QueueScheduler;
   worker?: Worker<JobData>;
@@ -252,15 +254,15 @@ async function processor(state: State, { data }: Job<JobData>) {
   (async () => {
     if (!nextData.meta) return;
 
+    watchdogIndexerDelayBlocks.labels(labels).set(state.block - nextData.meta.block);
+
+    if (data.meta?.block !== nextData.meta.block) {
+      const block = await state.network.provider().getBlock(nextData.meta.block);
+
+      if (block) watchdogIndexerDelaySeconds.labels(labels).set((now - block.timestamp * 1000) / 1000);
+    }
+
     watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
-
-    if (nextData.meta.block === data.meta?.block) return;
-
-    const latestBlock = await state.network.provider().getBlockNumber();
-    const block = await state.network.provider().getBlock(nextData.meta.block);
-
-    watchdogIndexerDelaySeconds.labels(labels).set(block ? (now - block.timestamp * 1000) / 1000 : 0);
-    watchdogIndexerDelayBlocks.labels(labels).set(block ? latestBlock - block.number : 0);
   })().catch((err) =>
     logger.error(err, 'failed to process ingress meta')
   );
@@ -278,9 +280,14 @@ async function startNetwork(network: Network) {
   const state: State = states[network.name] = {
     name,
     network,
+    block: await network.provider().getBlockNumber(),
+    blockListener: (block) => state.block = block,
     queue: new Queue<JobData>(name, { connection }),
     queueScheduler: new QueueScheduler(name, { connection }),
   };
+
+  network.provider().on('block', state.blockListener);
+
   await Promise.all([
     state.queue.waitUntilReady(),
     state.queueScheduler.waitUntilReady(),
@@ -329,6 +336,8 @@ async function stopNetwork(network: Network) {
   if (state.worker) await state.worker.close();
   await state.queue.close();
   await state.queueScheduler.close();
+
+  network.provider().on('blockNumber', state.blockListener);
 }
 
 export async function stop() {
