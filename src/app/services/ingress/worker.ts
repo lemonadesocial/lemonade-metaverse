@@ -26,7 +26,7 @@ const POLL_FIRST = 1000;
 
 interface JobData {
   meta?: { block: number; hasIndexingErrors: boolean };
-  orders_lastBlock_gt?: string;
+  persist?: boolean;
   tokens_createdAt_gt?: string;
 }
 
@@ -180,8 +180,8 @@ async function process(state: State, data: IngressQuery) {
 }
 
 async function poll(state: State, data: JobData): Promise<JobData> {
-  const { orders_lastBlock_gt, tokens_createdAt_gt } = data;
-  const nextData = { ...data };
+  const { meta, tokens_createdAt_gt } = data;
+  const nextData = { ...data, persist: false };
 
   let block: Block_height | undefined;
   let orders_skip = 0;
@@ -194,7 +194,7 @@ async function poll(state: State, data: JobData): Promise<JobData> {
       variables: {
         block,
         orders_include: orders_first > 0,
-        orders_where: { lastBlock_gt: orders_lastBlock_gt },
+        orders_where: { _change_block: { number_gte: meta ? meta.block + 1 : 0 } },
         orders_skip,
         orders_first,
         tokens_include: tokens_first > 0,
@@ -222,7 +222,6 @@ async function poll(state: State, data: JobData): Promise<JobData> {
       await process(state, data);
 
       if (orders_length) {
-        nextData.orders_lastBlock_gt = data.orders![orders_length - 1].lastBlock;
         orders_skip += orders_length;
       }
 
@@ -230,6 +229,8 @@ async function poll(state: State, data: JobData): Promise<JobData> {
         nextData.tokens_createdAt_gt = data.tokens![tokens_length - 1].createdAt!;
         tokens_skip += tokens_length;
       }
+
+      nextData.persist = true;
     }
 
     if (orders_length < orders_first) orders_first = 0;
@@ -248,7 +249,7 @@ async function processor(state: State, { data }: Job<JobData>) {
   const now = Date.now();
 
   await Promise.all([
-    (data.orders_lastBlock_gt !== nextData.orders_lastBlock_gt || data.tokens_createdAt_gt !== nextData.tokens_createdAt_gt) &&
+    nextData.persist &&
       StateModel.updateOne(
         { key: state.name },
         { $set: { value: nextData }, $inc: { __v: 1 } },
