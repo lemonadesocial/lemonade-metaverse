@@ -190,7 +190,7 @@ export type Order = {
   bids: Array<Bid>;
   contract: Scalars['Bytes'];
   createdAt: Scalars['BigInt'];
-  currency: Currency;
+  currency?: Maybe<Currency>;
   id: Scalars['ID'];
   kind: OrderKind;
   lastBlock: Scalars['BigInt'];
@@ -953,6 +953,7 @@ export enum _SubgraphErrorPolicy_ {
 export type tokenFieldsFragment = { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string };
 
 export type IngressQueryVariables = Exact<{
+  block?: Maybe<Block_height>;
   orders_include: Scalars['Boolean'];
   orders_where?: Maybe<Order_filter>;
   orders_skip?: Maybe<Scalars['Int']>;
@@ -964,7 +965,7 @@ export type IngressQueryVariables = Exact<{
 }>;
 
 
-export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, updatedAt?: string | null | undefined, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
+export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, updatedAt?: string | null | undefined, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency?: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined } | null | undefined, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;
@@ -982,4 +983,4 @@ export type GetTokenQueryVariables = Exact<{
 }>;
 
 
-export type GetTokenQuery = { __typename?: 'Query', token?: { __typename?: 'Token', owner?: string | null | undefined, id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, orders: Array<{ __typename?: 'Order', createdAt: string, transaction: string, updatedAt?: string | null | undefined, updatedTransaction?: string | null | undefined, maker: string, price: string, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined }, bids: Array<{ __typename?: 'Bid', createdAt: string, transaction: string, bidder: string, bidAmount: string }> }>, transfers: Array<{ __typename?: 'Transfer', createdAt: string, transaction: string, from: string, to: string }> } | null | undefined };
+export type GetTokenQuery = { __typename?: 'Query', token?: { __typename?: 'Token', owner?: string | null | undefined, id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string, orders: Array<{ __typename?: 'Order', createdAt: string, transaction: string, updatedAt?: string | null | undefined, updatedTransaction?: string | null | undefined, maker: string, price: string, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency?: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined } | null | undefined, bids: Array<{ __typename?: 'Bid', createdAt: string, transaction: string, bidder: string, bidAmount: string }> }>, transfers: Array<{ __typename?: 'Transfer', createdAt: string, transaction: string, from: string, to: string }> } | null | undefined };

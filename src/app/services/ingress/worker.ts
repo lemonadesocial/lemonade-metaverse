@@ -19,7 +19,7 @@ import { getDate } from '../../utils/date';
 import { getParsedUrl, getWebUrl } from '../../utils/url';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
-import { IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
+import { Block_height, IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
 
 const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
@@ -183,6 +183,7 @@ async function poll(state: State, data: JobData): Promise<JobData> {
   const { orders_lastBlock_gt, tokens_createdAt_gt } = data;
   const nextData = { ...data };
 
+  let block: Block_height | undefined;
   let orders_skip = 0;
   let orders_first = POLL_FIRST;
   let tokens_skip = 0;
@@ -191,6 +192,7 @@ async function poll(state: State, data: JobData): Promise<JobData> {
     const { data } = await state.network.indexer().query<IngressQuery, IngressQueryVariables>({
       query: Ingress,
       variables: {
+        block,
         orders_include: orders_first > 0,
         orders_where: { lastBlock_gt: orders_lastBlock_gt },
         orders_skip,
@@ -202,10 +204,16 @@ async function poll(state: State, data: JobData): Promise<JobData> {
       },
     });
 
-    if (data._meta) nextData.meta = {
-      block: data._meta.block.number,
-      hasIndexingErrors: data._meta.hasIndexingErrors,
-    };
+    if (data._meta) {
+      nextData.meta = {
+        block: data._meta.block.number,
+        hasIndexingErrors: data._meta.hasIndexingErrors,
+      };
+
+      if (!block) {
+        block = { number: data._meta.block.number };
+      }
+    }
 
     const orders_length = data.orders?.length || 0;
     const tokens_length = data.tokens?.length || 0;
