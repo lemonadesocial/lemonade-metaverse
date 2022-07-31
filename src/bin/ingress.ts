@@ -24,12 +24,10 @@ async function shutdown() {
   try {
     await ingress.stop();
 
+    await admin.stop();
+    await network.close();
+    await db.disconnect();
     redis.disconnect();
-    await Promise.all([
-      admin.stop(),
-      db.disconnect(),
-      network.close(),
-    ]);
   } catch (err: any) {
     logger.fatal(err);
     process.exit(1);
@@ -40,9 +38,9 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 async function main() {
-  await admin.start();
   await db.connect();
   await network.init();
+  await admin.start();
 
   await ingress.start();
 
