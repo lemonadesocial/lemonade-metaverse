@@ -1,7 +1,7 @@
-import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graphql';
+import { Arg, Args, Resolver, Info, Root, Query, Subscription, FieldResolver, Int } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 
-import { OrderComplex, OrderSort, OrderWhereComplex } from '../types/order';
+import { Order, OrderComplex, OrderSort, OrderWhereComplex } from '../types/order';
 import { OrderModel } from '../../app/models/order';
 import { Trigger } from '../../app/helpers/pub-sub';
 import { PaginationArgs } from '../types/pagination';
@@ -81,5 +81,17 @@ class _OrdersSubscriptionResolver {
     @Arg('where', () => OrderWhereComplex, { nullable: true }) ____?: OrderWhereComplex | null,
   ): OrderComplex[] {
     return root;
+  }
+}
+
+@Resolver(() => Order)
+class _OrderResolver {
+  @FieldResolver(() => Int, { nullable: true })
+  async price_usd(
+    @Root() order: Order
+  ) {
+    if (order.currency?.symbol) {
+      return 1;
+    }
   }
 }

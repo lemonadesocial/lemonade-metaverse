@@ -28,10 +28,13 @@ export class OrderWhereComplex extends OrderWhere {
 }
 
 @ObjectType()
-class Order extends OrderClass {
+export class Order extends OrderClass {
   @Directive('@expanded(modelName: "User", foreignField: "wallets")')
   @Field(() => User, { nullable: true })
   public makerExpanded?: never;
+
+  @Field({ nullable: true })
+  public price_usd?: number;
 }
 @ObjectType()
 export class OrderSimple extends Order {
