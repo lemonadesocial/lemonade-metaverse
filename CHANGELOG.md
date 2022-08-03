@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v9.1.0...v9.2.0) (2022-08-03)
+
+
+### Features
+
+* **ingress:** always paginate at same block to avoid skew ([aaf80d2](https://github.com/lemonadesocial/lemonade-metaverse/commit/aaf80d22c0a51313cd82b1c3e8a7103260b65887))
+* **ingress:** replace block polling by listener ([f4b13d8](https://github.com/lemonadesocial/lemonade-metaverse/commit/f4b13d8db72c7e368c4a36bba4edc39358b78271))
+* **ingress:** replace orders last block by change block filter ([5470d4f](https://github.com/lemonadesocial/lemonade-metaverse/commit/5470d4f2ae6456bd3b87668879b14bcc33b5efde))
+* remove source version environment variable ([ddd8673](https://github.com/lemonadesocial/lemonade-metaverse/commit/ddd8673236cd8cb305663c279858edd4f1368847))
+* use dependency-based ordering for start and shutdown handlers ([9577032](https://github.com/lemonadesocial/lemonade-metaverse/commit/957703233044c40e662f926d9464216b7d6f7be9))
+
 ## [9.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v9.0.0...v9.1.0) (2022-07-20)
 
 
