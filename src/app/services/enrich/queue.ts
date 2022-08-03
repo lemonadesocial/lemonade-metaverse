@@ -36,7 +36,7 @@ export async function enqueue(...items: Item[]) {
   const jobs: Job[] = [];
 
   items.forEach(({ token, orders }) => {
-    const jobId = `${token.contract}:${token.id}`;
+    const jobId = `${token.network}:${token.contract}:${token.id}`;
 
     if (orders?.length) {
       commands.push(['call', 'SADD', `${ORDERS_KEY}:${jobId}`, ...orders.map((order) => JSON.stringify(order))]);
