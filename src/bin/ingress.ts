@@ -10,8 +10,6 @@ import * as redis from '../app/helpers/redis';
 
 import * as ingress from '../app/services/ingress/worker';
 
-import { sourceVersion } from '../config';
-
 process.on('uncaughtException', (err) => {
   logger.error(err, 'uncaughtException');
 });
@@ -44,7 +42,7 @@ async function main() {
 
   await ingress.start();
 
-  logger.info({ version: sourceVersion }, 'metaverse ingress started');
+  logger.info('metaverse ingress started');
 }
 
 void main();

@@ -11,8 +11,6 @@ import * as redis from '../app/helpers/redis';
 import * as enrichAdmin from '../app/services/enrich/admin';
 import * as enrichWorker from '../app/services/enrich/worker';
 
-import { sourceVersion } from '../config';
-
 process.on('uncaughtException', (err) => {
   logger.error(err, 'uncaughtException');
 });
@@ -47,7 +45,7 @@ async function main() {
 
   await enrichWorker.start();
 
-  logger.info({ version: sourceVersion }, 'metaverse enrich started');
+  logger.info('metaverse enrich started');
 }
 
 void main();

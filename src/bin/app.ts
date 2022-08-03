@@ -12,7 +12,7 @@ import * as redis from '../app/helpers/redis';
 
 import { app } from '../app';
 
-import { appPort, sourceVersion } from '../config';
+import { appPort } from '../config';
 
 import { createApolloServer, ApolloServer } from '../graphql';
 
@@ -56,7 +56,7 @@ async function main() {
 
   await app.listen(appPort, '0.0.0.0');
 
-  logger.info({ version: sourceVersion }, 'metaverse app started');
+  logger.info('metaverse app started');
 
   const getConnections = util.promisify(app.server.getConnections).bind(app.server);
 

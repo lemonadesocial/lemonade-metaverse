@@ -25,7 +25,5 @@ FROM base as app
 
 COPY --from=build /app /app
 
-ARG SOURCE_VERSION
-ENV SOURCE_VERSION=$SOURCE_VERSION
 ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["node", "dist/bin/app.js"]
