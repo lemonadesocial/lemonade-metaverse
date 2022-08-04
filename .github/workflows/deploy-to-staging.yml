@@ -38,26 +38,26 @@ jobs:
 
       - name: Build
         run: |
-          docker build                                                     \
-            --build-arg BUILDKIT_INLINE_CACHE=1                            \
-            --build-arg GITHUB_SHA=$GITHUB_SHA                             \
-            --cache-from $REPOSITORY_URI:release-builder                   \
-            --cache-from $REPOSITORY_URI:release-base                      \
-            --tag $REPOSITORY_URI:$GITHUB_SHA                              \
-            --tag $REPOSITORY_URI:release                                  \
-            --target app                                                   \
+          docker build                                    \
+            --build-arg BUILDKIT_INLINE_CACHE=1           \
+            --build-arg VERSION=$GITHUB_SHA               \
+            --cache-from $REPOSITORY_URI:release-builder  \
+            --cache-from $REPOSITORY_URI:release-base     \
+            --tag $REPOSITORY_URI:$GITHUB_SHA             \
+            --tag $REPOSITORY_URI:release                 \
+            --target app                                  \
             .
 
-          docker build                                                     \
-            --build-arg BUILDKIT_INLINE_CACHE=1                            \
-            --tag $REPOSITORY_URI:release-builder                          \
-            --target builder                                               \
+          docker build                                    \
+            --build-arg BUILDKIT_INLINE_CACHE=1           \
+            --tag $REPOSITORY_URI:release-builder         \
+            --target builder                              \
             .
 
-          docker build                                                     \
-            --build-arg BUILDKIT_INLINE_CACHE=1                            \
-            --tag $REPOSITORY_URI:release-base                             \
-            --target base                                                  \
+          docker build                                    \
+            --build-arg BUILDKIT_INLINE_CACHE=1           \
+            --tag $REPOSITORY_URI:release-base            \
+            --target base                                 \
             .
 
       - name: Push version
