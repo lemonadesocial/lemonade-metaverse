@@ -20,6 +20,7 @@ export function createProvider(providerUrl: string): Provider {
 const WebSocketProviderClass = (): new () => ethers.providers.WebSocketProvider => (class {} as never);
 
 class WebSocketProvider extends WebSocketProviderClass() {
+  private events: ethers.providers.WebSocketProvider['_events'] = [];
   private provider?: ethers.providers.WebSocketProvider;
 
   private handler = {
@@ -38,7 +39,7 @@ class WebSocketProvider extends WebSocketProviderClass() {
   }
 
   private create() {
-    const events = this.provider?._events || [];
+    if (this.provider) this.events.push(...this.provider._events);
 
     const provider = new ethers.providers.WebSocketProvider(this.providerUrl);
     let pingInterval: NodeJS.Timeout | null = null;
@@ -51,10 +52,11 @@ class WebSocketProvider extends WebSocketProviderClass() {
         pongTimeout = setTimeout(() => { provider._websocket.terminate(); }, WEBSOCKET_PONG_TIMEOUT);
       }, WEBSOCKET_PING_INTERVAL);
 
-      events.forEach((event) => {
+      let event;
+      while ((event = this.events.pop())) {
         provider._events.push(event);
         provider._startEvent(event);
-      });
+      }
     });
 
     provider._websocket.on('error', (err: Error) => {
