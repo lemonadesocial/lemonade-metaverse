@@ -3,7 +3,7 @@
     /* Redirect output structure to the directory. */
     "outDir": "dist",
     /* List of library files to be included in the compilation. */
-    "lib": ["ES2021"],
+    "lib": ["ES2022"],
     /* Specify module code generation */
     "module": "commonjs",
     /* Specify ECMAScript target version */
