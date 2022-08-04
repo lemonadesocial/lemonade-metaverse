@@ -105,9 +105,9 @@ const processor: Processor<JobData> = async (job) => {
         case 'https:': {
           const response = await fetch(href, fetchInit);
 
-          assert.ok(response.ok, response.statusText);
-
-          token.metadata = await response.json();
+          if (response.ok) {
+            token.metadata = await response.json();
+          }
           break; }
         default:
           throw new Error(`unsupported protocol ${protocol}`);
