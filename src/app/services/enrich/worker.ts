@@ -107,6 +107,8 @@ const processor: Processor<JobData> = async (job) => {
 
           if (response.ok) {
             token.metadata = await response.json();
+          } else {
+            response.body.read();
           }
           break; }
         default:
