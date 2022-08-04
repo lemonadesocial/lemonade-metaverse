@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v9.2.0...v10.0.0) (2022-08-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade nodejs
+
+### Features
+
+* **enrich:** add network to queue job id ([7e3b79d](https://github.com/lemonadesocial/lemonade-metaverse/commit/7e3b79dacc5f12ce454588b33d021bc11ed97d1d))
+* **enrich:** always consume fetch body stream ([2700345](https://github.com/lemonadesocial/lemonade-metaverse/commit/270034557425d852734ab4f8f03f7b0ea5c39f08))
+* **enrich:** don't throw on fetch errors ([842e729](https://github.com/lemonadesocial/lemonade-metaverse/commit/842e7297b40586b579651e3d977e7fc48a3ff2ab))
+* upgrade nodejs ([51c5455](https://github.com/lemonadesocial/lemonade-metaverse/commit/51c5455407ca5d5cf2f3c3f96a8740e36b62482b))
+
+
+### Bug Fixes
+
+* **provider:** fix provider losing events after two consecutive interruptions ([1263c90](https://github.com/lemonadesocial/lemonade-metaverse/commit/1263c90ad6e17d3dd8d0720e8cead598f725545b))
+
 ## [9.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v9.1.0...v9.2.0) (2022-08-03)
 
 
