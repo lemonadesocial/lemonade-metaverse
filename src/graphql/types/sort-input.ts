@@ -1,6 +1,5 @@
+import { buildEnum } from 'type-graphql-utils';
 import { ClassType, Field, InputType, registerEnumType } from 'type-graphql';
-
-import { buildEnum } from '../utils/graphql';
 
 export enum SortDirection {
   ASC,

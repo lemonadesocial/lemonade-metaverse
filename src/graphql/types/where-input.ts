@@ -1,6 +1,5 @@
+import { buildType } from 'type-graphql-utils';
 import { ClassType, getMetadataStorage } from 'type-graphql';
-
-import { buildType } from '../utils/graphql';
 
 const metadata = getMetadataStorage();
 

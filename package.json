@@ -41,6 +41,7 @@
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.20",
     "type-graphql": "^1.1.1",
+    "type-graphql-utils": "^1.1.0",
     "utf-8-validate": "^5.0.9",
     "ws": "^8.8.1"
   },
