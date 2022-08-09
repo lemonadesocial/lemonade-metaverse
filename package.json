@@ -16,7 +16,7 @@
     "@graphql-tools/utils": "^8.5.2",
     "@typegoose/typegoose": "^9.2.0",
     "apollo-server-fastify": "^3.7.0",
-    "bullmq": "^1.55.1",
+    "bullmq": "^1.87.1",
     "class-validator": "^0.13.1",
     "dataloader": "^2.0.0",
     "env-var": "^7.1.1",

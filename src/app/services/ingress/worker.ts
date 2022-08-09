@@ -324,7 +324,7 @@ async function startNetwork(network: Network) {
   state.worker.on('completed', function onCompleted(job: Job<JobData>) {
     ingressesTotal.inc({ network: state.network.name, status: 'success' });
 
-    if (job.attemptsMade) {
+    if (job.attemptsMade > 1) {
       const obj = timing(job);
 
       ingressTimeToRecoverySeconds.labels({ network: state.network.name }).observe(obj.secondsElapsed);
