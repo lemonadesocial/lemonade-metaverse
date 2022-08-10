@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.0.0...v10.1.0) (2022-08-09)
+
+
+### Features
+
+* **indexer:** reuse in-memory cache instance ([54ba3e5](https://github.com/lemonadesocial/lemonade-metaverse/commit/54ba3e5face5863c43e3b72c95bda75a9a322ad1))
+* upgrade bullmq ([0d5142d](https://github.com/lemonadesocial/lemonade-metaverse/commit/0d5142d5fe7f6256796a301257d1a002567ca0d8))
+* upgrade ws and add binary addons ([9821c7f](https://github.com/lemonadesocial/lemonade-metaverse/commit/9821c7f0b1a3568e1e87b6f7aae2c36c76f73dc7))
+* use type-graphql-utils ([e341c4c](https://github.com/lemonadesocial/lemonade-metaverse/commit/e341c4c856681af9df21189a51a3da94ce90bd2c))
+
 ## [10.0.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v9.2.0...v10.0.0) (2022-08-05)
 
 
