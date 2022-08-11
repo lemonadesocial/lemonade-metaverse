@@ -9,7 +9,7 @@ import type { AnyBulkWriteOperation } from 'mongodb';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 
-import { fetchRegistry } from '../registry';
+import { getRegistry } from '../registry';
 import { networkMap } from '../network';
 
 import { connection } from '../../helpers/bullmq';
@@ -79,7 +79,7 @@ const processor: Processor<JobData> = async (job) => {
 
   assert.ok(network);
 
-  const registry = await fetchRegistry(network, token.contract, token.tokenId);
+  const registry = await getRegistry(network, token.contract, token.tokenId);
   const provider = network.provider();
 
   assert.ok(registry.isERC721);

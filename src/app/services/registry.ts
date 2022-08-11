@@ -7,7 +7,7 @@ import { erc165Contract, ERC2981_INTERFACE_ID, erc721MetadataContract, ERC721Met
 
 import { Registry, RegistryModel } from '../models/registry';
 
-const lru = new LRU<string, Registry>({ max: 100 });
+const lru = new LRU<string, Promise<Registry>>({ max: 100 });
 
 async function supportsInterface(contract: ethers.Contract, interfaceId: string) {
   try {
@@ -82,23 +82,31 @@ async function createRegistry(network: Network, address: string, tokenId: string
   return registry;
 }
 
-export async function fetchRegistry(network: Network, address: string, tokenId: string): Promise<Registry> {
-  const key = network.name + address;
+async function fetchRegistry(network: Network, address: string, tokenId: string): Promise<Registry> {
   const query = { network: network.name, id: address };
 
-  let registry = lru.get(key) || null;
+  let registry = await RegistryModel.findOne(query).lean<Registry | null>();
 
   if (!registry) {
-    registry = await RegistryModel.findOne(query).lean();
+    registry = await createRegistry(network, address, tokenId);
 
-    if (!registry) {
-      registry = await createRegistry(network, address, tokenId);
-
-      await RegistryModel.updateOne(query, registry, { upsert: true });
-    }
-
-    lru.set(key, registry);
+    await RegistryModel.updateOne(query, registry, { upsert: true });
   }
 
   return registry;
+}
+
+export async function getRegistry(network: Network, address: string, tokenId: string): Promise<Registry> {
+  const key = network.name + address;
+
+  let promise = lru.get(key);
+
+  if (!promise) {
+    promise = fetchRegistry(network, address, tokenId)
+      .catch((err) => { lru.del(key); throw err; });
+
+    lru.set(key, promise);
+  }
+
+  return await promise;
 }
