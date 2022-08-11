@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.1.0...v10.2.0) (2022-08-11)
+
+
+### Features
+
+* **provider:** add websocket provider metrics ([725dc9b](https://github.com/lemonadesocial/lemonade-metaverse/commit/725dc9bb85a52f25e9b26972afeb5e4ee018cba8))
+
 ## [10.1.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.0.0...v10.1.0) (2022-08-09)
 
 
