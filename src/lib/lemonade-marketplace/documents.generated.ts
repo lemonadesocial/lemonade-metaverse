@@ -9,7 +9,7 @@ export const tokenFields = gql`
 }
     `;
 export const Ingress = gql`
-    query Ingress($block: Block_height, $orders_include: Boolean!, $orders_where: Order_filter, $orders_skip: Int, $orders_first: Int, $tokens_include: Boolean!, $tokens_where: Token_filter, $tokens_skip: Int, $tokens_first: Int) {
+    query Ingress($block: Block_height, $orders_include: Boolean!, $orders_where: Order_filter, $orders_first: Int, $tokens_include: Boolean!, $tokens_where: Token_filter, $tokens_first: Int) {
   _meta {
     block {
       number
@@ -18,10 +18,9 @@ export const Ingress = gql`
   }
   orders(
     block: $block
-    orderBy: lastBlock
+    orderBy: id
     orderDirection: asc
     where: $orders_where
-    skip: $orders_skip
     first: $orders_first
   ) @include(if: $orders_include) {
     id
@@ -51,10 +50,9 @@ export const Ingress = gql`
   }
   tokens(
     block: $block
-    orderBy: createdAt
+    orderBy: id
     orderDirection: asc
     where: $tokens_where
-    skip: $tokens_skip
     first: $tokens_first
   ) @include(if: $tokens_include) {
     ...tokenFields

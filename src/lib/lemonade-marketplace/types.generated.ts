@@ -956,11 +956,9 @@ export type IngressQueryVariables = Exact<{
   block?: Maybe<Block_height>;
   orders_include: Scalars['Boolean'];
   orders_where?: Maybe<Order_filter>;
-  orders_skip?: Maybe<Scalars['Int']>;
   orders_first?: Maybe<Scalars['Int']>;
   tokens_include: Scalars['Boolean'];
   tokens_where?: Maybe<Token_filter>;
-  tokens_skip?: Maybe<Scalars['Int']>;
   tokens_first?: Maybe<Scalars['Int']>;
 }>;
 

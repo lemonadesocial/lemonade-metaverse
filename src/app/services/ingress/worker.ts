@@ -19,7 +19,7 @@ import { getDate } from '../../utils/date';
 import { getParsedUrl, getWebUrl } from '../../utils/url';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
-import { Block_height, IngressQuery, IngressQueryVariables } from '../../../lib/lemonade-marketplace/types.generated';
+import { Block_height, IngressQuery, IngressQueryVariables, Order_filter, Token_filter } from '../../../lib/lemonade-marketplace/types.generated';
 
 const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
@@ -184,9 +184,9 @@ async function poll(state: State, data: JobData): Promise<JobData> {
   const nextData = { ...data, persist: false };
 
   let block: Block_height | undefined;
-  let orders_skip = 0;
+  let orders_where: Order_filter = {};
   let orders_first = POLL_FIRST;
-  let tokens_skip = 0;
+  let tokens_where: Token_filter = {};
   let tokens_first = POLL_FIRST;
   do {
     const { data } = await state.network.indexer().query<IngressQuery, IngressQueryVariables>({
@@ -194,12 +194,10 @@ async function poll(state: State, data: JobData): Promise<JobData> {
       variables: {
         block,
         orders_include: orders_first > 0,
-        orders_where: { _change_block: { number_gte: meta ? meta.block + 1 : 0 } },
-        orders_skip,
+        orders_where: { _change_block: { number_gte: meta ? meta.block + 1 : 0 }, ...orders_where },
         orders_first,
         tokens_include: tokens_first > 0,
-        tokens_where: { createdAt_gt: tokens_createdAt_gt, ...state.network.ingressWhere },
-        tokens_skip,
+        tokens_where: { createdAt_gt: tokens_createdAt_gt, ...tokens_where, ...state.network.ingressWhere },
         tokens_first,
       },
     });
@@ -222,12 +220,12 @@ async function poll(state: State, data: JobData): Promise<JobData> {
       await process(state, data);
 
       if (orders_length) {
-        orders_skip += orders_length;
+        orders_where = { id_gt: data.orders![orders_length - 1].id };
       }
 
       if (tokens_length) {
-        nextData.tokens_createdAt_gt = data.tokens![tokens_length - 1].createdAt!;
-        tokens_skip += tokens_length;
+        nextData.tokens_createdAt_gt = data.tokens!.reduce((acc, cur) => Math.max(acc, +(cur.createdAt || 0)), +(nextData.tokens_createdAt_gt || 0)).toString(); // @todo replace by createdBlock
+        tokens_where = { id_gt: data.tokens![tokens_length - 1].id };
       }
 
       nextData.persist = true;
