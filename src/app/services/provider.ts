@@ -1,3 +1,4 @@
+import { Counter } from 'prom-client';
 import { ethers } from 'ethers';
 
 import { logger } from '../helpers/pino';
@@ -5,13 +6,29 @@ import { logger } from '../helpers/pino';
 const WEBSOCKET_PING_INTERVAL = 60000;
 const WEBSOCKET_PONG_TIMEOUT = 5000;
 
+const webSocketClosesTotal = new Counter({
+  name: 'provider_websocket_closes_total',
+  help: 'Total number of provider websocket closes',
+  labelNames: ['network', 'code'],
+});
+const webSocketErrorsTotal = new Counter({
+  name: 'provider_websocket_errors_total',
+  help: 'Total number of provider websocket errors',
+  labelNames: ['network'],
+});
+const webSocketTimeoutsTotal = new Counter({
+  name: 'provider_websocket_timeouts_total',
+  help: 'Total number of provider websocket timeouts',
+  labelNames: ['network'],
+});
+
 export interface Provider extends ethers.providers.BaseProvider {
   destroy?: () => Promise<void>;
 }
 
-export function createProvider(providerUrl: string): Provider {
+export function createProvider(providerUrl: string, name: string): Provider {
   if (providerUrl.startsWith('ws')) {
-    return new WebSocketProvider(providerUrl);
+    return new WebSocketProvider(providerUrl, name);
   }
 
   return new ethers.providers.JsonRpcProvider(providerUrl);
@@ -31,7 +48,7 @@ class WebSocketProvider extends WebSocketProviderClass() {
     },
   };
 
-  constructor(private providerUrl: string) {
+  constructor(private providerUrl: string, private name: string) {
     super();
     this.create();
 
@@ -49,7 +66,10 @@ class WebSocketProvider extends WebSocketProviderClass() {
       pingInterval = setInterval(() => {
         provider._websocket.ping();
 
-        pongTimeout = setTimeout(() => { provider._websocket.terminate(); }, WEBSOCKET_PONG_TIMEOUT);
+        pongTimeout = setTimeout(() => {
+          provider._websocket.terminate();
+          webSocketTimeoutsTotal.labels(this.name).inc();
+        }, WEBSOCKET_PONG_TIMEOUT);
       }, WEBSOCKET_PING_INTERVAL);
 
       let event;
@@ -60,7 +80,8 @@ class WebSocketProvider extends WebSocketProviderClass() {
     });
 
     provider._websocket.on('error', (err: Error) => {
-      logger.error({ err, url: this.providerUrl }, 'WebSocket error: %s', err.message);
+      logger.error({ network: this.name, err }, 'WebSocket error: %s', err.message);
+      webSocketErrorsTotal.labels(this.name).inc();
     });
 
     provider._websocket.on('pong', () => {
@@ -72,6 +93,8 @@ class WebSocketProvider extends WebSocketProviderClass() {
       if (pongTimeout) clearTimeout(pongTimeout);
 
       if (code !== 1000) this.create();
+
+      webSocketClosesTotal.labels(this.name, code.toString()).inc();
     });
 
     this.provider = provider;
