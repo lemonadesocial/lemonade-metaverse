@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.2.0...v10.3.0) (2022-08-12)
+
+
+### Features
+
+* **enrich:** don't throw external errors ([7d42e14](https://github.com/lemonadesocial/lemonade-metaverse/commit/7d42e14b941ee5db76690ec7522b9b1c7259f44b))
+* **ingress:** upgrade pagination by using id bound instead of skip ([043ddbe](https://github.com/lemonadesocial/lemonade-metaverse/commit/043ddbeda8a0c8442b4b6884c836310a3f2bd57c))
+* **registry:** upgrade cache by setting promise instead of result ([614b1c9](https://github.com/lemonadesocial/lemonade-metaverse/commit/614b1c9db718510ecae853930ef3bce3645c863e))
+
+
+### Bug Fixes
+
+* **provider:** fix inflight request callback leak ([066d1e1](https://github.com/lemonadesocial/lemonade-metaverse/commit/066d1e17ebd32fde4878fa9d99e555345ca4c9e8))
+
 ## [10.2.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.1.0...v10.2.0) (2022-08-11)
 
 
