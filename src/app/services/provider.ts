@@ -63,8 +63,8 @@ class WebSocketProvider extends WebSocketProviderClass() {
     }
 
     const provider = new ethers.providers.WebSocketProvider(this.providerUrl);
-    let pingInterval: NodeJS.Timeout | null = null;
-    let pongTimeout: NodeJS.Timeout | null = null;
+    let pingInterval: NodeJS.Timeout | undefined;
+    let pongTimeout: NodeJS.Timeout | undefined;
 
     provider._websocket.on('open', () => {
       pingInterval = setInterval(() => {
