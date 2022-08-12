@@ -109,8 +109,6 @@ const processor: Processor<JobData> = async (job) => {
             token.metadata = await response.json();
           }
           break; }
-        default:
-          throw new Error(`unsupported protocol ${protocol}`);
       }
     })(),
     registry.supportsRaribleRoyaltiesV2 || registry.supportsERC2981 && (async () => {
@@ -129,7 +127,7 @@ const processor: Processor<JobData> = async (job) => {
         }
       }
     })(),
-  ]);
+  ]).catch(() => { /* no-op */ });
 
   token.enrichedAt = new Date();
 
