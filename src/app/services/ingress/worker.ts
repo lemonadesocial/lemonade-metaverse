@@ -258,9 +258,9 @@ async function processor(state: State, { data }: Job<JobData>) {
 
   ingressDurationTimer();
 
-  (async () => {
-    if (!nextData.meta) return;
+  if (!nextData.meta) return;
 
+  try {
     watchdogIndexerDelayBlocks.labels(labels).set(state.block - nextData.meta.block);
 
     if (data.meta?.block !== nextData.meta.block) {
@@ -270,9 +270,9 @@ async function processor(state: State, { data }: Job<JobData>) {
     }
 
     watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
-  })().catch((err) =>
+  } catch (err) {
     logger.error(err, 'failed to process ingress meta')
-  );
+  }
 }
 
 function timing({ timestamp }: Job<JobData>) {
