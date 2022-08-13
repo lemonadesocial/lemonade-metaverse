@@ -5,6 +5,7 @@ import { logger } from '../helpers/pino';
 
 const WEBSOCKET_PING_INTERVAL = 60000;
 const WEBSOCKET_PONG_TIMEOUT = 5000;
+const WEBSOCKET_RECONNECT_DELAY = 100;
 
 const webSocketClosesTotal = new Counter({
   name: 'provider_websocket_closes_total',
@@ -99,10 +100,14 @@ class WebSocketProvider extends WebSocketProviderClass() {
     });
 
     provider._websocket.on('close', (code: number) => {
+      provider._wsReady = false;
+
       if (pingInterval) clearInterval(pingInterval);
       if (pongTimeout) clearTimeout(pongTimeout);
 
-      if (code !== 1000) this.create();
+      if (code !== 1000) {
+        setTimeout(() => this.create(), WEBSOCKET_RECONNECT_DELAY);
+      }
 
       webSocketClosesTotal.labels(this.name, code.toString()).inc();
     });
