@@ -99,7 +99,7 @@ class WebSocketProvider extends WebSocketProviderClass() {
       if (pongTimeout) clearTimeout(pongTimeout);
     });
 
-    provider._websocket.on('close', (code: number) => {
+    provider._websocket.on('close', (code: number, reason: string) => {
       provider._wsReady = false;
 
       if (pingInterval) clearInterval(pingInterval);
@@ -109,6 +109,7 @@ class WebSocketProvider extends WebSocketProviderClass() {
         setTimeout(() => this.create(), WEBSOCKET_RECONNECT_DELAY);
       }
 
+      logger.info({ network: this.name, code, reason }, 'WebSocket closed');
       webSocketClosesTotal.labels(this.name, code.toString()).inc();
     });
 
