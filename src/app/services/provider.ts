@@ -63,7 +63,7 @@ class WebSocketProvider extends WebSocketProviderClass() {
       this.requests = { ...this.requests, ...this.provider._requests };
     }
 
-    const provider = new ethers.providers.WebSocketProvider(this.providerUrl);
+    const provider = new ethers.providers.WebSocketProvider(this.providerUrl, this.provider?.network?.chainId);
     let pingInterval: NodeJS.Timeout | undefined;
     let pongTimeout: NodeJS.Timeout | undefined;
 
