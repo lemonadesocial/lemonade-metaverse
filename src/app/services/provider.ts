@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 
 import { logger } from '../helpers/pino';
 
-const WEBSOCKET_PING_INTERVAL = 60000;
+const WEBSOCKET_PING_INTERVAL = 10000;
 const WEBSOCKET_PONG_TIMEOUT = 5000;
 const WEBSOCKET_RECONNECT_DELAY = 100;
 
