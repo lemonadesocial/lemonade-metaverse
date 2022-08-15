@@ -2,7 +2,7 @@ import { URL } from 'url';
 
 import { ipfsGatewayUrl, webUrl } from '../../config';
 
-export function parseUrl(input: string): URL {
+export function parseUrl(input: string) {
   const url = new URL(input);
 
   if (url.protocol === 'ipfs:') {
@@ -12,7 +12,7 @@ export function parseUrl(input: string): URL {
   return url;
 }
 
-export function getParsedUrl(input: unknown): string | undefined {
+export function getParsedUrl(input: unknown) {
   if (typeof input !== 'string') return;
 
   try {
@@ -20,6 +20,6 @@ export function getParsedUrl(input: unknown): string | undefined {
   } catch { /* no-op */ }
 }
 
-export function getWebUrl(args: { network: string; contract: string, tokenId: string }): string {
+export function getWebUrl(args: { network: string; contract: string, tokenId: string }) {
   return `${webUrl}nft/${args.network}/${args.contract}/${args.tokenId}`;
 }

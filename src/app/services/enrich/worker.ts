@@ -7,24 +7,22 @@ import * as https from 'https';
 import fetch, { RequestInit } from 'node-fetch';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
+import { BufferQueue } from '../../utils/buffer-queue';
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
-
-import { getRegistry } from '../registry';
-import { networkMap } from '../network';
-
-import { connection } from '../../helpers/bullmq';
-import { logger } from '../../helpers/pino';
-import { pubSub, Trigger } from '../../helpers/pub-sub';
-import { redis } from '../../helpers/redis';
-
 import { Token, TokenModel } from '../../models/token';
 import type { Order } from '../../models/order';
 
-import { BufferQueue } from '../../utils/buffer-queue';
+import { connection } from '../../helpers/bullmq';
+import { logger } from '../../helpers/pino';
+import { networkMap } from '../network';
+import { pubSub, Trigger } from '../../helpers/pub-sub';
+import { redis } from '../../helpers/redis';
+
+import { getRegistry } from '../registry';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
-import { tokenURI } from '../contract/erc721-metadata';
 import { getRaribleV2Royalties } from '../contract/rarible-royalties-v2';
 import { royaltyInfo } from '../contract/erc2981';
+import { tokenURI } from '../contract/erc721-metadata';
 
 const FETCH_TIMEOUT = 10000;
 const WORKER_CONCURRENCY = 25;
