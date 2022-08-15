@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.3.0...v10.4.0) (2022-08-15)
+
+
+### Features
+
+* **contract:** create contract services for each interface ([cf3bf35](https://github.com/lemonadesocial/lemonade-metaverse/commit/cf3bf35db7b8e60908963ad030791f891cc0dc98))
+* **ingress:** await ingress meta process ([076ed13](https://github.com/lemonadesocial/lemonade-metaverse/commit/076ed136a58a16649ea42bdf7fb1cf6bd0797179))
+* **ingress:** set delay to zero when block cannot be found ([50e52a8](https://github.com/lemonadesocial/lemonade-metaverse/commit/50e52a8f5aa79f8231be7c5eab260948be925d07))
+* **introspection:** use introspection contract for multi supports interface ([626e794](https://github.com/lemonadesocial/lemonade-metaverse/commit/626e794f513d0aab6f9ef5f9d6709348388cfaa5))
+* **provider:** add close logging ([6bcd420](https://github.com/lemonadesocial/lemonade-metaverse/commit/6bcd420e096fd0255c76edf05368ecc55688771a))
+* **provider:** add websocket reconnect delay ([1d5eaa6](https://github.com/lemonadesocial/lemonade-metaverse/commit/1d5eaa64629848a3562ba5810f9d4fcb564dc0ea))
+* **provider:** reuse network from previous websocket provider ([4ca625d](https://github.com/lemonadesocial/lemonade-metaverse/commit/4ca625d927df1a5e508ff62f1f826e9dc3e4752c))
+
 ## [10.3.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.2.0...v10.3.0) (2022-08-12)
 
 
