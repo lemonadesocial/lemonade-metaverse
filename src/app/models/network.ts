@@ -14,6 +14,9 @@ export class Network {
   @prop({ required: true })
   public providerUrl!: string;
 
+  @prop({ required: true })
+  public introspection!: string;
+
   @prop()
   public ingressWhere?: any;
 
