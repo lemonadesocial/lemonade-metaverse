@@ -13,7 +13,6 @@ import { getRegistry } from '../registry';
 import { networkMap } from '../network';
 
 import { connection } from '../../helpers/bullmq';
-import { erc721MetadataContract, erc2981Contract, raribleRoyaltiesV2 } from '../../helpers/web3';
 import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
@@ -23,6 +22,9 @@ import type { Order } from '../../models/order';
 
 import { BufferQueue } from '../../utils/buffer-queue';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
+import { tokenURI } from '../contract/erc721-metadata';
+import { getRaribleV2Royalties } from '../contract/rarible-royalties-v2';
+import { royaltyInfo } from '../contract/erc2981';
 
 const FETCH_TIMEOUT = 10000;
 const WORKER_CONCURRENCY = 25;
@@ -80,13 +82,12 @@ const processor: Processor<JobData> = async (job) => {
   assert.ok(network);
 
   const registry = await getRegistry(network, token.contract, token.tokenId);
-  const provider = network.provider();
 
   assert.ok(registry.isERC721);
 
   await Promise.all([
     registry.supportsERC721Metadata && (async () => {
-      token.uri = await erc721MetadataContract.connect(provider).attach(token.contract).tokenURI(token.tokenId) as string;
+      token.uri = await tokenURI(network, token.contract, token.tokenId);
 
       const { href, pathname, protocol } = parseUrl(token.uri);
 
@@ -113,17 +114,16 @@ const processor: Processor<JobData> = async (job) => {
     })(),
     registry.supportsRaribleRoyaltiesV2 || registry.supportsERC2981 && (async () => {
       if (registry.supportsRaribleRoyaltiesV2) {
-        const royalties = await raribleRoyaltiesV2.connect(provider).attach(token.contract).getRaribleV2Royalties(token.tokenId).catch(() => null) as [string, ethers.BigNumber][] | null;
+        const royalties = await getRaribleV2Royalties(network, token.contract, token.tokenId);
 
-        if (royalties?.length) {
+        if (royalties.length) {
           token.royalties = royalties.map(([account, value]) => ({ account: account.toLowerCase(), value: value.toString() }));
         }
       } else if (registry.supportsERC2981) {
-        const price = ethers.utils.parseEther('1');
-        const royaltyInfo = await erc2981Contract.connect(provider).attach(token.contract).royaltyInfo(token.tokenId, price).catch(() => null) as [string, ethers.BigNumber] | null;
+        const [receiver, amount] = await royaltyInfo(network, token.contract, token.tokenId, ethers.constants.WeiPerEther);
 
-        if (royaltyInfo?.[1].gt(0)) {
-          token.royalties = [{ account: royaltyInfo[0].toLowerCase(), value: royaltyInfo[1].div(price).mul(10000).toString() }];
+        if (amount.gt(0)) {
+          token.royalties = [{ account: receiver.toLowerCase(), value: amount.div(ethers.constants.WeiPerEther).mul(10000).toString() }];
         }
       }
     })(),

@@ -1,10 +1,11 @@
 import LRU from 'lru-cache';
 
-import { ERC2981_INTERFACE_ID, erc721MetadataContract, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, LemonadePoapV1_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from '../helpers/web3';
+import { ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, LemonadePoapV1_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from './contract/constants';
+import { getSupportedInterfaces } from './contract/introspection';
+import { tokenURI } from './contract/erc721-metadata';
+
 import { Registry, RegistryModel } from '../models/registry';
 import type { Network } from './network';
-
-import { getSupportedInterfaces } from './contract/introspection';
 
 const lru = new LRU<string, Promise<Registry>>({ max: 100 });
 
@@ -19,9 +20,7 @@ async function createUniqueCollectionRegistry(network: Network, address: string,
    * This property is currently not exposed. So to determine actual ERC721Metadata support, we attempt to read the token URI.
    */
   try {
-    const contract = erc721MetadataContract.connect(network.provider()).attach(address);
-
-    await contract.tokenURI(tokenId);
+    await tokenURI(network, address, tokenId);
 
     // non-fungible with token property
     registry.isERC721 = true;
