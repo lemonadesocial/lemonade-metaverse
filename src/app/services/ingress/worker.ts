@@ -344,7 +344,7 @@ async function stopNetwork(network: Network) {
   await state.queue.close();
   await state.queueScheduler.close();
 
-  network.provider().on('blockNumber', state.blockListener);
+  network.provider().off('block', state.blockListener);
 }
 
 export async function stop() {
