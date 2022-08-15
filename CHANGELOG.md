@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.4.0...v10.5.0) (2022-08-15)
+
+
+### Features
+
+* **provider:** use short websocket ping interval ([3715e4a](https://github.com/lemonadesocial/lemonade-metaverse/commit/3715e4a5008506b93296069cb2e68ccd3d7a1c6e))
+
+
+### Reverts
+
+* Revert "feat(provider): add close logging" ([86aa16e](https://github.com/lemonadesocial/lemonade-metaverse/commit/86aa16eb08fa4bbbfa3549708da005cfd452b593))
+
 ## [10.4.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.3.0...v10.4.0) (2022-08-15)
 
 
