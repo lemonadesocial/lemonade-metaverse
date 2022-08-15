@@ -266,7 +266,7 @@ async function processor(state: State, { data }: Job<JobData>) {
     if (data.meta?.block !== nextData.meta.block) {
       const block = await state.network.provider().getBlock(nextData.meta.block);
 
-      if (block) watchdogIndexerDelaySeconds.labels(labels).set((now - block.timestamp * 1000) / 1000);
+      watchdogIndexerDelaySeconds.labels(labels).set(block ? (now - block.timestamp * 1000) / 1000 : 0);
     }
 
     watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
