@@ -81,7 +81,7 @@ const processor: Processor<JobData> = async (job) => {
 
   const registry = await getRegistry(network, token.contract, token.tokenId);
 
-  assert.ok(registry.isERC721);
+  assert.ok(registry.isERC721, `registry network ${registry.network} id ${registry.id} not ERC721`);
 
   await Promise.all([
     registry.supportsERC721Metadata && (async () => {
