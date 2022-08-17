@@ -189,17 +189,14 @@ async function poll(state: State, data: JobData): Promise<JobData> {
   let tokens_where: Token_filter = {};
   let tokens_first = POLL_FIRST;
   do {
-    const { data } = await state.network.indexer().query<IngressQuery, IngressQueryVariables>({
-      query: Ingress,
-      variables: {
-        block,
-        orders_include: orders_first > 0,
-        orders_where: { _change_block: { number_gte: meta ? meta.block + 1 : 0 }, ...orders_where },
-        orders_first,
-        tokens_include: tokens_first > 0,
-        tokens_where: { createdAt_gt: tokens_createdAt_gt, ...tokens_where, ...state.network.ingressWhere },
-        tokens_first,
-      },
+    const data = await state.network.indexer().request<IngressQuery, IngressQueryVariables>(Ingress, {
+      block,
+      orders_include: orders_first > 0,
+      orders_where: { _change_block: { number_gte: meta ? meta.block + 1 : 0 }, ...orders_where },
+      orders_first,
+      tokens_include: tokens_first > 0,
+      tokens_where: { createdAt_gt: tokens_createdAt_gt, ...tokens_where, ...state.network.ingressWhere },
+      tokens_first,
     });
 
     if (data._meta) {

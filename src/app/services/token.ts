@@ -134,10 +134,7 @@ async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
 }
 
 export async function getTokens(network: Network, variables: GetTokensQueryVariables) {
-  const { data: { tokens } } = await network.indexer().query<GetTokensQuery, GetTokensQueryVariables>({
-    query: GetTokens,
-    variables,
-  });
+  const { tokens } = await network.indexer().request<GetTokensQuery, GetTokensQueryVariables>(GetTokens, variables);
 
   if (!tokens.length) return [];
 
@@ -147,10 +144,7 @@ export async function getTokens(network: Network, variables: GetTokensQueryVaria
 export async function getToken(network: Network, id: string) {
   const [external, internal] = await Promise.all([
     getOrSet(id, async function fn() {
-      const { data: { token } } = await network.indexer().query<GetTokenQuery, GetTokenQueryVariables>({
-        query: GetToken,
-        variables: { id },
-      });
+      const { token } = await network.indexer().request<GetTokenQuery, GetTokenQueryVariables>(GetToken, { id });
 
       if (token) return createToken(network, token);
     }),

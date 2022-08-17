@@ -30,10 +30,6 @@ export class Network extends NetworkBase {
   }
 
   public async close() {
-    if (this._indexer) {
-      this._indexer.stop();
-    }
-
     if (this._provider && this._provider.destroy) {
       await this._provider.destroy();
     }

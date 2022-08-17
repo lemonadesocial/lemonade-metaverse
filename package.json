@@ -11,7 +11,6 @@
     "start:dev": "ts-node-dev --transpile-only src/bin/app.ts"
   },
   "dependencies": {
-    "@apollo/client": "^3.4.16",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.2",
     "@typegoose/typegoose": "^9.2.0",
@@ -27,6 +26,7 @@
     "graphql": "^15.7.2",
     "graphql-parse-resolve-info": "^4.12.0",
     "graphql-redis-subscriptions": "^2.4.0",
+    "graphql-request": "^4.3.0",
     "graphql-subscriptions": "^1.2.1",
     "graphql-tag": "^2.12.5",
     "graphql-type-json": "^0.3.2",
