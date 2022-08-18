@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.5.0...v10.6.0) (2022-08-18)
+
+
+### Features
+
+* replace apollo client by graphql-request ([72461b0](https://github.com/lemonadesocial/lemonade-metaverse/commit/72461b077eed3b20a537d3dca15fbdb3587d6620))
+
+
+### Bug Fixes
+
+* **ingress:** fix block listener not stopping ([f972851](https://github.com/lemonadesocial/lemonade-metaverse/commit/f972851cad0910d5eca262c1617dc3c1a452d9bd))
+
 ## [10.5.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.4.0...v10.5.0) (2022-08-15)
 
 
