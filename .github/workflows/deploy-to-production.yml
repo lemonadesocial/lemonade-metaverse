@@ -1,12 +1,10 @@
 name: Deploy to Production
 on:
-  push:
-    branches:
-      - release/**
   pull_request:
     branches:
       - master
     types: [closed]
+  workflow_dispatch:
 
 env:
   DOCKER_BUILDKIT: 1
