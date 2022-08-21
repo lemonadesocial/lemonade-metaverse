@@ -60,13 +60,9 @@ jobs:
             --target base                                 \
             .
 
-      - name: Push version
+      - name: Push
         run: |
           docker push $REPOSITORY_URI:$GITHUB_SHA
-
-      - name: Push release
-        if: github.event_name == 'push'
-        run: |
           docker push $REPOSITORY_URI:release
           docker push $REPOSITORY_URI:release-builder
           docker push $REPOSITORY_URI:release-base
