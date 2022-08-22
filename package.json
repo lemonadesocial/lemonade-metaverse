@@ -34,6 +34,7 @@
     "ioredis": "^4.28.0",
     "lru-cache": "^7.7.1",
     "mongoose": "^6.0.12",
+    "multiformats": "^9.7.1",
     "node-fetch": "^2",
     "pino": "^7.1.0",
     "pino-slack-transport": "^1.1.0",

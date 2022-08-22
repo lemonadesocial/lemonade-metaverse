@@ -1,3 +1,4 @@
+import { CID } from 'multiformats/cid';
 import { URL } from 'url';
 
 import { ipfsGatewayUrl, webUrl } from '../../config';
@@ -6,7 +7,9 @@ export function parseUrl(input: string) {
   const url = new URL(input);
 
   if (url.protocol === 'ipfs:') {
-    return new URL(`${ipfsGatewayUrl}ipfs/${url.href.substring('ipfs://'.length)}`);
+    const cidv1 = CID.parse(url.hostname).toV1().toString();
+
+    return new URL(`${ipfsGatewayUrl.protocol}//${cidv1}.ipfs.${ipfsGatewayUrl.host}${url.pathname}`);
   }
 
   return url;
