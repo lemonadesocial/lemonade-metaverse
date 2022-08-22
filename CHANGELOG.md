@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.7.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.6.0...v10.7.0) (2022-08-22)
+
+
+### Features
+
+* **enrich:** add error message when registry is not erc721 ([b5fe5cb](https://github.com/lemonadesocial/lemonade-metaverse/commit/b5fe5cb08bdad6032c74aa055ebfaf4230501b8b))
+
 ## [10.6.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.5.0...v10.6.0) (2022-08-18)
 
 
