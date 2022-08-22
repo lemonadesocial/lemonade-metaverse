@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.8.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.7.0...v10.8.0) (2022-08-22)
+
+
+### Features
+
+* **registry:** use replace one instead of update one ([dbe3aa5](https://github.com/lemonadesocial/lemonade-metaverse/commit/dbe3aa5050770537d744087812101deb26a82fb0))
+
+
+### Bug Fixes
+
+* **registry:** fix create unique collection registry ([40ffa1b](https://github.com/lemonadesocial/lemonade-metaverse/commit/40ffa1b649b895dd10e5c9835a34112c62b5242e))
+
 ## [10.7.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.6.0...v10.7.0) (2022-08-22)
 
 
