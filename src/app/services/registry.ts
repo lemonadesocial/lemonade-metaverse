@@ -79,7 +79,7 @@ async function fetchRegistry(network: Network, address: string, tokenId: string)
   if (!registry) {
     registry = await createRegistry(network, address, tokenId);
 
-    await RegistryModel.updateOne(query, registry, { upsert: true });
+    await RegistryModel.replaceOne(query, registry, { upsert: true });
   }
 
   return registry;
