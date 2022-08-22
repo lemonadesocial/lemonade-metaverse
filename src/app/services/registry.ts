@@ -26,10 +26,10 @@ async function createUniqueCollectionRegistry(network: Network, address: string,
     registry.isERC721 = true;
     registry.supportsERC721Metadata = true;
   } catch (err: any) {
-    if (err.message.endsWith('revert Token properties not found')) { // burned non-fungible with token property
+    if (err.error?.message.endsWith('revert Token properties not found')) { // burned non-fungible with token property
       registry.isERC721 = true;
       registry.supportsERC721Metadata = true;
-    } else if (err.message.endsWith('revert No tokenURI permission')) { // non-fungible without token property
+    } else if (err.error?.message.endsWith('revert No tokenURI permission')) { // non-fungible without token property
       registry.isERC721 = true;
     }
   }
