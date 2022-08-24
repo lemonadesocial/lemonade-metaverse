@@ -123,7 +123,7 @@ async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
     const token = { ...createToken(network, item), ...doc };
 
     tokens.push(token);
-    if (!doc) missing.push(token);
+    if (!doc?.enrichedAt) missing.push(token);
   }
 
   if (missing.length) {
@@ -186,7 +186,7 @@ export async function getToken(network: Network, id: string) {
 
   const token = { ...external, ...internal };
 
-  if (!internal?.metadata) {
+  if (!internal?.enrichedAt) {
     await waitForEnrich([token]);
   }
 
