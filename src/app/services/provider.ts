@@ -3,9 +3,10 @@ import { ethers } from 'ethers';
 
 import { logger } from '../helpers/pino';
 
+const WEBSOCKET_BACKOFF_BASE = 100;
+const WEBSOCKET_BACKOFF_CAP = 30000;
 const WEBSOCKET_PING_INTERVAL = 10000;
 const WEBSOCKET_PONG_TIMEOUT = 5000;
-const WEBSOCKET_RECONNECT_DELAY = 100;
 
 const webSocketClosesTotal = new Counter({
   name: 'provider_websocket_closes_total',
@@ -38,9 +39,10 @@ export function createProvider(providerUrl: string, name: string): Provider {
 const WebSocketProviderClass = (): new () => ethers.providers.WebSocketProvider => (class {} as never);
 
 class WebSocketProvider extends WebSocketProviderClass() {
-  private provider?: ethers.providers.WebSocketProvider;
+  private attempts = 0;
   private events: ethers.providers.WebSocketProvider['_events'] = [];
   private requests: ethers.providers.WebSocketProvider['_requests'] = {};
+  private provider?: ethers.providers.WebSocketProvider;
 
   private handler = {
     get(target: WebSocketProvider, prop: string, receiver: unknown) {
@@ -68,6 +70,8 @@ class WebSocketProvider extends WebSocketProviderClass() {
     let pongTimeout: NodeJS.Timeout | undefined;
 
     provider._websocket.on('open', () => {
+      this.attempts = 0;
+
       pingInterval = setInterval(() => {
         provider._websocket.ping();
 
@@ -106,7 +110,10 @@ class WebSocketProvider extends WebSocketProviderClass() {
       if (pongTimeout) clearTimeout(pongTimeout);
 
       if (code !== 1000) {
-        setTimeout(() => this.create(), WEBSOCKET_RECONNECT_DELAY);
+        const temp = Math.min(WEBSOCKET_BACKOFF_CAP, WEBSOCKET_BACKOFF_BASE * 2 ** this.attempts++);
+        const sleep = temp / 2 + getRandomInt(0, temp / 2);
+
+        setTimeout(() => this.create(), sleep);
       }
 
       webSocketClosesTotal.labels(this.name, code.toString()).inc();
@@ -114,4 +121,8 @@ class WebSocketProvider extends WebSocketProviderClass() {
 
     this.provider = provider;
   }
+}
+
+function getRandomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
