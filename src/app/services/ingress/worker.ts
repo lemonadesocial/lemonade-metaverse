@@ -1,5 +1,6 @@
 import { Counter, Gauge, Histogram } from 'prom-client';
 import { Job, JobsOptions, Queue, QueueScheduler, Worker } from 'bullmq';
+import * as assert from 'assert';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
 import { createToken } from '../token';
@@ -19,7 +20,7 @@ import { getDate } from '../../utils/date';
 import { getParsedUrl, getWebUrl } from '../../utils/url';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
-import { Block_height, IngressQuery, IngressQueryVariables, Order_filter, Token_filter } from '../../../lib/lemonade-marketplace/types.generated';
+import type { Block_height, IngressQuery, IngressQueryVariables, Order_filter, Token_filter } from '../../../lib/lemonade-marketplace/types.generated';
 
 const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
@@ -199,19 +200,17 @@ async function poll(state: State, data: JobData): Promise<JobData> {
       tokens_first,
     });
 
-    if (data._meta) {
-      nextData.meta = data._meta;
-
-      if (!block) {
-        block = { number: data._meta.block.number };
-      }
-    }
+    assert.ok(data._meta);
 
     const orders_length = data.orders?.length || 0;
     const tokens_length = data.tokens?.length || 0;
 
     if (orders_length || tokens_length) {
       await process(state, data);
+
+      if (!block) {
+        block = { number: data._meta.block.number };
+      }
 
       if (orders_length) {
         orders_where = { id_gt: data.orders![orders_length - 1].id };
@@ -224,6 +223,8 @@ async function poll(state: State, data: JobData): Promise<JobData> {
 
       nextData.persist = true;
     }
+
+    nextData.meta = data._meta;
 
     if (orders_length < orders_first) orders_first = 0;
     if (tokens_length < tokens_first) tokens_first = 0;
