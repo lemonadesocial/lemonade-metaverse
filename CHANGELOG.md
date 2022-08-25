@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.10.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.9.0...v10.10.0) (2022-08-25)
+
+
+### Features
+
+* **ingress:** require meta to be present and refactor poll ([f2e2e94](https://github.com/lemonadesocial/lemonade-metaverse/commit/f2e2e948960f695f268a41c40a26355c5ea06726))
+* **ingress:** use new meta timestamp field instead of rpc ([c34e887](https://github.com/lemonadesocial/lemonade-metaverse/commit/c34e887cac974c21dfde3ac5815475bf02644ecf))
+
 ## [10.9.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.8.0...v10.9.0) (2022-08-25)
 
 
