@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.9.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.8.0...v10.9.0) (2022-08-25)
+
+
+### Features
+
+* **ipfs:** use nft.storage gateway ([2a866bf](https://github.com/lemonadesocial/lemonade-metaverse/commit/2a866bf4c97d0bc24b24ff149388ad3e07e58bbb))
+* **ipfs:** use subdomain style to remove redirect ([ffccfab](https://github.com/lemonadesocial/lemonade-metaverse/commit/ffccfab517e60d95d8bbead636bc806dffbca6ca))
+* **provider:** add exponential backoff ([3bdc6fa](https://github.com/lemonadesocial/lemonade-metaverse/commit/3bdc6faad1bbad263e7c1f8f52fc90f8249a8946))
+
+
+### Bug Fixes
+
+* **token:** fix token without metadata always enriching ([3b758ee](https://github.com/lemonadesocial/lemonade-metaverse/commit/3b758ee77b3132728d605cd024bf4228f76b77e2))
+
 ## [10.8.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.7.0...v10.8.0) (2022-08-22)
 
 
