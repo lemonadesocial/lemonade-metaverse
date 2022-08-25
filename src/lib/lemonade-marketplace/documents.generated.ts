@@ -13,6 +13,7 @@ export const Ingress = gql`
   _meta {
     block {
       number
+      timestamp
     }
     hasIndexingErrors
   }

@@ -924,6 +924,8 @@ export type _Block_ = {
   hash?: Maybe<Scalars['Bytes']>;
   /** The block number */
   number: Scalars['Int'];
+  /** Timestamp of the block if available, format depends on the chain */
+  timestamp?: Maybe<Scalars['String']>;
 };
 
 /** The type for the top-level _meta field */
@@ -963,7 +965,7 @@ export type IngressQueryVariables = Exact<{
 }>;
 
 
-export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, updatedAt?: string | null | undefined, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency?: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined } | null | undefined, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
+export type IngressQuery = { __typename?: 'Query', _meta?: { __typename?: '_Meta_', hasIndexingErrors: boolean, block: { __typename?: '_Block_', number: number, timestamp?: string | null | undefined } } | null | undefined, orders?: Array<{ __typename?: 'Order', id: string, lastBlock: string, contract: string, orderId: string, createdAt: string, updatedAt?: string | null | undefined, kind: OrderKind, open: boolean, openFrom?: string | null | undefined, openTo?: string | null | undefined, maker: string, price: string, bidder?: string | null | undefined, bidAmount?: string | null | undefined, taker?: string | null | undefined, paidAmount?: string | null | undefined, currency?: { __typename?: 'Currency', id: string, name?: string | null | undefined, symbol?: string | null | undefined } | null | undefined, token: { __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string } }>, tokens?: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
 
 export type GetTokensQueryVariables = Exact<{
   where?: Maybe<Token_filter>;

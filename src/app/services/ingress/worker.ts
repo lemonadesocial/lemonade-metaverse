@@ -25,7 +25,7 @@ const JOB_DELAY = 1000;
 const POLL_FIRST = 1000;
 
 interface JobData {
-  meta?: { block: number; hasIndexingErrors: boolean };
+  meta?: IngressQuery['_meta'];
   persist?: boolean;
   tokens_createdAt_gt?: string;
 }
@@ -192,7 +192,7 @@ async function poll(state: State, data: JobData): Promise<JobData> {
     const data = await state.network.indexer().request<IngressQuery, IngressQueryVariables>(Ingress, {
       block,
       orders_include: orders_first > 0,
-      orders_where: { _change_block: { number_gte: meta ? meta.block + 1 : 0 }, ...orders_where },
+      orders_where: { _change_block: { number_gte: meta ? meta.block.number + 1 : 0 }, ...orders_where },
       orders_first,
       tokens_include: tokens_first > 0,
       tokens_where: { createdAt_gt: tokens_createdAt_gt, ...tokens_where, ...state.network.ingressWhere },
@@ -200,10 +200,7 @@ async function poll(state: State, data: JobData): Promise<JobData> {
     });
 
     if (data._meta) {
-      nextData.meta = {
-        block: data._meta.block.number,
-        hasIndexingErrors: data._meta.hasIndexingErrors,
-      };
+      nextData.meta = data._meta;
 
       if (!block) {
         block = { number: data._meta.block.number };
@@ -255,20 +252,13 @@ async function processor(state: State, { data }: Job<JobData>) {
 
   ingressDurationTimer();
 
-  if (!nextData.meta) return;
-
-  try {
-    watchdogIndexerDelayBlocks.labels(labels).set(state.block - nextData.meta.block);
-
-    if (data.meta?.block !== nextData.meta.block) {
-      const block = await state.network.provider().getBlock(nextData.meta.block);
-
-      watchdogIndexerDelaySeconds.labels(labels).set(block ? (now - block.timestamp * 1000) / 1000 : 0);
-    }
-
+  if (nextData.meta) {
+    watchdogIndexerDelayBlocks.labels(labels).set(state.block - nextData.meta.block.number);
     watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
-  } catch (err) {
-    logger.error(err, 'failed to process ingress meta')
+
+    if (nextData.meta.block !== data.meta?.block && nextData.meta.block.timestamp) {
+      watchdogIndexerDelaySeconds.labels(labels).set(now / 1000 - parseInt(nextData.meta.block.timestamp, 16));
+    }
   }
 }
 

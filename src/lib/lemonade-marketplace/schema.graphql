@@ -12,7 +12,10 @@ query Ingress(
   $tokens_include: Boolean!, $tokens_where: Token_filter, $tokens_first: Int
 ) {
   _meta {
-    block { number }
+    block {
+      number
+      timestamp
+    }
     hasIndexingErrors
   }
 
