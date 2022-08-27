@@ -38,7 +38,7 @@
     "node-fetch": "^2",
     "pino": "^7.1.0",
     "pino-slack-transport": "^1.1.0",
-    "prom-client": "^14.0.1",
+    "prom-client": "^14.1.0",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.20",
     "type-graphql": "^1.1.1",
