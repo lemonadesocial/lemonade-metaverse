@@ -1,4 +1,4 @@
-import { Counter } from 'prom-client';
+import { Counter, Gauge } from 'prom-client';
 import { ethers } from 'ethers';
 
 import { logger } from '../helpers/pino';
@@ -16,6 +16,11 @@ const webSocketClosesTotal = new Counter({
 const webSocketErrorsTotal = new Counter({
   name: 'provider_websocket_errors_total',
   help: 'Total number of provider websocket errors',
+  labelNames: ['network'],
+});
+const webSocketStatus = new Gauge({
+  name: 'provider_websocket_status',
+  help: 'Status of the provider websocket',
   labelNames: ['network'],
 });
 const webSocketTimeoutsTotal = new Counter({
@@ -92,6 +97,8 @@ class WebSocketProvider extends WebSocketProviderClass() {
         provider._websocket.send(this.requests[key].payload);
         delete this.requests[key];
       }
+
+      webSocketStatus.labels(this.name).set(1);
     });
 
     provider._websocket.on('error', (err: Error) => {
@@ -117,6 +124,7 @@ class WebSocketProvider extends WebSocketProviderClass() {
       }
 
       webSocketClosesTotal.labels(this.name, code.toString()).inc();
+      webSocketStatus.labels(this.name).set(0);
     });
 
     this.provider = provider;
