@@ -326,6 +326,8 @@ export async function start() {
 }
 
 async function stopNetwork(network: Network) {
+  if (!states[network.name]) return;
+
   const state = states[network.name];
 
   if (state.worker) await state.worker.close();
