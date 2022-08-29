@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.11.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.11.0...v10.11.1) (2022-08-27)
+
+
+### Bug Fixes
+
+* **ingress:** fix stop network without state ([bf69b0b](https://github.com/lemonadesocial/lemonade-metaverse/commit/bf69b0b9e0ce0334cc47d56bb170802cb489f2e6))
+
 ## [10.11.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.10.0...v10.11.0) (2022-08-27)
 
 
