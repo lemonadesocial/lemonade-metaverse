@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.13.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.12.0...v10.13.0) (2022-09-01)
+
+
+### Features
+
+* **provider:** use static json rpc provider instead of json rpc provider ([7df3c6d](https://github.com/lemonadesocial/lemonade-metaverse/commit/7df3c6d790e1831d80400f21dfa6c417568a4d4e))
+
 ## [10.12.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.11.1...v10.12.0) (2022-09-01)
 
 
