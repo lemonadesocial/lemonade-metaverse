@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.12.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.11.1...v10.12.0) (2022-09-01)
+
+
+### Features
+
+* **ingress:** exclude updates from ingress duration metric ([514a283](https://github.com/lemonadesocial/lemonade-metaverse/commit/514a2833a19785061640e299b0c346c370c10030))
+
 ## [10.11.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.11.0...v10.11.1) (2022-08-27)
 
 
