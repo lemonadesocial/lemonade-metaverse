@@ -241,6 +241,8 @@ async function processor(state: State, { data }: Job<JobData>) {
   const nextData = await poll(state, data);
   const now = Date.now();
 
+  ingressDurationTimer();
+
   await Promise.all([
     nextData.persist &&
       StateModel.updateOne(
@@ -250,8 +252,6 @@ async function processor(state: State, { data }: Job<JobData>) {
       ),
     state.queue.add('*', nextData, jobOptions),
   ]);
-
-  ingressDurationTimer();
 
   if (nextData.meta) {
     watchdogIndexerDelayBlocks.labels(labels).set(state.block - nextData.meta.block.number);
