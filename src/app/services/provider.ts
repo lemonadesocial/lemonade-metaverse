@@ -38,7 +38,7 @@ export function createProvider(providerUrl: string, name: string): Provider {
     return new WebSocketProvider(providerUrl, name);
   }
 
-  return new ethers.providers.JsonRpcProvider(providerUrl);
+  return new ethers.providers.StaticJsonRpcProvider(providerUrl);
 }
 
 const WebSocketProviderClass = (): new () => ethers.providers.WebSocketProvider => (class {} as never);
