@@ -41,6 +41,13 @@ export function createToken<T extends GraphQLToken>(network: Network, token: T) 
   };
 }
 
+function shouldEnrich(token: Token & { registry: Registry }) {
+  if (!token.enrichCount) return true;
+  if (!token.metadata && token.registry.supportsERC721Metadata && token.enrichCount < 3) return true;
+
+  return false;
+}
+
 async function waitForEnrich(tokens: Token[]) {
   const map = new Map(tokens.map((token) => [token.id, token]));
   let listener: ((...args: any[]) => void) | undefined;
@@ -111,7 +118,7 @@ async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
       },
     },
     { $unwind: { path: '$order', preserveNullAndEmptyArrays: true } },
-    { $project: { id: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1, registry: 1, order: 1 } },
+    { $project: { id: 1, enrichCount: 1, enrichedAt: 1, uri: 1, royalties: 1, metadata: 1, registry: 1, order: 1 } },
   ]);
   const map = Object.fromEntries(docs.map((doc) => [doc.id, doc]));
 
@@ -123,7 +130,7 @@ async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
     const token = { ...createToken(network, item), ...doc };
 
     tokens.push(token);
-    if (!doc?.enrichedAt) missing.push(token);
+    if (shouldEnrich(token)) missing.push(token);
   }
 
   if (missing.length) {
@@ -186,7 +193,7 @@ export async function getToken(network: Network, id: string) {
 
   const token = { ...external, ...internal };
 
-  if (!internal?.enrichedAt) {
+  if (shouldEnrich(token)) {
     await waitForEnrich([token]);
   }
 
