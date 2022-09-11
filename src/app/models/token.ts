@@ -43,6 +43,10 @@ export class Token {
   @prop({ required: true })
   public tokenId!: string;
 
+  @Field({ nullable: true, description: 'The number of times this token has been enriched.' })
+  @prop()
+  public enrichCount?: number;
+
   @Field({ nullable: true, description: 'When this token was last enriched.' })
   @prop()
   public enrichedAt?: Date;

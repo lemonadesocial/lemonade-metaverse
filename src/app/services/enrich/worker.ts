@@ -128,6 +128,7 @@ const processor: Processor<JobData> = async (job) => {
   ]).catch(() => { /* no-op */ });
 
   token.enrichedAt = new Date();
+  token.enrichCount = token.enrichCount ? token.enrichCount + 1 : 1;
 
   writer.enqueue({
     updateOne: {
