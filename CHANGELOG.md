@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.14.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.13.0...v10.14.0) (2022-09-11)
+
+
+### Features
+
+* **token:** add enrich count ([d906455](https://github.com/lemonadesocial/lemonade-metaverse/commit/d90645573dac7ecc8a39db292b4a8a2c5455e6c5))
+* **token:** enrich when metadata is missing ([7f118f5](https://github.com/lemonadesocial/lemonade-metaverse/commit/7f118f556d0398df88b0292479fc52c730a87d00))
+
 ## [10.13.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.12.0...v10.13.0) (2022-09-01)
 
 
