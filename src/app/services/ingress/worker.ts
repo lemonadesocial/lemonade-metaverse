@@ -258,7 +258,7 @@ async function processor(state: State, { data }: Job<JobData>) {
     watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
 
     if (nextData.meta.block !== data.meta?.block && nextData.meta.block.timestamp) {
-      watchdogIndexerDelaySeconds.labels(labels).set(now / 1000 - parseInt(nextData.meta.block.timestamp, 16));
+      watchdogIndexerDelaySeconds.labels(labels).set(now / 1000 - nextData.meta.block.timestamp);
     }
   }
 }
