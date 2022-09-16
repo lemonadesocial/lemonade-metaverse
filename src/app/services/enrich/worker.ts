@@ -84,7 +84,7 @@ const processor: Processor<JobData> = async (job) => {
   assert.ok(registry.isERC721, `registry network ${registry.network} id ${registry.id} not ERC721`);
 
   await Promise.all([
-    registry.supportsERC721Metadata && (async () => {
+    (registry.supportsERC721Metadata) && (async () => {
       token.uri = await tokenURI(network, token.contract, token.tokenId);
 
       const { href, pathname, protocol } = parseUrl(token.uri);
@@ -110,7 +110,7 @@ const processor: Processor<JobData> = async (job) => {
           break; }
       }
     })(),
-    registry.supportsRaribleRoyaltiesV2 || registry.supportsERC2981 && (async () => {
+    (registry.supportsRaribleRoyaltiesV2 || registry.supportsERC2981) && (async () => {
       if (registry.supportsRaribleRoyaltiesV2) {
         const royalties = await getRaribleV2Royalties(network, token.contract, token.tokenId);
 
