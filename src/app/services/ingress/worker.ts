@@ -34,8 +34,6 @@ interface JobData {
 interface State {
   name: string;
   network: Network;
-  block: number;
-  blockListener: (block: number) => void;
   queue: Queue;
   queueScheduler: QueueScheduler;
   worker?: Worker<JobData>;
@@ -66,10 +64,10 @@ const ingressTimeToRecoverySeconds = new Histogram({
   help: 'Time to recovery of metaverse ingress in seconds',
   buckets: [1, 5, 30, 60, 300, 900, 1800, 3600, 7200, 10800, 14400],
 });
-const watchdogIndexerDelayBlocks = new Gauge({
+const watchdogIndexerBlock = new Gauge({
   labelNames: ['network'],
-  name: 'metaverse_watchdog_indexer_delay_blocks',
-  help: 'Delay of metaverse indexer in blocks',
+  name: 'metaverse_watchdog_indexer_block',
+  help: 'Block of the metaverse indexer',
 });
 const watchdogIndexerDelaySeconds = new Gauge({
   labelNames: ['network'],
@@ -254,7 +252,7 @@ async function processor(state: State, { data }: Job<JobData>) {
   ]);
 
   if (nextData.meta) {
-    watchdogIndexerDelayBlocks.labels(labels).set(state.block - nextData.meta.block.number);
+    watchdogIndexerBlock.labels(labels).set(nextData.meta.block.number);
     watchdogIndexerError.labels(labels).set(nextData.meta.hasIndexingErrors ? 1 : 0);
 
     if (nextData.meta.block !== data.meta?.block && nextData.meta.block.timestamp) {
@@ -275,13 +273,9 @@ async function startNetwork(network: Network) {
   const state: State = states[network.name] = {
     name,
     network,
-    block: await network.provider().getBlockNumber(),
-    blockListener: (block) => state.block = block,
     queue: new Queue<JobData>(name, { connection }),
     queueScheduler: new QueueScheduler(name, { connection }),
   };
-
-  network.provider().on('block', state.blockListener);
 
   await Promise.all([
     state.queue.waitUntilReady(),
@@ -333,8 +327,6 @@ async function stopNetwork(network: Network) {
   if (state.worker) await state.worker.close();
   await state.queue.close();
   await state.queueScheduler.close();
-
-  network.provider().off('block', state.blockListener);
 }
 
 export async function stop() {
