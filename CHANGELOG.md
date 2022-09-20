@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.16.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.15.0...v10.16.0) (2022-09-20)
+
+
+### Features
+
+* **ingress:** remove block listener ([7009b89](https://github.com/lemonadesocial/lemonade-metaverse/commit/7009b89a20496d4e52ae0341263bca047e3e2a9d))
+
+
+### Bug Fixes
+
+* **enrich:** fix rarible royalties not being fetched ([4e67d7a](https://github.com/lemonadesocial/lemonade-metaverse/commit/4e67d7a0efe826a50ed4bb3c30ed297bf50279e4))
+
 ## [10.15.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.14.0...v10.15.0) (2022-09-15)
 
 
