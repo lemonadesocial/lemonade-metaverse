@@ -117,8 +117,7 @@ class WebSocketProvider extends WebSocketProviderClass() {
       if (pongTimeout) clearTimeout(pongTimeout);
 
       if (code !== 1000) {
-        const temp = Math.min(WEBSOCKET_BACKOFF_CAP, WEBSOCKET_BACKOFF_BASE * 2 ** this.attempts++);
-        const sleep = temp / 2 + getRandomInt(0, temp / 2);
+        const sleep = getRandomInt(0, Math.min(WEBSOCKET_BACKOFF_CAP, WEBSOCKET_BACKOFF_BASE * 2 ** this.attempts++));
 
         setTimeout(() => this.create(), sleep);
       }
