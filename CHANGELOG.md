@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.17.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.16.0...v10.17.0) (2022-09-21)
+
+
+### Features
+
+* **enrich:** add unique metadata generation ([0784947](https://github.com/lemonadesocial/lemonade-metaverse/commit/07849478bcdcce26e0cb9fcbd559bdb16410c0c5))
+* **provider:** use full jitter backoff algorithm ([8675b63](https://github.com/lemonadesocial/lemonade-metaverse/commit/8675b63b8f25c4e31dbebab745344cee94b874b7))
+
 ## [10.16.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.15.0...v10.16.0) (2022-09-20)
 
 
