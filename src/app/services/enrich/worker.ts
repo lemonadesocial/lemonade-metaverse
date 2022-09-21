@@ -18,9 +18,10 @@ import { networkMap } from '../network';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
 
-import { getRegistry } from '../registry';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 import { getRaribleV2Royalties } from '../contract/rarible-royalties-v2';
+import { getRegistry } from '../registry';
+import { getUniqueMetadata, isUniqueCollection } from '../unique';
 import { royaltyInfo } from '../contract/erc2981';
 import { tokenURI } from '../contract/erc721-metadata';
 
@@ -84,6 +85,9 @@ const processor: Processor<JobData> = async (job) => {
   assert.ok(registry.isERC721, `registry network ${registry.network} id ${registry.id} not ERC721`);
 
   await Promise.all([
+    (isUniqueCollection(network, token.contract) && !registry.supportsERC721Metadata) && (async () => {
+      token.metadata = await getUniqueMetadata(network, token.contract, token.tokenId);
+    })(),
     (registry.supportsERC721Metadata) && (async () => {
       token.uri = await tokenURI(network, token.contract, token.tokenId);
 

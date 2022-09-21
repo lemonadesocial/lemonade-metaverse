@@ -1,7 +1,9 @@
 import LRU from 'lru-cache';
 
 import { ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, LemonadePoapV1_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from './contract/constants';
+
 import { getSupportedInterfaces } from './contract/introspection';
+import { isUniqueCollection } from './unique';
 import { tokenURI } from './contract/erc721-metadata';
 
 import { Registry, RegistryModel } from '../models/registry';
@@ -38,7 +40,7 @@ async function createUniqueCollectionRegistry(network: Network, address: string,
 }
 
 async function createRegistry(network: Network, address: string, tokenId: string) {
-  if (network.uniqueCollectionPrefix && address.startsWith(network.uniqueCollectionPrefix)) {
+  if (isUniqueCollection(network, address)) {
     return await createUniqueCollectionRegistry(network, address, tokenId);
   }
 

@@ -21,6 +21,9 @@ export class Network {
   public ingressWhere?: any;
 
   @prop()
+  public uniqueApiUrl?: string;
+
+  @prop()
   public uniqueCollectionPrefix?: string;
 }
 
