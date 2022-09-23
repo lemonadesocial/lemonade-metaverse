@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.18.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.17.0...v10.18.0) (2022-09-23)
+
+
+### Features
+
+* **enrich:** increase fetch timeout ([e286712](https://github.com/lemonadesocial/lemonade-metaverse/commit/e28671232d7c7f3aed3046946ea154f39567e5b0))
+
 ## [10.17.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.16.0...v10.17.0) (2022-09-21)
 
 
