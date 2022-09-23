@@ -25,7 +25,7 @@ import { getUniqueMetadata, isUniqueCollection } from '../unique';
 import { royaltyInfo } from '../contract/erc2981';
 import { tokenURI } from '../contract/erc721-metadata';
 
-const FETCH_TIMEOUT = 10000;
+const FETCH_TIMEOUT = 60000;
 const WORKER_CONCURRENCY = 25;
 const WRITER_TIMEOUT = 1000;
 
