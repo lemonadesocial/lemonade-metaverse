@@ -17,7 +17,7 @@ function getUniqueCollectionId(address: string) {
 export async function getUniqueMetadata(network: Network, address: string, tokenId: string) {
   if (!network.uniqueApiUrl) return;
 
-  const response = await fetch(`${network.uniqueApiUrl}/v1/tokens?collectionId=${getUniqueCollectionId(address)}&tokenId=${tokenId}`, { agent });
+  const response = await fetch(`${network.uniqueApiUrl}v1/tokens?collectionId=${getUniqueCollectionId(address)}&tokenId=${tokenId}`, { agent });
 
   assert.ok(response.ok);
 
