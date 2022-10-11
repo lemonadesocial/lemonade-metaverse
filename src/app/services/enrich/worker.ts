@@ -80,7 +80,7 @@ const processor: Processor<JobData> = async (job) => {
 
   assert.ok(network);
 
-  const registry = await getRegistry(network, token.contract, token.tokenId);
+  const registry = await getRegistry(network, token.contract);
 
   assert.ok(registry.isERC721, `registry network ${registry.network} id ${registry.id} not ERC721`);
 

@@ -3,47 +3,13 @@ import LRU from 'lru-cache';
 import { ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, LemonadePoapV1_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from './contract/constants';
 
 import { getSupportedInterfaces } from './contract/introspection';
-import { isUniqueCollection } from './unique';
-import { tokenURI } from './contract/erc721-metadata';
 
 import { Registry, RegistryModel } from '../models/registry';
 import type { Network } from './network';
 
 const lru = new LRU<string, Promise<Registry>>({ max: 100 });
 
-async function createUniqueCollectionRegistry(network: Network, address: string, tokenId: string) {
-  const registry = new Registry();
-  registry.network = network.name;
-  registry.id = address;
-
-  /**
-   * All non-fungible collections declare support for the ERC721Metadata interface.
-   * However, reading the token URI reverts with `No tokenURI permission`, unless the collection sets the `tokenPropertyPermission` property.
-   * This property is currently not exposed. So to determine actual ERC721Metadata support, we attempt to read the token URI.
-   */
-  try {
-    await tokenURI(network, address, tokenId);
-
-    // non-fungible with token property
-    registry.isERC721 = true;
-    registry.supportsERC721Metadata = true;
-  } catch (err: any) {
-    if (err.error?.message.endsWith('revert Token properties not found')) { // burned non-fungible with token property
-      registry.isERC721 = true;
-      registry.supportsERC721Metadata = true;
-    } else if (err.error?.message.endsWith('revert No tokenURI permission')) { // non-fungible without token property
-      registry.isERC721 = true;
-    }
-  }
-
-  return registry;
-}
-
-async function createRegistry(network: Network, address: string, tokenId: string) {
-  if (isUniqueCollection(network, address)) {
-    return await createUniqueCollectionRegistry(network, address, tokenId);
-  }
-
+async function createRegistry(network: Network, address: string) {
   const registry = new Registry();
   registry.network = network.name;
   registry.id = address;
@@ -73,13 +39,13 @@ async function createRegistry(network: Network, address: string, tokenId: string
   return registry;
 }
 
-async function fetchRegistry(network: Network, address: string, tokenId: string): Promise<Registry> {
+async function fetchRegistry(network: Network, address: string): Promise<Registry> {
   const query = { network: network.name, id: address };
 
   let registry = await RegistryModel.findOne(query).lean<Registry | null>();
 
   if (!registry) {
-    registry = await createRegistry(network, address, tokenId);
+    registry = await createRegistry(network, address);
 
     await RegistryModel.replaceOne(query, registry, { upsert: true });
   }
@@ -87,13 +53,13 @@ async function fetchRegistry(network: Network, address: string, tokenId: string)
   return registry;
 }
 
-export async function getRegistry(network: Network, address: string, tokenId: string): Promise<Registry> {
+export async function getRegistry(network: Network, address: string): Promise<Registry> {
   const key = network.name + address;
 
   let promise = lru.get(key);
 
   if (!promise) {
-    promise = fetchRegistry(network, address, tokenId)
+    promise = fetchRegistry(network, address)
       .catch((err) => { lru.del(key); throw err; });
 
     lru.set(key, promise);
