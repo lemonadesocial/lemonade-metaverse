@@ -1,11 +1,11 @@
 import LRU from 'lru-cache';
 
-import { ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, LemonadePoapV1_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from './contract/constants';
-
 import { getSupportedInterfaces } from './contract/introspection';
 
 import { Registry, RegistryModel } from '../models/registry';
 import type { Network } from './network';
+
+import { ERC2981_INTERFACE_ID, ERC721Metadata_INTERFACE_ID, ERC721_INTERFACE_ID, LemonadePoapV1_INTERFACE_ID, RaribleRoyaltiesV2_INTERFACE_ID } from './contract/constants';
 
 const lru = new LRU<string, Promise<Registry>>({ max: 100 });
 
@@ -39,7 +39,7 @@ async function createRegistry(network: Network, address: string) {
   return registry;
 }
 
-async function fetchRegistry(network: Network, address: string): Promise<Registry> {
+async function fetchRegistry(network: Network, address: string) {
   const query = { network: network.name, id: address };
 
   let registry = await RegistryModel.findOne(query).lean<Registry | null>();
@@ -53,7 +53,7 @@ async function fetchRegistry(network: Network, address: string): Promise<Registr
   return registry;
 }
 
-export async function getRegistry(network: Network, address: string): Promise<Registry> {
+export async function getRegistry(network: Network, address: string) {
   const key = network.name + address;
 
   let promise = lru.get(key);
