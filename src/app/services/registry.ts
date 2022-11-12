@@ -48,27 +48,25 @@ async function createRegistry(network: Network, address: string, tokenId: string
   registry.network = network.name;
   registry.id = address;
 
-  try {
-    const [
-      isERC721,
-      supportsERC721Metadata,
-      supportsERC2981,
-      supportsLemonadePoapV1,
-      supportsRaribleRoyaltiesV2,
-    ] = await getSupportedInterfaces(network, address, [
-      ERC721_INTERFACE_ID,
-      ERC721Metadata_INTERFACE_ID,
-      ERC2981_INTERFACE_ID,
-      LemonadePoapV1_INTERFACE_ID,
-      RaribleRoyaltiesV2_INTERFACE_ID,
-    ]);
+  const [
+    isERC721,
+    supportsERC721Metadata,
+    supportsERC2981,
+    supportsLemonadePoapV1,
+    supportsRaribleRoyaltiesV2,
+  ] = await getSupportedInterfaces(network, address, [
+    ERC721_INTERFACE_ID,
+    ERC721Metadata_INTERFACE_ID,
+    ERC2981_INTERFACE_ID,
+    LemonadePoapV1_INTERFACE_ID,
+    RaribleRoyaltiesV2_INTERFACE_ID,
+  ]);
 
-    if (isERC721) registry.isERC721 = true;
-    if (supportsERC721Metadata) registry.supportsERC721Metadata = true;
-    if (supportsERC2981) registry.supportsERC2981 = true;
-    if (supportsLemonadePoapV1) registry.supportsLemonadePoapV1 = true;
-    if (supportsRaribleRoyaltiesV2) registry.supportsRaribleRoyaltiesV2 = true;
-  } catch { /* no-op */ }
+  if (isERC721) registry.isERC721 = true;
+  if (supportsERC721Metadata) registry.supportsERC721Metadata = true;
+  if (supportsERC2981) registry.supportsERC2981 = true;
+  if (supportsLemonadePoapV1) registry.supportsLemonadePoapV1 = true;
+  if (supportsRaribleRoyaltiesV2) registry.supportsRaribleRoyaltiesV2 = true;
 
   return registry;
 }
