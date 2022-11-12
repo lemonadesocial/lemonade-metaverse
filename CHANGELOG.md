@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.19.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.18.0...v10.19.0) (2022-11-12)
+
+
+### Features
+
+* **registry:** fail when get supported interfaces fails ([c5b18d2](https://github.com/lemonadesocial/lemonade-metaverse/commit/c5b18d2ee793afe95a86da58acdad5c007ff784b))
+
 ## [10.18.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.17.0...v10.18.0) (2022-09-23)
 
 
