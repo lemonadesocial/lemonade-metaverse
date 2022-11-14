@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.20.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.19.0...v10.20.0) (2022-11-14)
+
+
+### Features
+
+* **token:** add index on network, contract and token id ([9644620](https://github.com/lemonadesocial/lemonade-metaverse/commit/964462092c4ceaec8d31cce9bc1c77b1c62eb182))
+
 ## [10.19.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.18.0...v10.19.0) (2022-11-12)
 
 
