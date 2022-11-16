@@ -170,7 +170,7 @@ const processor: Processor<JobData> = async (job) => {
     await pubSub.publish(Trigger.TokenUpdated, token);
   }
 
-  enrichDurationTimer();
+  enrichDurationTimer({ network: network.name });
 };
 
 let queueScheduler: QueueScheduler | undefined;
