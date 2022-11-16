@@ -16,8 +16,8 @@ RUN yarn build || exit $? && \
 FROM public.ecr.aws/docker/library/node:current-alpine as base
 WORKDIR /app
 
-RUN wget https://github.com/segmentio/chamber/releases/download/v2.10.6/chamber-v2.10.6-linux-amd64 -O /usr/local/bin/chamber && \
-    echo '8b2750d2f93c6014c7a26d5695472a9d164624915fb140879abe77d746356f5f  /usr/local/bin/chamber' | sha256sum -c && \
+RUN wget https://github.com/segmentio/chamber/releases/download/v2.10.12/chamber-v2.10.12-linux-amd64 -O /usr/local/bin/chamber && \
+    echo 'd9657b42373bfa4ec883332704ce6bf7cdeef2bc31da0f825aba7648c75f4ed5  /usr/local/bin/chamber' | sha256sum -c && \
     chmod +x /usr/local/bin/chamber
 
 ### app
