@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.21.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.20.0...v10.21.0) (2022-11-16)
+
+
+### Features
+
+* upgrade chamber ([8faa80e](https://github.com/lemonadesocial/lemonade-metaverse/commit/8faa80ecd1cdc0eaf30079a380cb19cac6471f63))
+* use node lts ([ad80bc8](https://github.com/lemonadesocial/lemonade-metaverse/commit/ad80bc82dc247375e3d661e09d9bf134b3d50e78))
+
+
+### Bug Fixes
+
+* **enrich:** fix network label missing in enrich duration metric ([d102c02](https://github.com/lemonadesocial/lemonade-metaverse/commit/d102c02ff49f479884c80bd105bb4841bd148e03))
+
 ## [10.20.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.19.0...v10.20.0) (2022-11-14)
 
 
