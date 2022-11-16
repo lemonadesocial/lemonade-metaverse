@@ -1,5 +1,5 @@
 ### builder
-FROM public.ecr.aws/docker/library/node:current-alpine as builder
+FROM public.ecr.aws/docker/library/node:18-alpine as builder
 WORKDIR /app
 
 COPY package.json yarn.lock /app/
@@ -13,7 +13,7 @@ RUN yarn build || exit $? && \
     yarn install --frozen-lockfile --ignore-optional --production --offline
 
 ### base
-FROM public.ecr.aws/docker/library/node:current-alpine as base
+FROM public.ecr.aws/docker/library/node:18-alpine as base
 WORKDIR /app
 
 RUN wget https://github.com/segmentio/chamber/releases/download/v2.10.12/chamber-v2.10.12-linux-amd64 -O /usr/local/bin/chamber && \
