@@ -9,7 +9,7 @@ RUN yarn install --frozen-lockfile --ignore-optional
 FROM builder as build
 
 COPY . /app
-RUN yarn build || exit $? && \
+RUN yarn build && \
     yarn install --frozen-lockfile --ignore-optional --production --offline
 
 ### base
