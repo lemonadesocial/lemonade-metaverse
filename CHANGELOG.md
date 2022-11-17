@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.22.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.21.0...v10.22.0) (2022-11-17)
+
+
+### Features
+
+* upgrade unique integration for new release ([aa2227f](https://github.com/lemonadesocial/lemonade-metaverse/commit/aa2227f76b8605e49ae8a668f6082c3297644f4d))
+
 ## [10.21.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.20.0...v10.21.0) (2022-11-16)
 
 
