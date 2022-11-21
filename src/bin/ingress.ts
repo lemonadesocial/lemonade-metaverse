@@ -20,12 +20,13 @@ process.on('uncaughtRejection', (err) => {
 
 async function shutdown() {
   try {
+    await admin.stop();
+
     await ingress.stop();
 
-    await admin.stop();
+    await redis.quit();
     await network.close();
     await db.disconnect();
-    redis.disconnect();
   } catch (err: any) {
     logger.fatal(err);
     process.exit(1);
@@ -38,9 +39,10 @@ process.on('SIGTERM', shutdown);
 async function main() {
   await db.connect();
   await network.init();
-  await admin.start();
 
   await ingress.start();
+
+  await admin.start();
 
   logger.info('metaverse ingress started');
 }

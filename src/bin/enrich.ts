@@ -21,12 +21,13 @@ process.on('uncaughtRejection', (err) => {
 
 async function shutdown() {
   try {
+    await admin.stop();
+
     await enrichWorker.stop();
 
-    await admin.stop();
+    await redis.quit();
     await network.close();
     await db.disconnect();
-    redis.disconnect();
   } catch (err: any) {
     logger.fatal(err);
     process.exit(1);
@@ -37,13 +38,14 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 async function main() {
-  admin.register(enrichAdmin.plugin);
-
   await db.connect();
   await network.init();
-  await admin.start();
 
   await enrichWorker.start();
+
+  admin.register(enrichAdmin.plugin);
+
+  await admin.start();
 
   logger.info('metaverse enrich started');
 }

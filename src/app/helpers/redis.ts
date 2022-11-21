@@ -24,10 +24,12 @@ export const redis = createRedis();
 export const publisher = createRedis();
 export const subscriber = createRedis();
 
-export function disconnect() {
-  redis.disconnect();
-  publisher.disconnect(),
-  subscriber.disconnect();
+export async function quit() {
+  await Promise.all([
+    redis.quit(),
+    publisher.quit(),
+    subscriber.quit(),
+  ]);
 }
 
 export async function getOrSet<T>(

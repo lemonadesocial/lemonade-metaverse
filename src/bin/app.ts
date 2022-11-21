@@ -28,12 +28,13 @@ process.on('uncaughtRejection', (err) => {
 
 async function shutdown() {
   try {
-    if (apolloServer) await apolloServer.stop();
-
     await admin.stop();
+
+    await apolloServer?.stop();
+
+    await redis.quit();
     await network.close();
     await db.disconnect();
-    redis.disconnect();
   } catch (err: any) {
     logger.fatal(err);
     process.exit(1);
@@ -46,7 +47,6 @@ process.on('SIGTERM', shutdown);
 async function main() {
   await db.connect();
   await network.init();
-  await admin.start();
 
   apolloServer = await createApolloServer(app);
 
@@ -65,6 +65,8 @@ async function main() {
     help: 'Number of open HTTP connections',
     collect: async function() { this.set(await getConnections()); },
   });
+
+  await admin.start();
 }
 
 void main();
