@@ -1,23 +1,22 @@
 import { Counter, Gauge, Histogram } from 'prom-client';
-import { Job, JobsOptions, Queue, QueueScheduler, Worker } from 'bullmq';
+import { Job, JobsOptions, Queue, Worker } from 'bullmq';
 import * as assert from 'assert';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
-import { createToken } from '../token';
-import { Network, networks } from '../network';
-import * as enrichQueue from '../enrich/queue';
-
-import { connection } from '../../helpers/bullmq';
 import { logger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 
+import { Network, networks } from '../network';
 import { Order, OrderKind, OrderModel } from '../../models/order';
 import { StateModel } from '../../models/state';
 import { Token, TokenModel } from '../../models/token';
 
+import { Connection, createConnection } from '../../helpers/bullmq';
+import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
 import { getParsedUrl, getWebUrl } from '../../utils/url';
+import * as enrichQueue from '../enrich/queue';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import type { Block_height, IngressQuery, IngressQueryVariables, Order_filter, Token_filter } from '../../../lib/lemonade-marketplace/types.generated';
@@ -34,8 +33,8 @@ interface JobData {
 interface State {
   name: string;
   network: Network;
+  connection: Connection;
   queue: Queue;
-  queueScheduler: QueueScheduler;
   worker?: Worker<JobData>;
 }
 
@@ -270,17 +269,15 @@ function timing({ timestamp }: Job<JobData>) {
 
 async function startNetwork(network: Network) {
   const name = `ingress:${network.name}`;
+  const connection = createConnection();
   const state: State = states[network.name] = {
     name,
     network,
+    connection,
     queue: new Queue<JobData>(name, { connection }),
-    queueScheduler: new QueueScheduler(name, { connection }),
   };
 
-  await Promise.all([
-    state.queue.waitUntilReady(),
-    state.queueScheduler.waitUntilReady(),
-  ]);
+  await state.queue.waitUntilReady();
 
   if (!await state.queue.getJobCountByTypes('wait', 'delayed', 'paused', 'active', 'failed')) {
     const extstate = await StateModel.findOne(
@@ -292,25 +289,22 @@ async function startNetwork(network: Network) {
     logger.info(job.asJSON(), 'created ingress job');
   }
 
-  state.worker = new Worker<JobData>(
-    name,
-    processor.bind(null, state),
-    { connection }
-  );
-  state.worker.on('failed', function onFailed(job: Job<JobData>, err) {
+  state.worker = new Worker<JobData>(name, processor.bind(null, state), { connection });
+  state.worker.on('failed', function onFailed(job, err) {
     ingressesTotal.inc({ network: state.network.name, status: 'fail' });
-    logger.error({ network: state.network.name, ...timing(job), err }, 'failed ingress');
+    logger.error({ network: state.network.name, ...job && timing(job), err }, 'failed ingress');
   });
-  state.worker.on('completed', function onCompleted(job: Job<JobData>) {
+  state.worker.on('completed', function onCompleted(job) {
     ingressesTotal.inc({ network: state.network.name, status: 'success' });
 
     if (job.attemptsMade > 1) {
-      const obj = timing(job);
+      const time = timing(job);
 
-      ingressTimeToRecoverySeconds.labels({ network: state.network.name }).observe(obj.secondsElapsed);
-      logger.info({ network: state.network.name, ...obj }, 'recovered ingress');
+      ingressTimeToRecoverySeconds.labels({ network: state.network.name }).observe(time.secondsElapsed);
+      logger.info({ network: state.network.name, ...time }, 'recovered ingress');
     }
   });
+
   await state.worker.waitUntilReady();
 }
 
@@ -324,9 +318,9 @@ async function stopNetwork(network: Network) {
 
   const state = states[network.name];
 
-  if (state.worker) await state.worker.close();
+  await state.worker?.close();
   await state.queue.close();
-  await state.queueScheduler.close();
+  await state.connection.quit();
 }
 
 export async function stop() {

@@ -1,13 +1,14 @@
-import { BulkJobOptions, Queue, QueueScheduler } from 'bullmq';
+import { BulkJobOptions, Queue } from 'bullmq';
 import * as assert from 'assert';
 
 import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 
-import { connection } from '../../helpers/bullmq';
 import { redis } from '../../helpers/redis';
 
-import { Order } from '../../models/order';
-import { Token } from '../../models/token';
+import { Connection, createConnection } from '../../helpers/bullmq';
+
+import type { Order } from '../../models/order';
+import type { Token } from '../../models/token';
 
 interface Item {
   token: Token;
@@ -19,12 +20,12 @@ interface Job {
   opts?: BulkJobOptions;
 }
 
+let connection: Connection | undefined;
 let queue: Queue<JobData> | undefined;
-let queueScheduler: QueueScheduler | undefined;
 
 export async function start() {
+  connection = createConnection();
   queue = new Queue<JobData>(QUEUE_NAME, { connection });
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection });
 }
 
 export async function enqueue(...items: Item[]) {
@@ -59,5 +60,5 @@ export async function enqueue(...items: Item[]) {
 
 export async function stop() {
   if (queue) await queue.close();
-  if (queueScheduler) await queueScheduler.close();
+  if (connection) await connection.quit();
 }

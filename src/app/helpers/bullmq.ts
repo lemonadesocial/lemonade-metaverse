@@ -1,11 +1,9 @@
-import type { RedisOptions } from 'ioredis';
-
-import { parseUrl } from '../utils/redis';
+import Redis from 'ioredis';
 
 import { redisUrl } from '../../config';
 
-export const connection: RedisOptions = {
-  ...parseUrl(redisUrl),
-  enableReadyCheck: false,
-  maxRetriesPerRequest: null,
-};
+export { Redis as Connection };
+
+export function createConnection() {
+  return new Redis(redisUrl, { maxRetriesPerRequest: null });
+}

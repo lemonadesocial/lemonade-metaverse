@@ -1,6 +1,6 @@
 import { Counter, Histogram } from 'prom-client';
 import { ethers } from 'ethers';
-import { Job, Processor, QueueScheduler, Worker } from 'bullmq';
+import { Job, Processor, Worker } from 'bullmq';
 import * as assert from 'assert';
 import * as http from 'http';
 import * as https from 'https';
@@ -12,12 +12,12 @@ import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 import { Token, TokenModel } from '../../models/token';
 import type { Order } from '../../models/order';
 
-import { connection } from '../../helpers/bullmq';
 import { logger } from '../../helpers/pino';
 import { networkMap } from '../network';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
 
+import { Connection, createConnection } from '../../helpers/bullmq';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 import { getRaribleV2Royalties } from '../contract/rarible-royalties-v2';
 import { getRegistry } from '../registry';
@@ -56,18 +56,17 @@ const enrichDurationSeconds = new Histogram({
 
 async function getOrders(job: Job<JobData>) {
   const key = `${ORDERS_KEY}:${job.id}`;
-  const [
-    [err1, members],
-    [err2],
-  ] = await redis.multi([
+  const result = await redis.multi([
     ['call', 'SMEMBERS', key],
     ['call', 'DEL', key],
   ]).exec();
 
-  if (err1) throw err1;
-  if (err2) throw err2;
+  assert.ok(result);
 
-  const values = members as string[];
+  if (result[0][0]) throw result[0][0];
+  if (result[1][0]) throw result[1][0];
+
+  const values = result[0][1] as string[];
 
   return values.map((value) => JSON.parse(value) as Order);
 }
@@ -173,29 +172,32 @@ const processor: Processor<JobData> = async (job) => {
   enrichDurationTimer({ network: network.name });
 };
 
-let queueScheduler: QueueScheduler | undefined;
+let connection: Connection | undefined;
 let worker: Worker<JobData> | undefined;
 
-export async function start(): Promise<void> {
-  queueScheduler = new QueueScheduler(QUEUE_NAME, { connection });
-  await queueScheduler.waitUntilReady();
+export async function start() {
+  connection = createConnection();
+  worker = new Worker<JobData>(QUEUE_NAME, processor, {
+    concurrency: WORKER_CONCURRENCY,
+    connection,
+  });
+  worker.on('failed', function onFailed(job, error) {
+    if (!job) return;
 
-  worker = new Worker<JobData>(QUEUE_NAME, processor, { connection, concurrency: WORKER_CONCURRENCY });
-  worker.on('failed', function onFailed(job: Job<JobData>, error) {
     enrichesTotal.inc({ network: job.data.token.network, status: 'fail' });
     pubSub.publish(Trigger.EnrichFailed, job.data.token);
     logger.error(error, 'failed to enrich');
   });
-  worker.on('completed', function onCompleted(job: Job<JobData>) {
+  worker.on('completed', function onCompleted(job) {
     enrichesTotal.inc({ network: job.data.token.network, status: 'success' });
   });
+
   await worker.waitUntilReady();
 }
 
 export async function stop(): Promise<void> {
   if (worker) await worker.close();
-
-  if (queueScheduler) await queueScheduler.close();
+  if (connection) await connection.quit();
 
   await writer.flush();
 }
