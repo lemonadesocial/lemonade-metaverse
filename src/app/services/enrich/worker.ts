@@ -130,7 +130,9 @@ const processor: Processor<JobData> = async (job) => {
           }
         }
       })(),
-    ]).catch(() => { /* no-op */ });
+    ]).catch((err) => {
+      logger.debug({ token, err }, 'failed to enrich');
+    });
 
     token.enrichedAt = new Date();
     token.enrichCount = token.enrichCount ? token.enrichCount + 1 : 1;
@@ -182,7 +184,7 @@ export async function start() {
   });
   worker.on('failed', function onFailed(job, err) {
     enrichesTotal.inc({ network: job?.data.token.network, status: 'fail' });
-    logger.error(err, 'failed to enrich');
+    logger.error({ token: job?.data.token, err }, 'failed to enrich');
   });
   worker.on('completed', function onCompleted(job) {
     enrichesTotal.inc({ network: job.data.token.network, status: 'success' });
