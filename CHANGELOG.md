@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.23.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.22.0...v10.23.0) (2022-11-21)
+
+
+### Features
+
+* **enrich:** improve error logging ([f33bc27](https://github.com/lemonadesocial/lemonade-metaverse/commit/f33bc27e1ce0c4806b87f6970302ff81e1626866))
+* **enrich:** improve worker structure ([9d95e46](https://github.com/lemonadesocial/lemonade-metaverse/commit/9d95e468ef41084397319ca4ccb4cf135a9b567e))
+* improve process setup and teardown ([9fca4a8](https://github.com/lemonadesocial/lemonade-metaverse/commit/9fca4a85fb958bc82a4d6f3fa84304c687027746))
+* upgrade bullmq and redis dependency and connection management ([988d93b](https://github.com/lemonadesocial/lemonade-metaverse/commit/988d93b0899cad1c1a470e5d165c36a2049e2f2d))
+
 ## [10.22.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.21.0...v10.22.0) (2022-11-17)
 
 
