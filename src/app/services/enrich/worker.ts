@@ -72,104 +72,103 @@ async function getOrders(job: Job<JobData>) {
 }
 
 const processor: Processor<JobData> = async (job) => {
-  const enrichDurationTimer = enrichDurationSeconds.startTimer();
-
   const { token } = job.data;
-  const network = networkMap[token.network];
 
-  assert.ok(network);
+  try {
+    const enrichDurationTimer = enrichDurationSeconds.startTimer();
 
-  const registry = await getRegistry(network, token.contract);
+    const network = networkMap[token.network];
 
-  assert.ok(registry.isERC721, `registry network ${registry.network} id ${registry.id} not ERC721`);
+    assert.ok(network);
 
-  await Promise.all([
-    (isUniqueCollection(network, token.contract) && !registry.supportsERC721Metadata) && (async () => {
-      token.metadata = await getUniqueMetadata(network, token.contract, token.tokenId);
-    })(),
-    (registry.supportsERC721Metadata) && (async () => {
-      token.uri = await tokenURI(network, token.contract, token.tokenId);
+    const registry = await getRegistry(network, token.contract);
 
-      const { href, pathname, protocol } = parseUrl(token.uri);
+    assert.ok(registry.isERC721, `registry network ${registry.network} id ${registry.id} not ERC721`);
 
-      switch (protocol) {
-        case 'data:': {
-          const pos = pathname.indexOf(',');
+    await Promise.all([
+      (isUniqueCollection(network, token.contract) && !registry.supportsERC721Metadata) && (async () => {
+        token.metadata = await getUniqueMetadata(network, token.contract, token.tokenId);
+      })(),
+      (registry.supportsERC721Metadata) && (async () => {
+        token.uri = await tokenURI(network, token.contract, token.tokenId);
 
-          assert.notStrictEqual(pos, -1);
+        const { href, pathname, protocol } = parseUrl(token.uri);
 
-          const base64ed = pathname.substring(0, pos).endsWith(';base64');
-          const data = pathname.substring(pos + 1);
+        switch (protocol) {
+          case 'data:': {
+            const pos = pathname.indexOf(',');
 
-          token.metadata = JSON.parse(base64ed ? Buffer.from(data, 'base64').toString() : data);
-          break; }
-        case 'http:':
-        case 'https:': {
-          const response = await fetch(href, fetchInit);
+            assert.notStrictEqual(pos, -1);
 
-          if (response.ok) {
-            token.metadata = await response.json();
+            const base64ed = pathname.substring(0, pos).endsWith(';base64');
+            const data = pathname.substring(pos + 1);
+
+            token.metadata = JSON.parse(base64ed ? Buffer.from(data, 'base64').toString() : data);
+            break; }
+          case 'http:':
+          case 'https:': {
+            const response = await fetch(href, fetchInit);
+
+            if (response.ok) {
+              token.metadata = await response.json();
+            }
+            break; }
+        }
+      })(),
+      (registry.supportsRaribleRoyaltiesV2 || registry.supportsERC2981) && (async () => {
+        if (registry.supportsRaribleRoyaltiesV2) {
+          const royalties = await getRaribleV2Royalties(network, token.contract, token.tokenId);
+
+          if (royalties.length) {
+            token.royalties = royalties.map(([account, value]) => ({ account: account.toLowerCase(), value: value.toString() }));
           }
-          break; }
-      }
-    })(),
-    (registry.supportsRaribleRoyaltiesV2 || registry.supportsERC2981) && (async () => {
-      if (registry.supportsRaribleRoyaltiesV2) {
-        const royalties = await getRaribleV2Royalties(network, token.contract, token.tokenId);
+        } else if (registry.supportsERC2981) {
+          const [receiver, amount] = await royaltyInfo(network, token.contract, token.tokenId, ethers.constants.WeiPerEther);
 
-        if (royalties.length) {
-          token.royalties = royalties.map(([account, value]) => ({ account: account.toLowerCase(), value: value.toString() }));
+          if (amount.gt(0)) {
+            token.royalties = [{ account: receiver.toLowerCase(), value: amount.div(ethers.constants.WeiPerEther).mul(10000).toString() }];
+          }
         }
-      } else if (registry.supportsERC2981) {
-        const [receiver, amount] = await royaltyInfo(network, token.contract, token.tokenId, ethers.constants.WeiPerEther);
+      })(),
+    ]).catch(() => { /* no-op */ });
 
-        if (amount.gt(0)) {
-          token.royalties = [{ account: receiver.toLowerCase(), value: amount.div(ethers.constants.WeiPerEther).mul(10000).toString() }];
-        }
-      }
-    })(),
-  ]).catch(() => { /* no-op */ });
+    token.enrichedAt = new Date();
+    token.enrichCount = token.enrichCount ? token.enrichCount + 1 : 1;
 
-  token.enrichedAt = new Date();
-  token.enrichCount = token.enrichCount ? token.enrichCount + 1 : 1;
+    writer.enqueue({
+      updateOne: {
+        filter: { network: token.network, id: token.id },
+        update: { $set: token },
+        upsert: true,
+      },
+    });
 
-  writer.enqueue({
-    updateOne: {
-      filter: { network: token.network, id: token.id },
-      update: { $set: token },
-      upsert: true,
-    },
-  });
+    const orders = await getOrders(job);
+    const imageUrl = getParsedUrl(token.metadata?.image);
+    const webUrl = getWebUrl(token);
 
-  const orders = await getOrders(job);
-  const imageUrl = getParsedUrl(token.metadata?.image);
-  const webUrl = getWebUrl(token);
+    if (orders.length) {
+      await Promise.all(orders.flatMap(async (order) => {
+        logger.info({ order, token, imageUrl, webUrl }, 'enrich order');
 
-  if (orders.length) {
-    const promises: Promise<void>[] = [];
+        return [
+          token.order === order.id
+            && pubSub.publish(Trigger.TokenUpdated, { ...token, order }),
+          pubSub.publish(Trigger.OrderUpdated, { ...order, token }),
+        ];
+      }));
+    } else {
+      logger.info({ token, imageUrl, webUrl }, 'enrich token');
 
-    for (const order of orders) {
-      logger.info({ order, token, imageUrl, webUrl }, 'enrich order');
-
-      promises.push(
-        pubSub.publish(Trigger.OrderUpdated, { ...order, token })
-      );
-
-      if (token.order === order.id) {
-        promises.push(
-          pubSub.publish(Trigger.TokenUpdated, { ...token, order })
-        );
-      }
+      await pubSub.publish(Trigger.TokenUpdated, token);
     }
 
-    await Promise.all(promises);
-  } else {
-    logger.info({ token, imageUrl, webUrl }, 'enrich token');
+    enrichDurationTimer({ network: network.name });
+  } catch (err) {
+    await pubSub.publish(Trigger.EnrichFailed, token);
 
-    await pubSub.publish(Trigger.TokenUpdated, token);
+    throw err;
   }
-
-  enrichDurationTimer({ network: network.name });
 };
 
 let connection: Connection | undefined;
@@ -181,12 +180,9 @@ export async function start() {
     concurrency: WORKER_CONCURRENCY,
     connection,
   });
-  worker.on('failed', function onFailed(job, error) {
-    if (!job) return;
-
-    enrichesTotal.inc({ network: job.data.token.network, status: 'fail' });
-    pubSub.publish(Trigger.EnrichFailed, job.data.token);
-    logger.error(error, 'failed to enrich');
+  worker.on('failed', function onFailed(job, err) {
+    enrichesTotal.inc({ network: job?.data.token.network, status: 'fail' });
+    logger.error(err, 'failed to enrich');
   });
   worker.on('completed', function onCompleted(job) {
     enrichesTotal.inc({ network: job.data.token.network, status: 'success' });
