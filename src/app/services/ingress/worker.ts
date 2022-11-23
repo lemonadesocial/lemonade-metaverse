@@ -268,6 +268,8 @@ function timing({ timestamp }: Job<JobData>) {
 }
 
 async function startNetwork(network: Network) {
+  if (!network.ingressEnabled) return;
+
   const name = `ingress:${network.name}`;
   const connection = createConnection();
   const state: State = states[network.name] = {

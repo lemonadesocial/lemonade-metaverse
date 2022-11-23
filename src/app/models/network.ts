@@ -18,6 +18,9 @@ export class Network {
   public introspection!: string;
 
   @prop()
+  public ingressEnabled?: boolean;
+
+  @prop()
   public ingressWhere?: any;
 
   @prop()
