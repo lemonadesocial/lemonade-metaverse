@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.24.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.23.0...v10.24.0) (2022-11-23)
+
+
+### Features
+
+* **ingress:** add ingress enabled property to network ([b6d5a9a](https://github.com/lemonadesocial/lemonade-metaverse/commit/b6d5a9a6143b5d9a7cd8c4945ae16fe6a7cf63b1))
+
 ## [10.23.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.22.0...v10.23.0) (2022-11-21)
 
 
