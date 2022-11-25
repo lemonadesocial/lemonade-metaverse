@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.25.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.25.0...v10.25.1) (2022-11-25)
+
+
+### Bug Fixes
+
+* **wert:** fix wert options type name ([370892a](https://github.com/lemonadesocial/lemonade-metaverse/commit/370892a2ac16abe3995ec223e12c81655c5bea4e))
+
 ## [10.25.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.24.0...v10.25.0) (2022-11-24)
 
 
