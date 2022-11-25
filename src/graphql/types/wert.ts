@@ -7,7 +7,7 @@ export enum WertOptionsType {
   BID = 'BID',
   FILL = 'FILL',
 }
-registerEnumType(WertOptionsType, { name: 'WertOptionsSignatureType' });
+registerEnumType(WertOptionsType, { name: 'WertOptionsType' });
 
 @InputType()
 class WertOptionsOrder extends Pick(Order, { network: 1, id: 1 }) { }
