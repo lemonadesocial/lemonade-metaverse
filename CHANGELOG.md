@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.25.2](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.25.1...v10.25.2) (2022-11-27)
+
+
+### Bug Fixes
+
+* **token:** fix cache key missing network ([8de6c83](https://github.com/lemonadesocial/lemonade-metaverse/commit/8de6c838b758b76b2e6efc7927f5f7bf246962fd))
+* **wert:** fix commodity amount decimals for stable coins ([abd0c33](https://github.com/lemonadesocial/lemonade-metaverse/commit/abd0c333bff16daf63c62491122e2135d0bb59bb))
+
 ## [10.25.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.25.0...v10.25.1) (2022-11-25)
 
 
