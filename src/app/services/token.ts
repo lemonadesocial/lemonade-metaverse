@@ -150,7 +150,7 @@ export async function getTokens(network: Network, variables: GetTokensQueryVaria
 
 export async function getToken(network: Network, id: string) {
   const [external, internal] = await Promise.all([
-    getOrSet(id, async function fn() {
+    getOrSet(network + id, async function fn() {
       const { token } = await network.indexer().request<GetTokenQuery, GetTokenQueryVariables>(GetToken, { id });
 
       if (token) return createToken(network, token);
