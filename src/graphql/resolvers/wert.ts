@@ -28,26 +28,26 @@ function getInputData(type: WertOptionsType, orderId: string, amount: string, su
   }
 }
 
-function getCommodityAndOptions(order: Order): [string, Record<string, unknown>] {
+function getCommodityAndOptions(order: Order): [number, string, Record<string, unknown>] {
   switch (true) {
     case order.network === 'goerli' && !order.currency:
-      return ['ETH', { commodity: 'ETH:Ethereum-Goerli', network: 'Goerli' }];
+      return [18, 'ETH', { commodity: 'ETH:Ethereum-Goerli', network: 'Goerli' }];
     case order.network === 'goerli' && order.currency?.symbol === 'TTG':
-      return ['TTG', { commodity: 'TT Goerli:Ethereum', network: 'Goerli' }];
+      return [18, 'TTG', { commodity: 'TT Goerli:Ethereum', network: 'Goerli' }];
     case order.network === 'mumbai' && !order.currency:
-      return ['MATIC', { commodity: 'MATIC:polygon' }];
+      return [18, 'MATIC', { commodity: 'MATIC:polygon' }];
     case order.network === 'mumbai' && order.currency?.symbol === 'TT':
-      return ['TT', { commodity: 'TT:polygon', network: 'Mumbai' }];
+      return [18, 'TT', { commodity: 'TT:polygon', network: 'Mumbai' }];
     case order.network === 'ethereum' && !order.currency:
-      return ['ETH', { commodity: 'ETH:ethereum' }];
+      return [18, 'ETH', { commodity: 'ETH:ethereum' }];
     case order.network === 'ethereum' && order.currency?.symbol === 'USDC':
-      return ['USDC', { commodity: 'USDC:ethereum' }];
+      return [6, 'USDC', { commodity: 'USDC:ethereum' }];
     case order.network === 'ethereum' && order.currency?.symbol === 'USDT':
-      return ['USDT', { commodity: 'USDT:ethereum' }];
+      return [6, 'USDT', { commodity: 'USDT:ethereum' }];
     case order.network === 'polygon' && !order.currency:
-      return ['MATIC', { commodity: 'MATIC:polygon' }];
+      return [18, 'MATIC', { commodity: 'MATIC:polygon' }];
     case order.network === 'polygon' && order.currency?.symbol === 'USDC':
-      return ['USDC', { commodity: 'USDC:polygon' }];
+      return [6, 'USDC', { commodity: 'USDC:polygon' }];
     default:
       throw new Error('order not supported');
   }
@@ -70,12 +70,12 @@ class _WertResolver {
 
     assert.ok(order);
 
-    const [commodity, options] = getCommodityAndOptions(order);
+    const [decimals, commodity, options] = getCommodityAndOptions(order);
 
     const data = signSmartContractData({
       address: args.subject,
       commodity,
-      commodity_amount: parseFloat(ethers.utils.formatEther(args.amount)),
+      commodity_amount: parseFloat(ethers.utils.formatUnits(args.amount, decimals)),
       pk_id: wertPublicKeyId,
       sc_address: order.contract,
       sc_id: crypto.randomUUID(),
