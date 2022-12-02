@@ -165,6 +165,10 @@ const processor: Processor<JobData> = async (job) => {
       await pubSub.publish(Trigger.TokenUpdated, token);
     }
 
+    const channel = network.enrichChannel?.[token.contract];
+
+    if (channel) logger.info({ channel, tokenId: token.tokenId, imageUrl, webUrl });
+
     enrichDurationTimer({ network: network.name });
   } catch (err) {
     await pubSub.publish(Trigger.EnrichFailed, token);

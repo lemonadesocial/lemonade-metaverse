@@ -9,7 +9,8 @@ const targets: pino.TransportTargetOptions[] = [
 
 if (slackWebhookUrl) {
   const options = {
-    excludedKeys: { imageUrl: 0 },
+    channelKey: 'channel',
+    excludedKeys: { channel: 0, imageUrl: 0 },
     imageUrlKey: 'imageUrl',
     keepAlive: true,
     webhookUrl: slackWebhookUrl,

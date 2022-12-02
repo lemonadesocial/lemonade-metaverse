@@ -18,6 +18,9 @@ export class Network {
   public introspection!: string;
 
   @prop()
+  public enrichChannel?: Record<string, string>;
+
+  @prop()
   public ingressEnabled?: boolean;
 
   @prop()
