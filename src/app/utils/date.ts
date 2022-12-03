@@ -1,3 +1,3 @@
-export function getDate(epoch: string): Date {
+export function getDate(epoch: string) {
   return new Date(+epoch * 1000);
 }

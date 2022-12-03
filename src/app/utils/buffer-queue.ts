@@ -19,7 +19,7 @@ export class BufferQueue<T> {
     this.timer = null;
   }
 
-  public enqueue(item: T): void {
+  public enqueue(item: T) {
     this.buffer.push(item);
 
     if (this.buffer.length === this.size) {
@@ -29,7 +29,7 @@ export class BufferQueue<T> {
     }
   }
 
-  public async flush(): Promise<void> {
+  public async flush() {
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = null;
