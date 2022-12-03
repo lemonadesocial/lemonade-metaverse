@@ -13,6 +13,14 @@ export class User {
 
   @Field({ nullable: true })
   @prop()
+  public handle_instagram?: string;
+
+  @Field({ nullable: true })
+  @prop()
+  public handle_twitter?: string;
+
+  @Field({ nullable: true })
+  @prop()
   public image_avatar?: string;
 
   @Field({ nullable: true })
