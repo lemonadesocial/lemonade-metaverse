@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.26.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.25.2...v10.26.0) (2022-12-03)
+
+
+### Features
+
+* **enrich:** add log channel customization ([a66fa7a](https://github.com/lemonadesocial/lemonade-metaverse/commit/a66fa7a436354859b76d42c81674c61fdd7e419e))
+* **network:** improve state management ([f414f1f](https://github.com/lemonadesocial/lemonade-metaverse/commit/f414f1f02b95e82b1306a7d1e22f2f0a31a137d2))
+* **token:** add founder expanded ([4ffb753](https://github.com/lemonadesocial/lemonade-metaverse/commit/4ffb753ce6775f996c5aa6ad08dea15f0617516a))
+* **user:** add handle instagram and handle twitter ([8bec685](https://github.com/lemonadesocial/lemonade-metaverse/commit/8bec685b7c450c87b6afccfab86e84e18b0e3d7f))
+
 ## [10.25.2](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.25.1...v10.25.2) (2022-11-27)
 
 
