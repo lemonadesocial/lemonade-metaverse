@@ -24,7 +24,7 @@ export class Network {
   public ingressEnabled?: boolean;
 
   @prop()
-  public ingressWhere?: any;
+  public ingressWhere?: Record<string, unknown>;
 
   @prop()
   public uniqueApiUrl?: string;
