@@ -1,17 +1,16 @@
 import { EventEmitter } from 'events';
 
-import { enqueue } from './enrich/queue';
-import { Network } from './network';
-
-import { getOrSet } from '../helpers/redis';
 import { pubSub, Trigger } from '../helpers/pub-sub';
 
+import { Network } from './network';
 import { Order } from '../models/order';
 import { Registry } from '../models/registry';
 import { Token, TokenModel } from '../models/token';
 
+import { enqueue } from './enrich/queue';
 import { excludeNull } from '../utils/object';
 import { getDate } from '../utils/date';
+import { getOrSet } from '../helpers/redis';
 
 import { GetToken, GetTokens } from '../../lib/lemonade-marketplace/documents.generated';
 import { GetTokenQuery, GetTokenQueryVariables, GetTokensQuery, GetTokensQueryVariables, Token as GeneratedToken } from '../../lib/lemonade-marketplace/types.generated';
