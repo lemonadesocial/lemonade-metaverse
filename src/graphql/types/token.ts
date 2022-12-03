@@ -37,6 +37,10 @@ class Token extends TokenClass {
   @Directive('@expanded(localPath: ["metadata", "creators"], modelName: "User", foreignField: "wallets")')
   @Field(() => [User], { nullable: 'itemsAndList' })
   public metadataCreatorsExpanded?: never;
+
+  @Directive('@expanded(modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public founderExpanded?: never;
 }
 @ObjectType()
 export class TokenSimple extends Token {
