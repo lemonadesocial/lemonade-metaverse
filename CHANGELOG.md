@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.27.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.26.0...v10.27.0) (2023-01-07)
+
+
+### Features
+
+* **graphql:** add active constraint to expanded directive ([c1942bc](https://github.com/lemonadesocial/lemonade-metaverse/commit/c1942bc0ea9b360ef8ba9f6e9eb9204cb7f3e6f4))
+
 ## [10.26.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.25.2...v10.26.0) (2022-12-03)
 
 
