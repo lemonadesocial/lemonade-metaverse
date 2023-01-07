@@ -51,7 +51,7 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
         const projection = getFieldProjection(fields);
 
         const docs = await model.find(
-          { [foreignField]: { $in: keys } },
+          { [foreignField]: { $in: keys }, active: true },
           { [foreignField]: 1, ...projection },
         ).lean();
 

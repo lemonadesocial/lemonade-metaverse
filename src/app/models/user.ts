@@ -7,6 +7,9 @@ export class User {
   @Field()
   public _id!: string;
 
+  @prop({ required: true })
+  public active!: boolean;
+
   @Field()
   @prop({ required: true })
   public name!: string;
