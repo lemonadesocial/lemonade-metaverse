@@ -50,16 +50,11 @@ export function createSubscribe<TPayload, TSource = any, TArgs = any, TContext =
       state.returned = new Promise<never>((_, reject) => state.return = reject);
 
       for await (const payload of { [Symbol.asyncIterator]: () => ({ ...iterator, next: () => Promise.race([state.returned, iterator.next()]) }) }) {
-        const hasRestrictions = restrictKey && restrictions.size > 0;
+        if (restrictKey && !restrictions.size) restrictions.add(restrictKey(payload));
 
-        if ((hasRestrictions && !restrictions.has(restrictKey(payload)))
-          || (!hasRestrictions && filter && !filter(payload, ctx))) {
-          continue;
-        }
+        if (restrictKey && !restrictions.has(restrictKey(payload))) continue;
 
-        if (restrictKey && !hasRestrictions) {
-          restrictions.add(restrictKey(payload));
-        }
+        if (filter && !filter(payload, ctx)) continue;
 
         yield [payload];
       }
