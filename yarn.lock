@@ -2209,10 +2209,10 @@ bufferutil@^4.0.6:
   dependencies:
     node-gyp-build "^4.3.0"
 
-bullmq@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-3.2.2.tgz#4ce935ed8c13c51d042fc4a682281258c7010697"
-  integrity sha512-L9BcKh24CSep4yNPWBOqEKufdIdw+eXwzEd731HEKRoKczB4QcvlJBHM6NJLK8JjEsQmfTZXH/txxYxOjEBrBA==
+bullmq@^3.4.0:
+  version "3.5.7"
+  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-3.5.7.tgz#ee4cb41e223e697c0cf3155d8c6b17ee9e67b70f"
+  integrity sha512-PgCBR28BumEuwp+7w0H4358bwA0PdnxoOPqiOlu4xNWqN1kOMam/UwxoMMozbzXuKVznJSHKM1edCaWcvu/snA==
   dependencies:
     cron-parser "^4.6.0"
     glob "^8.0.3"
