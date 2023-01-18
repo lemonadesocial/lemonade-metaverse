@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.28.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.27.0...v10.28.0) (2023-01-18)
+
+
+### Features
+
+* optimize existing indexes based on cardinality ([757946a](https://github.com/lemonadesocial/lemonade-metaverse/commit/757946af089426287b21709c9bad6b93ad2eb45c))
+* **token:** index contracts with token id zero ([07584db](https://github.com/lemonadesocial/lemonade-metaverse/commit/07584dbdc5e4df36cfd445cf44b6ed6d4a33e378))
+* upgrade bullmq ([ded4ea3](https://github.com/lemonadesocial/lemonade-metaverse/commit/ded4ea3e56641c0de8886cd07b23f3c92e4c59c6))
+
 ## [10.27.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.26.0...v10.27.0) (2023-01-07)
 
 
