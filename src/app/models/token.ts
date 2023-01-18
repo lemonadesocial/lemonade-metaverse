@@ -18,6 +18,7 @@ export class TokenRoyalty {
 @ObjectType({ isAbstract: true })
 @index({ id: 1, network: 1 }, { unique: true })
 @index({ contract: 1, tokenId: 1, network: 1 }, { unique: true })
+@index({ contract: 1 }, { partialFilterExpression: { tokenId: 0 } })
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Token {
   @Field()
