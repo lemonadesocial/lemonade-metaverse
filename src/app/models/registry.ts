@@ -1,7 +1,7 @@
 import { getModelForClass, index, prop } from '@typegoose/typegoose';
 import { Field, ObjectType } from 'type-graphql';
 
-@index({ network: 1, id: 1 }, { unique: true })
+@index({ id: 1, network: 1 }, { unique: true })
 @ObjectType()
 export class Registry {
   @Field()

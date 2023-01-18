@@ -25,7 +25,7 @@ export class OrderCurrency {
 }
 
 @ObjectType({ isAbstract: true })
-@index({ network: 1, id: 1 }, { unique: true })
+@index({ id: 1, network: 1 }, { unique: true })
 @index({ maker: 1 })
 @index({ token: 1 })
 export class Order {
