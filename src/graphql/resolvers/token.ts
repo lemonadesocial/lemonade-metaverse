@@ -1,4 +1,4 @@
-import { Arg, Args, Resolver, Info, Root, Query, Subscription } from 'type-graphql';
+import { Arg, Args, Resolver, Info, Root, Query, Subscription, Int } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import * as assert from 'assert';
 
@@ -15,11 +15,17 @@ import { getSort } from '../utils/sort';
 import { getToken, getTokens } from '../../app/services/token';
 import { networkMap, networks } from '../../app/services/network';
 
-const findTokens = async (
-  { skip, limit, sort, where }: PaginationArgs & { sort?: TokenSort | null; where?: TokenWhereComplex | null },
+interface FindTokensOptions extends PaginationArgs {
+  sample?: number | null;
+  sort?: TokenSort | null;
+  where?: TokenWhereComplex | null;
+}
+
+async function findTokens(
+  { skip, limit, sample, sort, where }: FindTokensOptions,
   info: GraphQLResolveInfo,
   projection?: { [P in keyof TokenComplex]?: 1 },
-) => {
+) {
   const fields = getFieldTree(info);
   const filterOrder = where?.order ? getFilter(where.order) : {};
   const filterRegistry = where?.registry ? getFilter(where.registry) : {};
@@ -61,9 +67,10 @@ const findTokens = async (
     ...sort ? [{ $sort: getSort(sort) }] : [],
     { $skip: skip },
     { $limit: limit },
+    ...sample ? [{ $sample: { size: sample } }] : [],
     { $project: { ...getFieldProjection(fields), ...projection } },
   ]);
-};
+}
 
 @Resolver()
 class _TokensQueryResolver {
@@ -114,10 +121,11 @@ class _TokensQueryResolver {
   async tokens(
     @Info() info: GraphQLResolveInfo,
     @Args() args: PaginationArgs,
+    @Arg('sample', () => Int, { nullable: true }) sample?: number | null,
     @Arg('sort', () => TokenSort, { nullable: true }) sort?: TokenSort | null,
     @Arg('where', () => TokenWhereComplex, { nullable: true }) where?: TokenWhereComplex | null,
   ): Promise<TokenComplex[]> {
-    return await findTokens({ ...args, sort, where }, info);
+    return await findTokens({ ...args, sample, sort, where }, info);
   }
 }
 
