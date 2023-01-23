@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.29.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.28.0...v10.29.0) (2023-01-23)
+
+
+### Features
+
+* **graphql:** increase pagination limit ([51dd829](https://github.com/lemonadesocial/lemonade-metaverse/commit/51dd829a427951b536451df86ae3819b5ebd7128))
+* **graphql:** refactor subscription trigger logic ([f5e0abc](https://github.com/lemonadesocial/lemonade-metaverse/commit/f5e0abc269383de1f7573d1cdcb5ba739ef635a8))
+* **token:** add sample ([579170e](https://github.com/lemonadesocial/lemonade-metaverse/commit/579170edea46fdedccaa586544057bd0269f4914))
+* upgrade bullmq ([ca97856](https://github.com/lemonadesocial/lemonade-metaverse/commit/ca97856e5db14c40d55c3da169b330f2e55df797))
+
 ## [10.28.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.27.0...v10.28.0) (2023-01-18)
 
 
