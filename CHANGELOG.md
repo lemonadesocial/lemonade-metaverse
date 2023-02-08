@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.30.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.29.0...v10.30.0) (2023-02-08)
+
+
+### Features
+
+* **token:** add token owner and owner expanded fields ([9a473f8](https://github.com/lemonadesocial/lemonade-metaverse/commit/9a473f812087ca232d11575f0c0de9a0503c928c))
+
+
+### Bug Fixes
+
+* **order:** fix order token filter ([fc629a2](https://github.com/lemonadesocial/lemonade-metaverse/commit/fc629a222799137ef4d7654258585899817d00a5))
+* **token:** fix get tokens error after enrich ([91863e4](https://github.com/lemonadesocial/lemonade-metaverse/commit/91863e4ca30222f4a8b8ef665221bad099812697))
+* **token:** fix token registry being nullable ([5df9899](https://github.com/lemonadesocial/lemonade-metaverse/commit/5df989968caac95bca168d48457718ba05b9e941))
+
 ## [10.29.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.28.0...v10.29.0) (2023-01-23)
 
 
