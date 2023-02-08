@@ -1,9 +1,7 @@
 name: Deploy to Production
 on:
-  pull_request:
-    branches:
-      - master
-    types: [closed]
+  release:
+    types: [published]
   workflow_dispatch:
 
 env:
@@ -12,9 +10,6 @@ env:
 
 jobs:
   buildAndPush:
-    if: |
-      github.event_name != 'pull_request'
-        || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release-please--branches--master--components--release-please-action')
     name: Build and push
     runs-on: ubuntu-latest
     permissions:
