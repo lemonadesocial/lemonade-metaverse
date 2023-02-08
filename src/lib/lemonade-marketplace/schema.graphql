@@ -74,6 +74,8 @@ query GetTokens($where: Token_filter, $orderBy: Token_orderBy, $orderDirection: 
     first: $first
   ) {
     ...tokenFields
+
+    owner
   }
 }
 

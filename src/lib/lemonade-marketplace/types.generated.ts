@@ -27,6 +27,7 @@ export type Bid = {
 export type Bid_filter = {
   /** Filter for the block changed event. */
   _change_block?: Maybe<BlockChangedFilter>;
+  and?: Maybe<Array<Maybe<Bid_filter>>>;
   bidAmount?: Maybe<Scalars['BigInt']>;
   bidAmount_gt?: Maybe<Scalars['BigInt']>;
   bidAmount_gte?: Maybe<Scalars['BigInt']>;
@@ -37,7 +38,11 @@ export type Bid_filter = {
   bidAmount_not_in?: Maybe<Array<Scalars['BigInt']>>;
   bidder?: Maybe<Scalars['Bytes']>;
   bidder_contains?: Maybe<Scalars['Bytes']>;
+  bidder_gt?: Maybe<Scalars['Bytes']>;
+  bidder_gte?: Maybe<Scalars['Bytes']>;
   bidder_in?: Maybe<Array<Scalars['Bytes']>>;
+  bidder_lt?: Maybe<Scalars['Bytes']>;
+  bidder_lte?: Maybe<Scalars['Bytes']>;
   bidder_not?: Maybe<Scalars['Bytes']>;
   bidder_not_contains?: Maybe<Scalars['Bytes']>;
   bidder_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -57,6 +62,7 @@ export type Bid_filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  or?: Maybe<Array<Maybe<Bid_filter>>>;
   order?: Maybe<Scalars['String']>;
   order_?: Maybe<Order_filter>;
   order_contains?: Maybe<Scalars['String']>;
@@ -80,7 +86,11 @@ export type Bid_filter = {
   order_starts_with_nocase?: Maybe<Scalars['String']>;
   transaction?: Maybe<Scalars['Bytes']>;
   transaction_contains?: Maybe<Scalars['Bytes']>;
+  transaction_gt?: Maybe<Scalars['Bytes']>;
+  transaction_gte?: Maybe<Scalars['Bytes']>;
   transaction_in?: Maybe<Array<Scalars['Bytes']>>;
+  transaction_lt?: Maybe<Scalars['Bytes']>;
+  transaction_lte?: Maybe<Scalars['Bytes']>;
   transaction_not?: Maybe<Scalars['Bytes']>;
   transaction_not_contains?: Maybe<Scalars['Bytes']>;
   transaction_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -125,6 +135,7 @@ export type CurrencyordersArgs = {
 export type Currency_filter = {
   /** Filter for the block changed event. */
   _change_block?: Maybe<BlockChangedFilter>;
+  and?: Maybe<Array<Maybe<Currency_filter>>>;
   id?: Maybe<Scalars['ID']>;
   id_gt?: Maybe<Scalars['ID']>;
   id_gte?: Maybe<Scalars['ID']>;
@@ -153,6 +164,7 @@ export type Currency_filter = {
   name_not_starts_with_nocase?: Maybe<Scalars['String']>;
   name_starts_with?: Maybe<Scalars['String']>;
   name_starts_with_nocase?: Maybe<Scalars['String']>;
+  or?: Maybe<Array<Maybe<Currency_filter>>>;
   orders_?: Maybe<Order_filter>;
   symbol?: Maybe<Scalars['String']>;
   symbol_contains?: Maybe<Scalars['String']>;
@@ -231,6 +243,7 @@ export enum OrderKind {
 export type Order_filter = {
   /** Filter for the block changed event. */
   _change_block?: Maybe<BlockChangedFilter>;
+  and?: Maybe<Array<Maybe<Order_filter>>>;
   bidAmount?: Maybe<Scalars['BigInt']>;
   bidAmount_gt?: Maybe<Scalars['BigInt']>;
   bidAmount_gte?: Maybe<Scalars['BigInt']>;
@@ -241,14 +254,22 @@ export type Order_filter = {
   bidAmount_not_in?: Maybe<Array<Scalars['BigInt']>>;
   bidder?: Maybe<Scalars['Bytes']>;
   bidder_contains?: Maybe<Scalars['Bytes']>;
+  bidder_gt?: Maybe<Scalars['Bytes']>;
+  bidder_gte?: Maybe<Scalars['Bytes']>;
   bidder_in?: Maybe<Array<Scalars['Bytes']>>;
+  bidder_lt?: Maybe<Scalars['Bytes']>;
+  bidder_lte?: Maybe<Scalars['Bytes']>;
   bidder_not?: Maybe<Scalars['Bytes']>;
   bidder_not_contains?: Maybe<Scalars['Bytes']>;
   bidder_not_in?: Maybe<Array<Scalars['Bytes']>>;
   bids_?: Maybe<Bid_filter>;
   contract?: Maybe<Scalars['Bytes']>;
   contract_contains?: Maybe<Scalars['Bytes']>;
+  contract_gt?: Maybe<Scalars['Bytes']>;
+  contract_gte?: Maybe<Scalars['Bytes']>;
   contract_in?: Maybe<Array<Scalars['Bytes']>>;
+  contract_lt?: Maybe<Scalars['Bytes']>;
+  contract_lte?: Maybe<Scalars['Bytes']>;
   contract_not?: Maybe<Scalars['Bytes']>;
   contract_not_contains?: Maybe<Scalars['Bytes']>;
   contract_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -303,7 +324,11 @@ export type Order_filter = {
   lastBlock_not_in?: Maybe<Array<Scalars['BigInt']>>;
   maker?: Maybe<Scalars['Bytes']>;
   maker_contains?: Maybe<Scalars['Bytes']>;
+  maker_gt?: Maybe<Scalars['Bytes']>;
+  maker_gte?: Maybe<Scalars['Bytes']>;
   maker_in?: Maybe<Array<Scalars['Bytes']>>;
+  maker_lt?: Maybe<Scalars['Bytes']>;
+  maker_lte?: Maybe<Scalars['Bytes']>;
   maker_not?: Maybe<Scalars['Bytes']>;
   maker_not_contains?: Maybe<Scalars['Bytes']>;
   maker_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -327,6 +352,7 @@ export type Order_filter = {
   open_in?: Maybe<Array<Scalars['Boolean']>>;
   open_not?: Maybe<Scalars['Boolean']>;
   open_not_in?: Maybe<Array<Scalars['Boolean']>>;
+  or?: Maybe<Array<Maybe<Order_filter>>>;
   orderId?: Maybe<Scalars['BigInt']>;
   orderId_gt?: Maybe<Scalars['BigInt']>;
   orderId_gte?: Maybe<Scalars['BigInt']>;
@@ -353,7 +379,11 @@ export type Order_filter = {
   price_not_in?: Maybe<Array<Scalars['BigInt']>>;
   taker?: Maybe<Scalars['Bytes']>;
   taker_contains?: Maybe<Scalars['Bytes']>;
+  taker_gt?: Maybe<Scalars['Bytes']>;
+  taker_gte?: Maybe<Scalars['Bytes']>;
   taker_in?: Maybe<Array<Scalars['Bytes']>>;
+  taker_lt?: Maybe<Scalars['Bytes']>;
+  taker_lte?: Maybe<Scalars['Bytes']>;
   taker_not?: Maybe<Scalars['Bytes']>;
   taker_not_contains?: Maybe<Scalars['Bytes']>;
   taker_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -380,7 +410,11 @@ export type Order_filter = {
   token_starts_with_nocase?: Maybe<Scalars['String']>;
   transaction?: Maybe<Scalars['Bytes']>;
   transaction_contains?: Maybe<Scalars['Bytes']>;
+  transaction_gt?: Maybe<Scalars['Bytes']>;
+  transaction_gte?: Maybe<Scalars['Bytes']>;
   transaction_in?: Maybe<Array<Scalars['Bytes']>>;
+  transaction_lt?: Maybe<Scalars['Bytes']>;
+  transaction_lte?: Maybe<Scalars['Bytes']>;
   transaction_not?: Maybe<Scalars['Bytes']>;
   transaction_not_contains?: Maybe<Scalars['Bytes']>;
   transaction_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -394,7 +428,11 @@ export type Order_filter = {
   updatedAt_not_in?: Maybe<Array<Scalars['BigInt']>>;
   updatedTransaction?: Maybe<Scalars['Bytes']>;
   updatedTransaction_contains?: Maybe<Scalars['Bytes']>;
+  updatedTransaction_gt?: Maybe<Scalars['Bytes']>;
+  updatedTransaction_gte?: Maybe<Scalars['Bytes']>;
   updatedTransaction_in?: Maybe<Array<Scalars['Bytes']>>;
+  updatedTransaction_lt?: Maybe<Scalars['Bytes']>;
+  updatedTransaction_lte?: Maybe<Scalars['Bytes']>;
   updatedTransaction_not?: Maybe<Scalars['Bytes']>;
   updatedTransaction_not_contains?: Maybe<Scalars['Bytes']>;
   updatedTransaction_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -574,6 +612,7 @@ export type RegistrytokensArgs = {
 export type Registry_filter = {
   /** Filter for the block changed event. */
   _change_block?: Maybe<BlockChangedFilter>;
+  and?: Maybe<Array<Maybe<Registry_filter>>>;
   id?: Maybe<Scalars['ID']>;
   id_gt?: Maybe<Scalars['ID']>;
   id_gte?: Maybe<Scalars['ID']>;
@@ -586,6 +625,7 @@ export type Registry_filter = {
   isERC721_in?: Maybe<Array<Scalars['Boolean']>>;
   isERC721_not?: Maybe<Scalars['Boolean']>;
   isERC721_not_in?: Maybe<Array<Scalars['Boolean']>>;
+  or?: Maybe<Array<Maybe<Registry_filter>>>;
   tokens_?: Maybe<Token_filter>;
 };
 
@@ -760,9 +800,14 @@ export type TokentransfersArgs = {
 export type Token_filter = {
   /** Filter for the block changed event. */
   _change_block?: Maybe<BlockChangedFilter>;
+  and?: Maybe<Array<Maybe<Token_filter>>>;
   contract?: Maybe<Scalars['Bytes']>;
   contract_contains?: Maybe<Scalars['Bytes']>;
+  contract_gt?: Maybe<Scalars['Bytes']>;
+  contract_gte?: Maybe<Scalars['Bytes']>;
   contract_in?: Maybe<Array<Scalars['Bytes']>>;
+  contract_lt?: Maybe<Scalars['Bytes']>;
+  contract_lte?: Maybe<Scalars['Bytes']>;
   contract_not?: Maybe<Scalars['Bytes']>;
   contract_not_contains?: Maybe<Scalars['Bytes']>;
   contract_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -776,7 +821,11 @@ export type Token_filter = {
   createdAt_not_in?: Maybe<Array<Scalars['BigInt']>>;
   creator?: Maybe<Scalars['Bytes']>;
   creator_contains?: Maybe<Scalars['Bytes']>;
+  creator_gt?: Maybe<Scalars['Bytes']>;
+  creator_gte?: Maybe<Scalars['Bytes']>;
   creator_in?: Maybe<Array<Scalars['Bytes']>>;
+  creator_lt?: Maybe<Scalars['Bytes']>;
+  creator_lte?: Maybe<Scalars['Bytes']>;
   creator_not?: Maybe<Scalars['Bytes']>;
   creator_not_contains?: Maybe<Scalars['Bytes']>;
   creator_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -788,10 +837,15 @@ export type Token_filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  or?: Maybe<Array<Maybe<Token_filter>>>;
   orders_?: Maybe<Order_filter>;
   owner?: Maybe<Scalars['Bytes']>;
   owner_contains?: Maybe<Scalars['Bytes']>;
+  owner_gt?: Maybe<Scalars['Bytes']>;
+  owner_gte?: Maybe<Scalars['Bytes']>;
   owner_in?: Maybe<Array<Scalars['Bytes']>>;
+  owner_lt?: Maybe<Scalars['Bytes']>;
+  owner_lte?: Maybe<Scalars['Bytes']>;
   owner_not?: Maybe<Scalars['Bytes']>;
   owner_not_contains?: Maybe<Scalars['Bytes']>;
   owner_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -852,6 +906,7 @@ export type Transfer = {
 export type Transfer_filter = {
   /** Filter for the block changed event. */
   _change_block?: Maybe<BlockChangedFilter>;
+  and?: Maybe<Array<Maybe<Transfer_filter>>>;
   createdAt?: Maybe<Scalars['BigInt']>;
   createdAt_gt?: Maybe<Scalars['BigInt']>;
   createdAt_gte?: Maybe<Scalars['BigInt']>;
@@ -862,7 +917,11 @@ export type Transfer_filter = {
   createdAt_not_in?: Maybe<Array<Scalars['BigInt']>>;
   from?: Maybe<Scalars['Bytes']>;
   from_contains?: Maybe<Scalars['Bytes']>;
+  from_gt?: Maybe<Scalars['Bytes']>;
+  from_gte?: Maybe<Scalars['Bytes']>;
   from_in?: Maybe<Array<Scalars['Bytes']>>;
+  from_lt?: Maybe<Scalars['Bytes']>;
+  from_lte?: Maybe<Scalars['Bytes']>;
   from_not?: Maybe<Scalars['Bytes']>;
   from_not_contains?: Maybe<Scalars['Bytes']>;
   from_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -874,9 +933,14 @@ export type Transfer_filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  or?: Maybe<Array<Maybe<Transfer_filter>>>;
   to?: Maybe<Scalars['Bytes']>;
   to_contains?: Maybe<Scalars['Bytes']>;
+  to_gt?: Maybe<Scalars['Bytes']>;
+  to_gte?: Maybe<Scalars['Bytes']>;
   to_in?: Maybe<Array<Scalars['Bytes']>>;
+  to_lt?: Maybe<Scalars['Bytes']>;
+  to_lte?: Maybe<Scalars['Bytes']>;
   to_not?: Maybe<Scalars['Bytes']>;
   to_not_contains?: Maybe<Scalars['Bytes']>;
   to_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -903,7 +967,11 @@ export type Transfer_filter = {
   token_starts_with_nocase?: Maybe<Scalars['String']>;
   transaction?: Maybe<Scalars['Bytes']>;
   transaction_contains?: Maybe<Scalars['Bytes']>;
+  transaction_gt?: Maybe<Scalars['Bytes']>;
+  transaction_gte?: Maybe<Scalars['Bytes']>;
   transaction_in?: Maybe<Array<Scalars['Bytes']>>;
+  transaction_lt?: Maybe<Scalars['Bytes']>;
+  transaction_lte?: Maybe<Scalars['Bytes']>;
   transaction_not?: Maybe<Scalars['Bytes']>;
   transaction_not_contains?: Maybe<Scalars['Bytes']>;
   transaction_not_in?: Maybe<Array<Scalars['Bytes']>>;
@@ -976,7 +1044,7 @@ export type GetTokensQueryVariables = Exact<{
 }>;
 
 
-export type GetTokensQuery = { __typename?: 'Query', tokens: Array<{ __typename?: 'Token', id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
+export type GetTokensQuery = { __typename?: 'Query', tokens: Array<{ __typename?: 'Token', owner?: string | null | undefined, id: string, contract: string, createdAt?: string | null | undefined, creator?: string | null | undefined, tokenId: string }> };
 
 export type GetTokenQueryVariables = Exact<{
   id: Scalars['ID'];

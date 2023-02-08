@@ -70,6 +70,7 @@ export const GetTokens = gql`
     first: $first
   ) {
     ...tokenFields
+    owner
   }
 }
     ${tokenFields}`;

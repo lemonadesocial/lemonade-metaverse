@@ -54,6 +54,13 @@ export class TokenComplex extends Token {
 
   @Field(() => Registry)
   public registry!: Registry;
+
+  @Field({ nullable: true, description: 'The owner. Requires data from the indexer.' })
+  public owner?: string;
+
+  @Directive('@expanded(modelName: "User", foreignField: "wallets")')
+  @Field(() => User, { nullable: true })
+  public ownerExpanded?: never;
 }
 
 @ObjectType()
@@ -138,13 +145,6 @@ class TokenDetailTransfer {
 }
 @ObjectType()
 export class TokenDetail extends TokenComplex {
-  @Field({ nullable: true, description: 'The owner.' })
-  public owner?: string;
-
-  @Directive('@expanded(modelName: "User", foreignField: "wallets")')
-  @Field(() => User, { nullable: true })
-  public ownerExpanded?: never;
-
   @Field(() => [TokenDetailOrder], { nullable: true, description: 'This token\'s orders.' })
   public orders?: TokenDetailOrder[];
 
