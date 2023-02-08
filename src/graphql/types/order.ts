@@ -23,7 +23,7 @@ export class OrderWhereSimple extends OrderWhere {
 }
 @InputType()
 export class OrderWhereComplex extends OrderWhere {
-  @Field(() => OrderWhereSimple, { nullable: true })
+  @Field(() => TokenWhereSimple, { nullable: true })
   token?: TokenWhereSimple;
 }
 
