@@ -114,7 +114,9 @@ class _TokensQueryResolver {
       getTokens(network, variables).catch(() => [])
     ));
 
-    return tokens.flat().sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+    return tokens.flat().sort((a, b) =>
+      (b.createdAt ? new Date(b.createdAt).getTime() : 0) - (a.createdAt ? new Date(a.createdAt).getTime() : 0)
+    );
   }
 
   @Query(() => [TokenComplex])
