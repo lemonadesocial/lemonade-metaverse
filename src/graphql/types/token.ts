@@ -52,8 +52,8 @@ export class TokenComplex extends Token {
   @Field(() => OrderSimple, { nullable: true, description: 'The order.' })
   declare public order?: OrderSimple;
 
-  @Field(() => Registry, { nullable: true })
-  public registry?: Registry;
+  @Field(() => Registry)
+  public registry!: Registry;
 }
 
 @ObjectType()
