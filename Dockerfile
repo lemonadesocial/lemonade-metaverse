@@ -1,14 +1,21 @@
+# syntax=docker/dockerfile:1
+### manifest
+FROM public.ecr.aws/docker/library/node:18-alpine as manifest
+
+COPY package.json yarn.lock /tmp/
+RUN sed -e 's/"version": "[^"]\+",/"version": "0.0.0",/' -i /tmp/package.json
+
 ### builder
 FROM public.ecr.aws/docker/library/node:18-alpine as builder
 WORKDIR /app
 
-COPY package.json yarn.lock /app/
+COPY --from=manifest /tmp/package.json /tmp/yarn.lock ./
 RUN yarn install --frozen-lockfile --ignore-optional
 
 ### build
 FROM builder as build
 
-COPY . /app
+COPY . .
 RUN yarn build && \
     yarn install --frozen-lockfile --ignore-optional --production --offline
 
@@ -23,7 +30,7 @@ RUN wget https://github.com/segmentio/chamber/releases/download/v2.10.12/chamber
 ### app
 FROM base as app
 
-COPY --from=build /app /app
+COPY --from=build /app .
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["node", "dist/bin/app.js"]
