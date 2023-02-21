@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.30.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.30.0...v10.30.1) (2023-02-21)
+
+
+### Bug Fixes
+
+* **enrich:** fix registry missing after enrich ([5bead64](https://github.com/lemonadesocial/lemonade-metaverse/commit/5bead648681c011009dfe8f906172846b4834ba3))
+
 ## [10.30.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.29.0...v10.30.0) (2023-02-08)
 
 
