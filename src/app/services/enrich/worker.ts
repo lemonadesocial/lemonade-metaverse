@@ -155,14 +155,14 @@ const processor: Processor<JobData> = async (job) => {
 
         return [
           token.order === order.id
-            && pubSub.publish(Trigger.TokenUpdated, { ...token, order }),
+            && pubSub.publish(Trigger.TokenUpdated, { ...token, order, registry }),
           pubSub.publish(Trigger.OrderUpdated, { ...order, token }),
         ];
       }));
     } else {
       logger.info({ token, imageUrl, webUrl }, 'enrich token');
 
-      await pubSub.publish(Trigger.TokenUpdated, token);
+      await pubSub.publish(Trigger.TokenUpdated, { ...token, registry });
     }
 
     const channel = network.enrichChannel?.[token.contract];
