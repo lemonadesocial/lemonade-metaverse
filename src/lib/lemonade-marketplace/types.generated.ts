@@ -9,7 +9,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  BigDecimal: any;
+  BigDecimal: unknown;
   BigInt: string;
   Bytes: string;
 };
@@ -102,6 +102,24 @@ export enum Bid_orderBy {
   createdAt = 'createdAt',
   id = 'id',
   order = 'order',
+  order__bidAmount = 'order__bidAmount',
+  order__bidder = 'order__bidder',
+  order__contract = 'order__contract',
+  order__createdAt = 'order__createdAt',
+  order__id = 'order__id',
+  order__kind = 'order__kind',
+  order__lastBlock = 'order__lastBlock',
+  order__maker = 'order__maker',
+  order__open = 'order__open',
+  order__openFrom = 'order__openFrom',
+  order__openTo = 'order__openTo',
+  order__orderId = 'order__orderId',
+  order__paidAmount = 'order__paidAmount',
+  order__price = 'order__price',
+  order__taker = 'order__taker',
+  order__transaction = 'order__transaction',
+  order__updatedAt = 'order__updatedAt',
+  order__updatedTransaction = 'order__updatedTransaction',
   transaction = 'transaction'
 }
 
@@ -445,6 +463,9 @@ export enum Order_orderBy {
   contract = 'contract',
   createdAt = 'createdAt',
   currency = 'currency',
+  currency__id = 'currency__id',
+  currency__name = 'currency__name',
+  currency__symbol = 'currency__symbol',
   id = 'id',
   kind = 'kind',
   lastBlock = 'lastBlock',
@@ -457,6 +478,12 @@ export enum Order_orderBy {
   price = 'price',
   taker = 'taker',
   token = 'token',
+  token__contract = 'token__contract',
+  token__createdAt = 'token__createdAt',
+  token__creator = 'token__creator',
+  token__id = 'token__id',
+  token__owner = 'token__owner',
+  token__tokenId = 'token__tokenId',
   transaction = 'transaction',
   updatedAt = 'updatedAt',
   updatedTransaction = 'updatedTransaction'
@@ -889,6 +916,8 @@ export enum Token_orderBy {
   orders = 'orders',
   owner = 'owner',
   registry = 'registry',
+  registry__id = 'registry__id',
+  registry__isERC721 = 'registry__isERC721',
   tokenId = 'tokenId',
   transfers = 'transfers'
 }
@@ -983,6 +1012,12 @@ export enum Transfer_orderBy {
   id = 'id',
   to = 'to',
   token = 'token',
+  token__contract = 'token__contract',
+  token__createdAt = 'token__createdAt',
+  token__creator = 'token__creator',
+  token__id = 'token__id',
+  token__owner = 'token__owner',
+  token__tokenId = 'token__tokenId',
   transaction = 'transaction'
 }
 

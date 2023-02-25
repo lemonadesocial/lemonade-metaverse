@@ -11,8 +11,13 @@ import { getFieldTree, getFieldProjection } from '../utils/field';
 import { getFilter, validate } from '../utils/where';
 import { getSort } from '../utils/sort';
 
+interface FindOrdersArgs extends PaginationArgs {
+  sort?: OrderSort | null;
+  where?: OrderWhereComplex | null;
+}
+
 const findOrders = async (
-  { skip, limit, sort, where }: PaginationArgs & { sort?: OrderSort | null; where?: OrderWhereComplex | null },
+  { skip, limit, sort, where }: FindOrdersArgs,
   info: GraphQLResolveInfo,
   projection?: { [P in keyof OrderComplex]?: 1 },
 ) => {
@@ -63,7 +68,7 @@ class _OrdersSubscriptionResolver {
   @Subscription(
     () => [OrderComplex],
     {
-      subscribe: createSubscribe<OrderComplex>({
+      subscribe: createSubscribe<OrderComplex, unknown, FindOrdersArgs & { query?: boolean | null }>({
         init: async function* ({ args, info }) {
           if (args.query) yield findOrders(args, info, { network: 1, id: 1 });
         },

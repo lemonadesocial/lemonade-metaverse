@@ -49,13 +49,13 @@ function shouldEnrich(token: Token & { registry: Registry }) {
 
 async function waitForEnrich(tokens: Token[]) {
   const map = new Map(tokens.map((token) => [token.id, token]));
-  let listener: ((...args: any[]) => void) | undefined;
+  let listener: ((trigger: Trigger, token: Token) => void) | undefined;
   let timeout: NodeJS.Timeout | undefined;
 
   try {
     await Promise.race([
       new Promise<void>((approve) => (async () => {
-        listener = (trigger: Trigger, token: Token) => {
+        listener = (trigger, token) => {
           const value = map.get(token.id);
 
           if (value) {

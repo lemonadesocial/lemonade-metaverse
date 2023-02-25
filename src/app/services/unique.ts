@@ -26,9 +26,9 @@ export async function getUniqueMetadata(network: Network, address: string, token
   const metadata: Record<string, unknown> = {};
 
   if (data.attributes) {
-    const attributes = Object.values(data.attributes);
+    const attributes = Object.values(data.attributes) as { name: { _: string }, value: { _: string } }[];
 
-    if (attributes.length) metadata.attributes = attributes.map((attr: any) => ({ trait_type: attr.name._, value: attr.value._ }));
+    if (attributes.length) metadata.attributes = attributes.map((attr) => ({ trait_type: attr.name._, value: attr.value._ }));
   }
 
   if (data.image?.fullUrl) metadata.image = data.image.fullUrl;

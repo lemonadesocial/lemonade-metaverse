@@ -15,14 +15,14 @@ import { getSort } from '../utils/sort';
 import { getToken, getTokens } from '../../app/services/token';
 import { networkMap, networks } from '../../app/services/network';
 
-interface FindTokensOptions extends PaginationArgs {
+interface FindTokensArgs extends PaginationArgs {
   sample?: number | null;
   sort?: TokenSort | null;
   where?: TokenWhereComplex | null;
 }
 
 async function findTokens(
-  { skip, limit, sample, sort, where }: FindTokensOptions,
+  { skip, limit, sample, sort, where }: FindTokensArgs,
   info: GraphQLResolveInfo,
   projection?: { [P in keyof TokenComplex]?: 1 },
 ) {
@@ -136,7 +136,7 @@ class _TokensSubscriptionResolver {
   @Subscription(
     () => [TokenComplex],
     {
-      subscribe: createSubscribe<TokenComplex>({
+      subscribe: createSubscribe<TokenComplex, unknown, FindTokensArgs & { query?: boolean | null }>({
         init: async function* ({ args, info }) {
           if (args.query) yield findTokens(args, info, { network: 1, id: 1 });
         },

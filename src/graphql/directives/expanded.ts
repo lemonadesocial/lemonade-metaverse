@@ -28,7 +28,8 @@ export const expandedDirectiveTypedefs = `
 `;
 
 export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSchema = (schema) => mapSchema(schema, {
-  [MapperKind.OBJECT_FIELD]: (fieldConfig: GraphQLFieldConfig<any, Context, any>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [MapperKind.OBJECT_FIELD]: (fieldConfig: GraphQLFieldConfig<any, Context, Record<string, unknown>>) => {
     const directive = getDirective(schema, fieldConfig, DIRECTIVE_NAME)?.[0];
 
     if (!directive) return;
@@ -42,7 +43,8 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
       } = directive as DirectiveArgs;
 
       context.dataLoaders = context.dataLoaders || {};
-      context.dataLoaders[key] = context.dataLoaders[key] || new DataLoader(async (keys) => {
+
+      const dataLoader = context.dataLoaders[key] = context.dataLoaders[key] || new DataLoader(async (keys) => {
         const model = getModelWithString(modelName);
 
         assert.ok(model);
@@ -56,7 +58,7 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
         ).lean();
 
         const map = Object.fromEntries(
-          docs.map((doc) => [].concat(doc[foreignField]).map((key) => [`${key}`.toLowerCase(), doc])).flat()
+          docs.flatMap((doc) => [].concat(doc[foreignField]).map((key) => [`${key}`.toLowerCase(), doc]))
         );
 
         return keys.map((key) => map[key.toLowerCase()] || null);
@@ -64,10 +66,10 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
 
       const keys = localPath instanceof Array
         ? localPath.reduce((acc, cur) => acc?.[cur], source)
-        : localPath && source[localPath];
+        : localPath ? source[localPath] : null;
 
-      if (keys instanceof Array) return context.dataLoaders[key]!.loadMany(keys);
-      if (keys) return context.dataLoaders[key]!.load(keys);
+      if (keys instanceof Array) return dataLoader.loadMany(keys);
+      if (keys) return dataLoader.load(keys);
     }
 
     return fieldConfig;

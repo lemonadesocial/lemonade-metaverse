@@ -1,6 +1,7 @@
 overwrite: true
 schema: ${INDEXER_URL:https://api.thegraph.com/subgraphs/name/lemonadesocial/lemonade-marketplace-matic}
 config:
+  defaultScalarType: unknown
   scalars:
     BigInt: string
     Bytes: string
