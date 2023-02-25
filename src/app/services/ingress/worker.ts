@@ -199,23 +199,20 @@ async function poll(state: State, data: JobData): Promise<JobData> {
 
     assert.ok(data._meta);
 
-    const orders_length = data.orders?.length || 0;
-    const tokens_length = data.tokens?.length || 0;
-
-    if (orders_length || tokens_length) {
+    if (data.orders?.length || data.tokens?.length) {
       await process(state, data);
 
       if (!block) {
         block = { number: data._meta.block.number };
       }
 
-      if (orders_length) {
-        orders_where = { id_gt: data.orders![orders_length - 1].id };
+      if (data.orders?.length) {
+        orders_where = { id_gt: data.orders[data.orders.length - 1].id };
       }
 
-      if (tokens_length) {
-        nextData.tokens_createdAt_gt = data.tokens!.reduce((acc, cur) => Math.max(acc, +(cur.createdAt || 0)), +(nextData.tokens_createdAt_gt || 0)).toString(); // @todo replace by createdBlock
-        tokens_where = { id_gt: data.tokens![tokens_length - 1].id };
+      if (data.tokens?.length) {
+        nextData.tokens_createdAt_gt = data.tokens.reduce((acc, cur) => Math.max(acc, +(cur.createdAt || 0)), +(nextData.tokens_createdAt_gt || 0)).toString(); // @todo replace by createdBlock
+        tokens_where = { id_gt: data.tokens[data.tokens.length - 1].id };
       }
 
       nextData.persist = true;
@@ -223,8 +220,8 @@ async function poll(state: State, data: JobData): Promise<JobData> {
 
     nextData.meta = data._meta;
 
-    if (orders_length < orders_first) orders_first = 0;
-    if (tokens_length < tokens_first) tokens_first = 0;
+    if (data.orders?.length || 0 < orders_first) orders_first = 0;
+    if (data.tokens?.length || 0 < tokens_first) tokens_first = 0;
   } while (orders_first || tokens_first);
 
   return nextData;

@@ -42,7 +42,8 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
       } = directive as DirectiveArgs;
 
       context.dataLoaders = context.dataLoaders || {};
-      context.dataLoaders[key] = context.dataLoaders[key] || new DataLoader(async (keys) => {
+
+      const dataLoader = context.dataLoaders[key] = context.dataLoaders[key] || new DataLoader(async (keys) => {
         const model = getModelWithString(modelName);
 
         assert.ok(model);
@@ -66,8 +67,8 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
         ? localPath.reduce((acc, cur) => acc?.[cur], source)
         : localPath ? source[localPath] : null;
 
-      if (keys instanceof Array) return context.dataLoaders[key]!.loadMany(keys);
-      if (keys) return context.dataLoaders[key]!.load(keys);
+      if (keys instanceof Array) return dataLoader.loadMany(keys);
+      if (keys) return dataLoader.load(keys);
     }
 
     return fieldConfig;
