@@ -64,7 +64,7 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
 
       const keys = localPath instanceof Array
         ? localPath.reduce((acc, cur) => acc?.[cur], source)
-        : localPath && source[localPath];
+        : localPath ? source[localPath] : null;
 
       if (keys instanceof Array) return context.dataLoaders[key]!.loadMany(keys);
       if (keys) return context.dataLoaders[key]!.load(keys);
