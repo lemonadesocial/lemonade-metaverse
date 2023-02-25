@@ -27,7 +27,7 @@ async function shutdown() {
     await redis.quit();
     await network.close();
     await db.disconnect();
-  } catch (err: any) {
+  } catch (err) {
     logger.fatal(err);
     process.exit(1);
   }

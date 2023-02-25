@@ -28,7 +28,8 @@ export const expandedDirectiveTypedefs = `
 `;
 
 export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSchema = (schema) => mapSchema(schema, {
-  [MapperKind.OBJECT_FIELD]: (fieldConfig: GraphQLFieldConfig<any, Context, any>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [MapperKind.OBJECT_FIELD]: (fieldConfig: GraphQLFieldConfig<any, Context, Record<string, unknown>>) => {
     const directive = getDirective(schema, fieldConfig, DIRECTIVE_NAME)?.[0];
 
     if (!directive) return;

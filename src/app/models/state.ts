@@ -7,7 +7,7 @@ export class State {
   public key!: string;
 
   @prop({ required: true })
-  public value!: any;
+  public value!: unknown;
 }
 
 export const StateModel = getModelForClass(State);

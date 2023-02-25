@@ -37,6 +37,7 @@ export const getFilter = <T>(
   return query;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const validate = <T extends Record<string, any>>(
   where: Where<T>,
   doc: T,
