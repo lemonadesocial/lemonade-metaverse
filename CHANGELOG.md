@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.30.2](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.30.1...v10.30.2) (2023-02-25)
+
+
+### Bug Fixes
+
+* **order:** fix token type in order where ([335ae31](https://github.com/lemonadesocial/lemonade-metaverse/commit/335ae312a33e9c2cbe0b30e22503c5f4776856b3))
+* **token:** fix order type in token where ([b77afcf](https://github.com/lemonadesocial/lemonade-metaverse/commit/b77afcf3f5601d83dabaa658e1005583f1e640ef))
+
 ## [10.30.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.30.0...v10.30.1) (2023-02-21)
 
 
