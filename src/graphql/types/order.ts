@@ -1,4 +1,5 @@
 import { Directive, Field, InputType, ObjectType } from 'type-graphql';
+import { Omit } from 'type-graphql-utils';
 
 import { Order as OrderClass, OrderCurrency } from '../../app/models/order';
 import { SortInput } from './sort-input';
@@ -12,7 +13,7 @@ export class OrderSort extends SortInput(OrderClass) { }
 @InputType()
 class OrderCurrencyWhere extends WhereInput(OrderCurrency) { }
 @InputType()
-class OrderWhere extends WhereInput(OrderClass) {
+class OrderWhere extends WhereInput(Omit(OrderClass, { token: 1 })) {
   @Field(() => OrderCurrencyWhere, { nullable: true })
   currency?: OrderCurrencyWhere;
 }
