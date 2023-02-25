@@ -56,7 +56,7 @@ export const expandedDirectiveTransformer: (schema: GraphQLSchema) => GraphQLSch
         ).lean();
 
         const map = Object.fromEntries(
-          docs.map((doc) => [].concat(doc[foreignField]).map((key) => [`${key}`.toLowerCase(), doc])).flat()
+          docs.flatMap((doc) => [].concat(doc[foreignField]).map((key) => [`${key}`.toLowerCase(), doc]))
         );
 
         return keys.map((key) => map[key.toLowerCase()] || null);
