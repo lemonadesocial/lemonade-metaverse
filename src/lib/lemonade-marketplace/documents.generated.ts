@@ -25,7 +25,6 @@ export const Ingress = gql`
     first: $orders_first
   ) @include(if: $orders_include) {
     id
-    lastBlock
     contract
     orderId
     createdAt

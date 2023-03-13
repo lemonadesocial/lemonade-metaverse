@@ -37,10 +37,6 @@ export class Order {
   @prop({ required: true })
   public id!: string;
 
-  @Field({ description: 'The last block number updating this order.' })
-  @prop({ required: true })
-  public lastBlock!: string;
-
   @Field({ description: 'The LemonadeMarketplace contract address.' })
   @prop({ required: true })
   public contract!: string;
