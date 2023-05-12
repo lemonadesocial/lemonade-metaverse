@@ -18,27 +18,14 @@ import { createApolloServer, ApolloServer } from '../graphql';
 
 let apolloServer: ApolloServer | undefined;
 
-process.on('uncaughtException', (err) => {
-  logger.error(err, 'uncaughtException');
-});
-
-process.on('uncaughtRejection', (err) => {
-  logger.error(err, 'uncaughtRejection');
-});
-
 async function shutdown() {
-  try {
-    await admin.stop();
+  await admin.stop();
 
-    await apolloServer?.stop();
+  await apolloServer?.stop();
 
-    await redis.quit();
-    await network.close();
-    await db.disconnect();
-  } catch (err) {
-    logger.fatal(err);
-    process.exit(1);
-  }
+  await redis.quit();
+  await network.close();
+  await db.disconnect();
 }
 
 process.on('SIGINT', shutdown);

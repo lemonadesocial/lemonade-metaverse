@@ -10,27 +10,14 @@ import * as redis from '../app/helpers/redis';
 
 import * as ingress from '../app/services/ingress/worker';
 
-process.on('uncaughtException', (err) => {
-  logger.error(err, 'uncaughtException');
-});
-
-process.on('uncaughtRejection', (err) => {
-  logger.error(err, 'uncaughtRejection');
-})
-
 async function shutdown() {
-  try {
-    await admin.stop();
+  await admin.stop();
 
-    await ingress.stop();
+  await ingress.stop();
 
-    await redis.quit();
-    await network.close();
-    await db.disconnect();
-  } catch (err) {
-    logger.fatal(err);
-    process.exit(1);
-  }
+  await redis.quit();
+  await network.close();
+  await db.disconnect();
 }
 
 process.on('SIGINT', shutdown);
