@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.32.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.31.0...v10.32.0) (2023-05-12)
+
+
+### Features
+
+* remove uncaught exception and rejection handlers ([4cf519d](https://github.com/lemonadesocial/lemonade-metaverse/commit/4cf519d6f43cfcc5e25bd44686a854a7e9a79ccf))
+
 ## [10.31.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.30.2...v10.31.0) (2023-03-13)
 
 
