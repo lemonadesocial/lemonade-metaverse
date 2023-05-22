@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.33.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.32.0...v10.33.0) (2023-05-22)
+
+
+### Features
+
+* **deps:** upgrade bullmq and ioredis ([b4af418](https://github.com/lemonadesocial/lemonade-metaverse/commit/b4af418dd5f0693d3272344ebe580de6afd434eb))
+* **ingress:** use full jitter backoff algorithm ([69e9841](https://github.com/lemonadesocial/lemonade-metaverse/commit/69e984161f1a92bc6077f9ac2efe65cc7224701b))
+* **utils:** add math util ([852572d](https://github.com/lemonadesocial/lemonade-metaverse/commit/852572d9a5eb3ac8e8489e2743759023b632240c))
+
 ## [10.32.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.31.0...v10.32.0) (2023-05-12)
 
 
