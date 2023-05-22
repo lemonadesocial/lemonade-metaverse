@@ -2209,14 +2209,14 @@ bufferutil@^4.0.6:
   dependencies:
     node-gyp-build "^4.3.0"
 
-bullmq@^3.5.9:
-  version "3.5.9"
-  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-3.5.9.tgz#67a8e483fd91694ea5e9f87032d592f44da4fe2c"
-  integrity sha512-zdjann4YHfOpb2RbVmSIU0i4742H3omLQfXjBR4T0DIIV+S0Lduej0uPwLtcuFL0THgxohRWAnZluiNh4f1H6A==
+bullmq@^3.13.4:
+  version "3.13.4"
+  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-3.13.4.tgz#3ebf3628e4778e3ba05e7757d55369af49ddb0c8"
+  integrity sha512-3B16ZbOQSr9VoWpUXhoLB4khgxAbqwIiboJItA5rU2CEkLRe613w8yGxrivNdjJ6q8RcZtS+QvK0WHqCsuQYTQ==
   dependencies:
     cron-parser "^4.6.0"
     glob "^8.0.3"
-    ioredis "^5.2.2"
+    ioredis "^5.3.2"
     lodash "^4.17.21"
     msgpackr "^1.6.2"
     semver "^7.3.7"
@@ -2651,6 +2651,11 @@ denque@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/denque/-/denque-2.0.1.tgz#bcef4c1b80dc32efe97515744f21a4229ab8934a"
   integrity sha512-tfiWc6BQLXNLpNiR5iGd0Ocu3P3VpxfzFiqubLgMfhfOw9WyvgJBd46CClNn9k3qfbjvT//0cf7AlYRX/OslMQ==
+
+denque@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/denque/-/denque-2.1.0.tgz#e93e1a6569fb5e66f16a3c2a2964617d349d6ab1"
+  integrity sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==
 
 dependency-graph@^0.11.0:
   version "0.11.0"
@@ -3627,15 +3632,15 @@ ioredis@^4.17.3:
     redis-parser "^3.0.0"
     standard-as-callback "^2.1.0"
 
-ioredis@^5.2.2, ioredis@^5.2.4:
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-5.2.4.tgz#9e262a668bc29bae98f2054c1e0d7efd86996b96"
-  integrity sha512-qIpuAEt32lZJQ0XyrloCRdlEdUUNGG9i0UOk6zgzK6igyudNWqEBxfH6OlbnOOoBBvr1WB02mm8fR55CnikRng==
+ioredis@^5.3.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-5.3.2.tgz#9139f596f62fc9c72d873353ac5395bcf05709f7"
+  integrity sha512-1DKMMzlIHM02eBBVOFQ1+AolGjs6+xEcM4PDL7NqOS6szq7H9jSaEkIUH6/a5Hl241LzW6JLSiAbNvTQjUupUA==
   dependencies:
     "@ioredis/commands" "^1.1.1"
     cluster-key-slot "^1.1.0"
     debug "^4.3.4"
-    denque "^2.0.1"
+    denque "^2.1.0"
     lodash.defaults "^4.2.0"
     lodash.isarguments "^3.1.0"
     redis-errors "^1.2.0"
