@@ -16,13 +16,16 @@ import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
 import { getParsedUrl, getWebUrl } from '../../utils/url';
+import { getRandomInt } from '../../utils/math';
 import * as enrichQueue from '../enrich/queue';
 
 import { Ingress } from '../../../lib/lemonade-marketplace/documents.generated';
 import type { Block_height, IngressQuery, IngressQueryVariables, Order_filter, Token_filter } from '../../../lib/lemonade-marketplace/types.generated';
 
-const JOB_DELAY = 1000;
-const POLL_FIRST = 1000;
+const POLL_BACKOFF_BASE = 100;
+const POLL_BACKOFF_CAP = 30000;
+const POLL_DELAY = 1000;
+const POLL_LIMIT = 1000;
 
 interface JobData {
   meta?: IngressQuery['_meta'];
@@ -40,8 +43,8 @@ interface State {
 
 const jobOptions: JobsOptions = {
   attempts: Number.MAX_VALUE,
-  backoff: JOB_DELAY,
-  delay: JOB_DELAY,
+  backoff: { type: 'custom' },
+  delay: POLL_DELAY,
   removeOnComplete: true,
   removeOnFail: true,
 };
@@ -183,9 +186,9 @@ async function poll(state: State, data: JobData): Promise<JobData> {
 
   let block: Block_height | undefined;
   let orders_where: Order_filter = {};
-  let orders_first = POLL_FIRST;
+  let orders_first = POLL_LIMIT;
   let tokens_where: Token_filter = {};
-  let tokens_first = POLL_FIRST;
+  let tokens_first = POLL_LIMIT;
   do {
     const data = await state.network.indexer().request<IngressQuery, IngressQueryVariables>(Ingress, {
       block,
@@ -288,7 +291,10 @@ async function startNetwork(network: Network) {
     logger.info(job.asJSON(), 'created ingress job');
   }
 
-  state.worker = new Worker<JobData>(name, processor.bind(null, state), { connection });
+  state.worker = new Worker<JobData>(name, processor.bind(null, state), {
+    connection,
+    settings: { backoffStrategy: (attempts) => getRandomInt(0, Math.min(POLL_BACKOFF_CAP, POLL_BACKOFF_BASE * 2 ** attempts)) },
+  });
   state.worker.on('failed', function onFailed(job, err) {
     ingressesTotal.inc({ network: state.network.name, status: 'fail' });
     logger.error({ network: state.network.name, ...job && timing(job), err }, 'failed ingress');
