@@ -1,6 +1,7 @@
 import { Counter, Gauge } from 'prom-client';
 import { ethers } from 'ethers';
 
+import { getRandomInt } from '../utils/math';
 import { logger } from '../helpers/pino';
 
 const WEBSOCKET_BACKOFF_BASE = 100;
@@ -128,8 +129,4 @@ class WebSocketProvider extends WebSocketProviderClass() {
 
     this.provider = provider;
   }
-}
-
-function getRandomInt(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
