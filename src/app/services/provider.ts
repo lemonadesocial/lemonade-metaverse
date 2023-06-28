@@ -46,12 +46,17 @@ const WebSocketProviderClass = (): new () => ethers.providers.WebSocketProvider 
 
 class WebSocketProvider extends WebSocketProviderClass() {
   private attempts = 0;
+  private destroyed = false;
+  private timeout?: NodeJS.Timeout;
+
   private events: ethers.providers.WebSocketProvider['_events'] = [];
   private requests: ethers.providers.WebSocketProvider['_requests'] = {};
   private provider?: ethers.providers.WebSocketProvider;
 
   private handler = {
-    get(target: WebSocketProvider, prop: string, receiver: unknown) {
+    get(target: WebSocketProvider, prop: keyof WebSocketProvider, receiver: unknown) {
+      if (target[prop]) return target[prop];
+
       const value = target.provider && Reflect.get(target.provider, prop, receiver);
 
       return value instanceof Function ? value.bind(target.provider) : value;
@@ -117,10 +122,10 @@ class WebSocketProvider extends WebSocketProviderClass() {
       if (pingInterval) clearInterval(pingInterval);
       if (pongTimeout) clearTimeout(pongTimeout);
 
-      if (code !== 1000) {
+      if (!this.destroyed) {
         const sleep = getRandomInt(0, Math.min(WEBSOCKET_BACKOFF_CAP, WEBSOCKET_BACKOFF_BASE * 2 ** this.attempts++));
 
-        setTimeout(() => this.create(), sleep);
+        this.timeout = setTimeout(() => this.create(), sleep);
       }
 
       webSocketClosesTotal.labels(this.name, code.toString()).inc();
@@ -128,5 +133,17 @@ class WebSocketProvider extends WebSocketProviderClass() {
     });
 
     this.provider = provider;
+  }
+
+  public async destroy() {
+    this.destroyed = true;
+
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    if (this.provider) {
+      await this.provider.destroy();
+    }
   }
 }
