@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.34.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.33.0...v10.34.0) (2023-06-28)
+
+
+### Features
+
+* **deps:** upgrade bullmq ([6268963](https://github.com/lemonadesocial/lemonade-metaverse/commit/6268963d0c0eb86771d06a6d804a95c4e90e7fb7))
+* **provider:** refactor reconnect logic ([fa7c273](https://github.com/lemonadesocial/lemonade-metaverse/commit/fa7c273060709bb0bfb44e292307ded011c64c6f))
+
 ## [10.33.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.32.0...v10.33.0) (2023-05-22)
 
 
