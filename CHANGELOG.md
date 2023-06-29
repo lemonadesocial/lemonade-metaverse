@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.35.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.34.0...v10.35.0) (2023-06-29)
+
+
+### Features
+
+* **deps:** upgrade graphql-request ([2a9a034](https://github.com/lemonadesocial/lemonade-metaverse/commit/2a9a0345fbdc6df7af4e37d7182e2c2ce42541e9))
+
 ## [10.34.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.33.0...v10.34.0) (2023-06-28)
 
 
