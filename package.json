@@ -27,7 +27,7 @@
     "graphql": "^15.7.2",
     "graphql-parse-resolve-info": "^4.12.0",
     "graphql-redis-subscriptions": "^2.4.0",
-    "graphql-request": "^4.3.0",
+    "graphql-request": "^6.1.0",
     "graphql-subscriptions": "^1.2.1",
     "graphql-tag": "^2.12.5",
     "graphql-type-json": "^0.3.2",
