@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.36.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.35.0...v10.36.0) (2023-06-30)
+
+
+### Features
+
+* **deps:** upgrade eslint ([97edb00](https://github.com/lemonadesocial/lemonade-metaverse/commit/97edb00bd0e4beb90eed59d59ae0c55cee2ff57e))
+* **deps:** upgrade typescript ([34ac6a6](https://github.com/lemonadesocial/lemonade-metaverse/commit/34ac6a62dad3f69ffa75dbd834aca9d0b43b3c7c))
+* **token:** add request timeout ([98b8229](https://github.com/lemonadesocial/lemonade-metaverse/commit/98b8229ec1b9b9aa06aecba2685b5ba3aac17c05))
+
 ## [10.35.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.34.0...v10.35.0) (2023-06-29)
 
 
