@@ -16,6 +16,7 @@ import { GetToken, GetTokens } from '../../lib/lemonade-marketplace/documents.ge
 import { GetTokenQuery, GetTokenQueryVariables, GetTokensQuery, GetTokensQueryVariables, Token as GeneratedToken } from '../../lib/lemonade-marketplace/types.generated';
 
 const ENRICH_TIMEOUT = 10000;
+const REQUEST_TIMEOUT = 2500;
 
 const emitter = new EventEmitter();
 
@@ -140,7 +141,11 @@ async function fetch<T extends GraphQLToken>(network: Network, items: T[]) {
 }
 
 export async function getTokens(network: Network, variables: GetTokensQueryVariables) {
-  const { tokens } = await network.indexer().request<GetTokensQuery, GetTokensQueryVariables>(GetTokens, variables);
+  const { tokens } = await network.indexer().request<GetTokensQuery, GetTokensQueryVariables>({
+    document: GetTokens,
+    variables,
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+  });
 
   if (!tokens.length) return [];
 
@@ -150,7 +155,11 @@ export async function getTokens(network: Network, variables: GetTokensQueryVaria
 export async function getToken(network: Network, id: string) {
   const [external, internal] = await Promise.all([
     getOrSet(network + id, async function fn() {
-      const { token } = await network.indexer().request<GetTokenQuery, GetTokenQueryVariables>(GetToken, { id });
+      const { token } = await network.indexer().request<GetTokenQuery, GetTokenQueryVariables>({
+        document: GetToken,
+        variables: { id },
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+      });
 
       if (token) return createToken(network, token);
     }),
