@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.37.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.36.0...v10.37.0) (2023-06-30)
+
+
+### Features
+
+* **unique:** use erc721 metadata when available ([5d36fa1](https://github.com/lemonadesocial/lemonade-metaverse/commit/5d36fa19a31718270e7babb2d5f39e6c6992c238))
+
 ## [10.36.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.35.0...v10.36.0) (2023-06-30)
 
 
