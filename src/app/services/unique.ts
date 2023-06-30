@@ -23,6 +23,8 @@ export async function getUniqueMetadata(network: Network, address: string, token
 
   const data = await response.json();
 
+  if (data.erc721Metadata?.metadata) return data.erc721Metadata.metadata;
+
   const metadata: Record<string, unknown> = {};
 
   if (data.attributes) {
