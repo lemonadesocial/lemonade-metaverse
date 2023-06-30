@@ -53,7 +53,7 @@
     "@types/node-fetch": "^2",
     "@types/source-map-support": "^0.5.4",
     "@types/ws": "^8.5.3",
-    "typescript": "^4.6.6"
+    "typescript": "^5.1.6"
   },
   "optionalDependencies": {
     "@graphql-codegen/cli": "^2.2.2",
