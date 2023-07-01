@@ -15,7 +15,7 @@ export class Network extends NetworkBase {
 
   public indexer() {
     if (!this._indexer) {
-      this._indexer = createIndexer(this.indexerUrl);
+      this._indexer = createIndexer(this.indexerUrl, this.name);
     }
 
     return this._indexer;
