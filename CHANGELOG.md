@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.38.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.37.0...v10.38.0) (2023-07-01)
+
+
+### Features
+
+* **indexer:** add request metrics ([8b028e1](https://github.com/lemonadesocial/lemonade-metaverse/commit/8b028e13c87b9853e94a17b1fc766c8c9524a05d))
+
 ## [10.37.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.36.0...v10.37.0) (2023-06-30)
 
 
