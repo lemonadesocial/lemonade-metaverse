@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.39.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.38.0...v10.39.0) (2023-11-21)
+
+
+### Features
+
+* **deps:** upgrade bullmq ([3d0abe0](https://github.com/lemonadesocial/lemonade-metaverse/commit/3d0abe060cfabf487ec740e074a26053e31845cd))
+* **deps:** upgrade node ([82c59bb](https://github.com/lemonadesocial/lemonade-metaverse/commit/82c59bba33fcf02b8fba75ec7fa56aaf1a427a5a))
+
 ## [10.38.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.37.0...v10.38.0) (2023-07-01)
 
 
