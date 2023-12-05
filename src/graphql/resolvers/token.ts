@@ -1,6 +1,8 @@
-import { Arg, Args, Resolver, Info, Root, Query, Subscription, Int } from 'type-graphql';
+import { Arg, Args, Ctx, Resolver, Info, Root, Query, Subscription, Int } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import * as assert from 'assert';
+
+import type { Context } from '../types';
 
 import { OrderDirection, Token_orderBy } from '../../lib/lemonade-marketplace/types.generated';
 import { PaginationArgs } from '../types/pagination';
@@ -86,6 +88,7 @@ class _TokensQueryResolver {
 
   @Query(() => [TokenComplex])
   async getTokens(
+    @Ctx() { logger }: Context,
     @Args() { skip, limit }: PaginationArgs,
     @Arg('network', () => String, { nullable: true }) network?: string,
     @Arg('id', () => String, { nullable: true }) id?: string,
@@ -111,7 +114,11 @@ class _TokensQueryResolver {
     }
 
     const tokens = await Promise.all(networks.map((network) =>
-      getTokens(network, variables).catch(() => [])
+      getTokens(network, variables).catch((err) => {
+        logger.debug({ network: network.name, err }, 'failed to get tokens');
+
+        return [];
+      })
     ));
 
     return tokens.flat().sort((a, b) =>
