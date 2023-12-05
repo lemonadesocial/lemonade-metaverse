@@ -21,7 +21,7 @@ const indexerRequestDurationSeconds = new Histogram({
 });
 
 export function createIndexer(indexerUrl: string, name: string): Indexer {
-  const client = new GraphQLClient(indexerUrl, { keepalive: true });
+  const client = new GraphQLClient(indexerUrl, { fetch, keepalive: true });
 
   client.request = new Proxy(client.request, {
     apply: async (target, thisArg, argArray) => {
