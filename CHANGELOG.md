@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.40.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.39.0...v10.40.0) (2023-12-05)
+
+
+### Features
+
+* **token:** add get tokens error logging ([38f2354](https://github.com/lemonadesocial/lemonade-metaverse/commit/38f2354d17d86707684e64086721ce15c82e32b2))
+* use native fetch instead of node fetch ([93980ff](https://github.com/lemonadesocial/lemonade-metaverse/commit/93980ffa91cff30d707e33eeb35cc101f5689fc6))
+
 ## [10.39.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.38.0...v10.39.0) (2023-11-21)
 
 
