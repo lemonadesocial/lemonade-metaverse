@@ -2,9 +2,6 @@ import { Counter, Histogram } from 'prom-client';
 import { ethers } from 'ethers';
 import { Job, Processor, Worker } from 'bullmq';
 import * as assert from 'assert';
-import * as http from 'http';
-import * as https from 'https';
-import fetch, { RequestInit } from 'node-fetch';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
 import { BufferQueue } from '../../utils/buffer-queue';
@@ -28,15 +25,6 @@ import { tokenURI } from '../contract/erc721-metadata';
 const FETCH_TIMEOUT = 60000;
 const WORKER_CONCURRENCY = 25;
 const WRITER_TIMEOUT = 1000;
-
-const fetchAgent: Record<string, http.Agent> = {
-  'http:': new http.Agent({ keepAlive: true }),
-  'https:': new https.Agent({ keepAlive: true }),
-};
-const fetchInit: RequestInit = {
-  agent: ({ protocol }) => fetchAgent[protocol],
-  timeout: FETCH_TIMEOUT,
-};
 
 const writer = new BufferQueue<AnyBulkWriteOperation<Token>>(
   (operations) => TokenModel.bulkWrite(operations, { ordered: false }).then(),
@@ -107,7 +95,10 @@ const processor: Processor<JobData> = async (job) => {
             break; }
           case 'http:':
           case 'https:': {
-            const response = await fetch(href, fetchInit);
+            const response = await fetch(href, {
+              keepalive: true,
+              signal: AbortSignal.timeout(FETCH_TIMEOUT),
+            });
 
             if (response.ok) {
               token.metadata = await response.json();

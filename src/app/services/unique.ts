@@ -1,10 +1,7 @@
 import * as assert from 'assert';
 import * as https from 'https';
-import fetch from 'node-fetch';
 
 import type { Network } from './network';
-
-const agent = new https.Agent({ keepAlive: true });
 
 export function isUniqueCollection(network: Network, address: string) {
   return network.uniqueCollectionPrefix ? address.startsWith(network.uniqueCollectionPrefix) : false;
@@ -17,7 +14,7 @@ function getUniqueCollectionId(address: string) {
 export async function getUniqueMetadata(network: Network, address: string, tokenId: string) {
   if (!network.uniqueApiUrl) return;
 
-  const response = await fetch(`${network.uniqueApiUrl}v1/tokens?collectionId=${getUniqueCollectionId(address)}&tokenId=${tokenId}`, { agent });
+  const response = await fetch(`${network.uniqueApiUrl}v1/tokens?collectionId=${getUniqueCollectionId(address)}&tokenId=${tokenId}`, { keepalive: true });
 
   assert.ok(response.ok);
 
