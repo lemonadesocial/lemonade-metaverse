@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.40.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.40.0...v10.40.1) (2023-12-05)
+
+
+### Bug Fixes
+
+* **indexer:** use native fetch instead of cross fetch ([29375ad](https://github.com/lemonadesocial/lemonade-metaverse/commit/29375ad41606a1725db7c7f5ef1366ec4272abf4))
+
 ## [10.40.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.39.0...v10.40.0) (2023-12-05)
 
 
