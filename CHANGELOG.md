@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.41.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.40.1...v10.41.0) (2023-12-06)
+
+
+### Features
+
+* use standardized logging ([d58cfb8](https://github.com/lemonadesocial/lemonade-metaverse/commit/d58cfb82f77f4645ac1e9b6a9fda1d61a9f08310))
+
 ## [10.40.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.40.0...v10.40.1) (2023-12-05)
 
 
