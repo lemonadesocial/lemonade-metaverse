@@ -3,7 +3,7 @@ import { Job, JobsOptions, Queue, Worker } from 'bullmq';
 import * as assert from 'assert';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
-import { logger } from '../../helpers/pino';
+import { logger, slackLogger } from '../../helpers/pino';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 
 import { Network, networks } from '../network';
@@ -164,7 +164,7 @@ async function process(state: State, data: IngressQuery) {
 
     const token = { ...tokenMap[order.token as string], ...map[order.token as string] };
 
-    logger.info({ order, token, imageUrl: getParsedUrl(token.metadata?.image), webUrl: getWebUrl(token) }, 'ingress order');
+    slackLogger.info({ order, token, imageUrl: getParsedUrl(token.metadata?.image), webUrl: getWebUrl(token) }, 'ingress order');
 
     promises.push(
       pubSub.publish(Trigger.OrderUpdated, { ...order, token })

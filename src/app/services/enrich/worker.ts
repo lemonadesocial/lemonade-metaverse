@@ -9,7 +9,7 @@ import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 import { Token, TokenModel } from '../../models/token';
 import type { Order } from '../../models/order';
 
-import { logger } from '../../helpers/pino';
+import { logger, slackLogger } from '../../helpers/pino';
 import { networkMap } from '../network';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
@@ -122,7 +122,7 @@ const processor: Processor<JobData> = async (job) => {
         }
       })(),
     ]).catch((err) => {
-      logger.debug({ token, err }, 'failed to enrich');
+      logger.warn({ token, err }, 'failed to enrich');
     });
 
     token.enrichedAt = new Date();
@@ -142,7 +142,7 @@ const processor: Processor<JobData> = async (job) => {
 
     if (orders.length) {
       await Promise.all(orders.flatMap(async (order) => {
-        logger.info({ order, token, imageUrl, webUrl }, 'enrich order');
+        slackLogger.info({ order, token, imageUrl, webUrl }, 'enrich order');
 
         return [
           token.order === order.id
@@ -151,14 +151,14 @@ const processor: Processor<JobData> = async (job) => {
         ];
       }));
     } else {
-      logger.info({ token, imageUrl, webUrl }, 'enrich token');
+      slackLogger.info({ token, imageUrl, webUrl }, 'enrich token');
 
       await pubSub.publish(Trigger.TokenUpdated, { ...token, registry });
     }
 
     const channel = network.enrichChannel?.[token.contract];
 
-    if (channel) logger.info({ channel, tokenId: token.tokenId, imageUrl, webUrl });
+    if (channel) slackLogger.info({ channel, tokenId: token.tokenId, imageUrl, webUrl });
 
     enrichDurationTimer({ network: network.name });
   } catch (err) {

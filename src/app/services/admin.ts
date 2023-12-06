@@ -1,11 +1,13 @@
 import * as prom from 'prom-client';
 import fastify, { FastifyPluginCallback } from 'fastify'
 
+import { logger } from '../helpers/pino';
+
 import { adminPort } from '../../config';
 
 export const app = fastify({
   keepAliveTimeout: 70000,
-  logger: true,
+  logger: logger.child({ service: 'admin' }),
   trustProxy: true,
 });
 
