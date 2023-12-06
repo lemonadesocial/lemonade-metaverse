@@ -115,7 +115,7 @@ class _TokensQueryResolver {
 
     const tokens = await Promise.all(networks.map((network) =>
       getTokens(network, variables).catch((err) => {
-        logger.debug({ network: network.name, err }, 'failed to get tokens');
+        logger.warn({ network: network.name, err }, 'failed to get tokens');
 
         return [];
       })

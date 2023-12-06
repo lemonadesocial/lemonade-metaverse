@@ -7,6 +7,11 @@ const targets: pino.TransportTargetOptions[] = [
   { level: 'fatal', target: 'pino/file', options: { destination: 2 } },
 ];
 
+export const logger = pino(
+  { level: 'trace' },
+  pino.transport({ targets })
+);
+
 if (slackWebhookUrl) {
   const options = {
     channelKey: 'channel',
@@ -19,7 +24,7 @@ if (slackWebhookUrl) {
   targets.push({ level: 'info', target: '../../../lib/logger.mjs', options });
 }
 
-export const logger = pino(
+export const slackLogger = pino(
   { level: 'trace' },
   pino.transport({ targets })
 );

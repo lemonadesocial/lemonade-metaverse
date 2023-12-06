@@ -1,12 +1,14 @@
 import fastify from 'fastify'
 
+import { logger } from './helpers/pino';
+
 import { prometheusPlugin } from './plugins/prometheus';
 
 import * as enrichQueue from './services/enrich/queue';
 
 export const app = fastify({
   keepAliveTimeout: 70000,
-  logger: true,
+  logger,
   trustProxy: true,
 });
 
