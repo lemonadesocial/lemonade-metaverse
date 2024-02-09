@@ -162,7 +162,7 @@ export async function getToken(network: Network, id: string) {
       });
 
       if (token) return createToken(network, token);
-    }),
+    }).catch(() => null),
     (async () => {
       const tokens = await TokenModel.aggregate<Omit<Token, 'order'> & { registry: Registry; order: Omit<Order, 'token'> & { token: string } }>([
         { $match: { network: network.name, id } },
