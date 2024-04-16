@@ -11,7 +11,7 @@ import { Order, OrderKind, OrderModel } from '../../models/order';
 import { StateModel } from '../../models/state';
 import { Token, TokenModel } from '../../models/token';
 
-import { Connection, createConnection } from '../../helpers/bullmq';
+import { createQueueConnection, createWorkerConnection } from '../../helpers/bullmq';
 import { createToken } from '../token';
 import { excludeNull } from '../../utils/object';
 import { getDate } from '../../utils/date';
@@ -36,7 +36,6 @@ interface JobData {
 interface State {
   name: string;
   network: Network;
-  connection: Connection;
   queue: Queue;
   worker?: Worker<JobData>;
 }
@@ -271,12 +270,10 @@ async function startNetwork(network: Network) {
   if (!network.ingressEnabled) return;
 
   const name = `ingress:${network.name}`;
-  const connection = createConnection();
   const state: State = states[network.name] = {
     name,
     network,
-    connection,
-    queue: new Queue<JobData>(name, { connection }),
+    queue: new Queue<JobData>(name, { connection: createQueueConnection() }),
   };
 
   await state.queue.waitUntilReady();
@@ -292,7 +289,7 @@ async function startNetwork(network: Network) {
   }
 
   state.worker = new Worker<JobData>(name, processor.bind(null, state), {
-    connection,
+    connection: createWorkerConnection(),
     settings: { backoffStrategy: (attempts) => getRandomInt(0, Math.min(POLL_BACKOFF_CAP, POLL_BACKOFF_BASE * 2 ** attempts)) },
   });
   state.worker.on('failed', function onFailed(job, err) {
@@ -325,7 +322,6 @@ async function stopNetwork(network: Network) {
 
   await state.worker?.close();
   await state.queue.close();
-  await state.connection.quit();
 }
 
 export async function stop() {

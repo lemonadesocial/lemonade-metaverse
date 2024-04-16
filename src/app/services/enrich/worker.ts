@@ -14,7 +14,7 @@ import { networkMap } from '../network';
 import { pubSub, Trigger } from '../../helpers/pub-sub';
 import { redis } from '../../helpers/redis';
 
-import { Connection, createConnection } from '../../helpers/bullmq';
+import { createWorkerConnection } from '../../helpers/bullmq';
 import { getParsedUrl, getWebUrl, parseUrl } from '../../utils/url';
 import { getRaribleV2Royalties } from '../contract/rarible-royalties-v2';
 import { getRegistry } from '../registry';
@@ -168,14 +168,12 @@ const processor: Processor<JobData> = async (job) => {
   }
 };
 
-let connection: Connection | undefined;
 let worker: Worker<JobData> | undefined;
 
 export async function start() {
-  connection = createConnection();
   worker = new Worker<JobData>(QUEUE_NAME, processor, {
     concurrency: WORKER_CONCURRENCY,
-    connection,
+    connection: createWorkerConnection(),
   });
   worker.on('failed', function onFailed(job, err) {
     enrichesTotal.inc({ network: job?.data.token.network, status: 'fail' });
@@ -190,7 +188,6 @@ export async function start() {
 
 export async function stop(): Promise<void> {
   if (worker) await worker.close();
-  if (connection) await connection.quit();
 
   await writer.flush();
 }

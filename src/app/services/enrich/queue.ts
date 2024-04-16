@@ -5,7 +5,7 @@ import { JobData, ORDERS_KEY, QUEUE_NAME } from './shared';
 
 import { redis } from '../../helpers/redis';
 
-import { Connection, createConnection } from '../../helpers/bullmq';
+import { createQueueConnection } from '../../helpers/bullmq';
 
 import type { Order } from '../../models/order';
 import type { Token } from '../../models/token';
@@ -20,12 +20,10 @@ interface Job {
   opts?: BulkJobOptions;
 }
 
-let connection: Connection | undefined;
 let queue: Queue<JobData> | undefined;
 
 export async function start() {
-  connection = createConnection();
-  queue = new Queue<JobData>(QUEUE_NAME, { connection });
+  queue = new Queue<JobData>(QUEUE_NAME, { connection: createQueueConnection() });
 }
 
 export async function enqueue(...items: Item[]) {
@@ -60,5 +58,4 @@ export async function enqueue(...items: Item[]) {
 
 export async function stop() {
   if (queue) await queue.close();
-  if (connection) await connection.quit();
 }
