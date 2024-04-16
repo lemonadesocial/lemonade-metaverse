@@ -2,8 +2,16 @@ import { Redis } from 'ioredis';
 
 import { redisUrl } from '../../config';
 
-export { Redis as Connection };
+export function createQueueConnection() {
+  return new Redis(redisUrl, {
+    retryStrategy: () => 1000,
+    enableOfflineQueue: false,
+  });
+}
 
-export function createConnection() {
-  return new Redis(redisUrl, { maxRetriesPerRequest: null });
+export function createWorkerConnection() {
+  return new Redis(redisUrl, {
+    retryStrategy: () => 1000,
+    maxRetriesPerRequest: null,
+  });
 }
