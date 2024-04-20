@@ -2237,16 +2237,14 @@ bufferutil@^4.0.6:
   dependencies:
     node-gyp-build "^4.3.0"
 
-bullmq@^4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-4.14.0.tgz#7c37b3940dc68a4a99255a0b2f1f414924a9d6cb"
-  integrity sha512-2IjTzXfTkXQ+WNRy2/CVupnHJtqp6JpxacIvYbru2EvporUALnIcpiSpjJbk4V6kAbsYvrV2wRdUKllb+LfssQ==
+bullmq@^5.7.6:
+  version "5.7.6"
+  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-5.7.6.tgz#bb5b86d2ecf99c41747e4fc0010466cac09d8adb"
+  integrity sha512-bDTNqqNDrmUGHcA5lw6tcestchS4vV7/VkTyywybvOiXGtkGZCyjuziBzCNwDYMKibPpWmKySe5yTJsEb5bIlw==
   dependencies:
     cron-parser "^4.6.0"
-    glob "^8.0.3"
     ioredis "^5.3.2"
-    lodash "^4.17.21"
-    msgpackr "^1.6.2"
+    msgpackr "^1.10.1"
     node-abort-controller "^3.1.1"
     semver "^7.5.4"
     tslib "^2.0.0"
