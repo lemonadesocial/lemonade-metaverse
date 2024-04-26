@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.42.1](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.42.0...v10.42.1) (2024-04-26)
+
+
+### Reverts
+
+* Revert "feat(deps): upgrade bullmq" ([d282880](https://github.com/lemonadesocial/lemonade-metaverse/commit/d28288081b74a3afa6f1c35f3a2986e0c10b8c98))
+
 ## [10.42.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.41.0...v10.42.0) (2024-04-11)
 
 
