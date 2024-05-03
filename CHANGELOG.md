@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.44.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.43.0...v10.44.0) (2024-05-03)
+
+
+### Features
+
+* **deps:** upgrade bullmq ([63b06c1](https://github.com/lemonadesocial/lemonade-metaverse/commit/63b06c1810f2730d8d1fb2da807385abcf147021))
+* **deps:** upgrade ioredis ([f840d9d](https://github.com/lemonadesocial/lemonade-metaverse/commit/f840d9d9da5e8c047ddf74d3a4241e980e24fa5c))
+
 ## [10.43.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.42.1...v10.43.0) (2024-04-28)
 
 
