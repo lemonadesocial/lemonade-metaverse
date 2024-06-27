@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.45.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.44.0...v10.45.0) (2024-06-27)
+
+
+### Features
+
+* **utils:** update IPFS gateway url ([#67](https://github.com/lemonadesocial/lemonade-metaverse/issues/67)) ([0aa7a5e](https://github.com/lemonadesocial/lemonade-metaverse/commit/0aa7a5eb6474f56f3142b561194b20dcfa3d28a0))
+
 ## [10.44.0](https://github.com/lemonadesocial/lemonade-metaverse/compare/v10.43.0...v10.44.0) (2024-05-03)
 
 
