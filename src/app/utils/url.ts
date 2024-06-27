@@ -9,7 +9,7 @@ export function parseUrl(input: string) {
   if (url.protocol === 'ipfs:') {
     const cidv1 = CID.parse(url.hostname).toV1().toString();
 
-    return new URL(`${ipfsGatewayUrl.protocol}//${cidv1}.ipfs.${ipfsGatewayUrl.host}${url.pathname}`);
+    return new URL(`${ipfsGatewayUrl}${cidv1}/${url.pathname}`);
   }
 
   return url;
